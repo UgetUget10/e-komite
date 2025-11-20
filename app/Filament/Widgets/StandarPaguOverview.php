@@ -48,10 +48,10 @@ class StandarPaguOverview extends BaseWidget
         $cards = [];
 
         // 1. Total Pagu Keseluruhan
-        $cards[] = Stat::make('Total Pagu Standar', 'Rp. ' . number_format($totalKeseluruhan, 0, ',', '.'))
-            ->description("{$jumlahStandar} standar")
-            ->descriptionIcon('heroicon-m-banknotes')
-            ->color('primary');
+        // $cards[] = Stat::make('Total Pagu Standar', 'Rp. ' . number_format($totalKeseluruhan, 0, ',', '.'))
+        //     ->description("{$jumlahStandar} standar")
+        //     ->descriptionIcon('heroicon-m-banknotes')
+        //     ->color('primary');
 
         // 2. Per Standar
         foreach ($stats as $item) {

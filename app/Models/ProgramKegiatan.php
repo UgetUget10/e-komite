@@ -23,6 +23,14 @@ class ProgramKegiatan extends Model
         'pagu_komite',
     ];
 
+    // <<< WAJIB DITAMBAHKAN >>>
+    protected $casts = [
+        'pagu_dipa'   => 'integer',
+        'pagu_komite' => 'integer',
+        'total'       => 'integer',
+    ];
+    // <<< END >>>
+
     public function standar()
     {
         return $this->belongsTo(Standar::class, 'id_standar', 'id');
@@ -35,17 +43,14 @@ class ProgramKegiatan extends Model
 
     protected static function booted()
     {
-        // Hitung ulang total saat simpan
         static::saved(function ($program) {
             $program->hitungTotalUraian();
         });
 
-        // HAPUS uraian saat program dihapus
         static::deleting(function ($program) {
             $program->uraianProgram()->delete();
         });
 
-        // Set pagu tahun anggaran aktif saat buat
         static::creating(function ($program) {
             $pagu = PaguTahunAnggaran::where('status_aktif', 1)->first();
             if ($pagu) {
