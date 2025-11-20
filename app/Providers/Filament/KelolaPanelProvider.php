@@ -91,6 +91,7 @@ class KelolaPanelProvider extends PanelProvider
                 Authenticate::class,
             ])
             // ->viteTheme('resources/css/filament/kelola/theme.css')
-            ->sidebarFullyCollapsibleOnDesktop();
+            ->sidebarFullyCollapsibleOnDesktop()
+            ->sidebarWidth('19rem');
     }
 }

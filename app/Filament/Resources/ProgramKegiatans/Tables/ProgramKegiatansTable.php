@@ -45,6 +45,14 @@ class ProgramKegiatansTable
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
+                // Kolom Pagu Komite — readonly & otomatis sama dengan total
+            // TextColumn::make('pagu_komite')
+            //     ->label('Pagu Komite')
+            //     ->numeric(thousandsSeparator: '.')
+            //     ->sortable()
+            //     ->color('success')
+            //     ->extraAttributes(['class' => 'font-mono']),
             ])
             // ->filters([
             //     SelectFilter::make('id_standar')
