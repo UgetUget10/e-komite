@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\ProgramKegiatans\Tables;
 
+use Filament\Actions\Action;
 use Filament\Tables\Table;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
@@ -11,6 +12,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\SelectFilter;
+use Illuminate\Database\Eloquent\Builder;
 
 class ProgramKegiatansTable
 {
@@ -18,6 +20,20 @@ class ProgramKegiatansTable
     {
 
         return $table
+            ->modifyQueryUsing(function (Builder $query) {
+                // Ambil ID tahun anggaran yang aktif
+                $tahunAktifId = \App\Models\PaguTahunAnggaran::where('status_aktif', 1)
+                    ->value('id');
+
+                // Jika tidak ada tahun aktif (misal data belum di-set), tampilkan semua (atau kosong)
+                if ($tahunAktifId) {
+                    $query->where('fk_id_pagu_tahun_anggaran', $tahunAktifId);
+                } else {
+                    // Opsional: jika tidak ada tahun aktif, sembunyikan semua data
+                    $query->whereRaw('1 = 0'); // tidak ada data yang ditampilkan
+                }
+            })
+
 
             ->columns([
                 // TextColumn::make('id')
@@ -111,10 +127,21 @@ class ProgramKegiatansTable
                             ->body('Semua uraian terkait juga telah dihapus.')
                     ),
             ])
+
+            ->headerActions([
+                Action::make('tahun_aktif')
+                    ->label(function () {
+                        $tahun = \App\Models\PaguTahunAnggaran::where('status_aktif', 1)->value('tahun');
+                        return "Tahun Anggaran Aktif: " . ($tahun ?? 'Tidak ada');
+                    })
+                    ->color('success')
+            ])
+
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
             ]);
+
     }
 }
