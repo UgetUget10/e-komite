@@ -13,7 +13,7 @@
         "filament/filament": "^4.0",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
-        "leandrocfe/filament-apex-charts": "4.0",
+        "leandrocfe/filament-apex-charts": "^4.0",
         "muazzam/slick-scrollbar": "^1.0",
         "osamanagi/filament-abyss-theme": "^1.0",
         "resma/filament-awin-theme": "^1.1"

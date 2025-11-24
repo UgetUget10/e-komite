@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
 class ProgramKegiatan extends Model
 {
-    use HasRoles, HasUuids;
+    use HasUuids;
 
     protected $table = 'tb_program_kegiatan';
     public $incrementing = false;
@@ -21,13 +21,23 @@ class ProgramKegiatan extends Model
         'judul_program',
         'pagu_dipa',
         'pagu_komite',
+        'total_pengeluaran_perprogram ',
+        'sisa_anggaran_perprogram ',
     ];
 
     // <<< WAJIB DITAMBAHKAN >>>
+    // protected $casts = [
+    //     'pagu_dipa'   => 'integer',
+    //     'pagu_komite' => 'integer',
+    //     'total'       => 'integer',
+    // ];
+
+    // Cast semua kolom uang ke decimal agar presisi tetap terjaga
     protected $casts = [
-        'pagu_dipa'   => 'integer',
-        'pagu_komite' => 'integer',
-        'total'       => 'integer',
+        'pagu_dipa' => 'decimal:2',
+        'pagu_komite' => 'decimal:2',
+        'total_pengeluaran_perprogram' => 'decimal:2',
+        'sisa_anggaran_perprogram' => 'decimal:2',
     ];
     // <<< END >>>
 
