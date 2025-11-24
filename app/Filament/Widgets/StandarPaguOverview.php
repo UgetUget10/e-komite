@@ -4,85 +4,106 @@ namespace App\Filament\Widgets;
 
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
-use Illuminate\Container\Attributes\Cache;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class StandarPaguOverview extends BaseWidget
 {
     protected static ?int $sort = 2;
     protected int|string|array $columnSpan = 'full';
 
+    public function getPollingInterval(): ?string
+    {
+        return '30s';
+    }
+
+    protected function getColumns(): int | array
+    {
+        return [
+            'default' => 1,
+            'sm' => 2,
+            'md' => 3,
+            'lg' => 4,
+            'xl' => 5,
+        ];
+    }
+
+    // CUSTOM HEADER — INI YANG BIKIN TOMBOL MUNCUL!
+    protected function getHeader(): ?string
+    {
+        $tahunAktifId = $this->getTahunAktifId();
+
+        return view('filament.widgets.standar-pagu-anggaran-overview-header', [
+            'tahunAktifId' => $tahunAktifId,
+        ])->render();
+    }
+
     protected function getStats(): array
     {
-
         $user = Auth::user();
+        $tahunAktifId = $this->getTahunAktifId();
 
-        // Ambil ID tahun anggaran yang aktif (status_aktif = 1)
-        $tahunAktifId = DB::table('komite.tb_pagu_tahun_anggaran')
-            ->where('status_aktif', 1)
-            ->value('id');
-
-        // Jika tidak ada tahun aktif → kembalikan widget kosong
-        if (!$tahunAktifId) {
+        if (! $tahunAktifId) {
             return [
-                Stat::make('Tahun Anggaran', 'Belum ada tahun aktif')
+                Stat::make('Tahun Anggaran', 'Tidak Aktif')
                     ->description('Hubungi admin untuk mengaktifkan tahun anggaran')
+                    ->descriptionIcon('heroicon-o-exclamation-triangle')
                     ->color('danger'),
             ];
         }
 
-        // Cek apakah user Super Admin
+        $tahunAnggaran = Cache::remember("tahun_label_{$tahunAktifId}", now()->addDay(), fn() =>
+            DB::table('komite.tb_pagu_tahun_anggaran')->where('id', $tahunAktifId)->value('tahun')
+        );
+
         $isSuperAdmin = $user->hasRole('Super Admin');
+        $allowedStandarIds = $isSuperAdmin ? null : $user->standar()->pluck('standar_id')->toArray();
 
-        // Ambil standar yang diizinkan (kecuali super admin)
-        $allowedStandarIds = $isSuperAdmin
-            ? null // akan diabaikan di query
-            : DB::table('komite.tb_standar_user')
-                ->where('user_id', $user->id)
-                ->pluck('standar_id')
-                ->toArray();
+        $stats = Cache::remember("widget_pagu_{$user->id}_{$tahunAktifId}", now()->addMinutes(15), function () use ($tahunAktifId, $isSuperAdmin, $allowedStandarIds) {
+            return DB::table('komite.tb_standar as s')
+                ->leftJoin('komite.tb_program_kegiatan as pk', fn($j) => $j
+                    ->on('pk.id_standar', '=', 's.id')
+                    ->where('pk.fk_id_pagu_tahun_anggaran', $tahunAktifId)
+                )
+                ->select(
+                    's.id',
+                    's.nama_standar',
+                    DB::raw('COUNT(pk.id) as jumlah_program'),
+                    DB::raw('COALESCE(SUM(pk.total), 0) as total_pagu')
+                )
+                ->when(!$isSuperAdmin && $allowedStandarIds, fn($q) => $q->whereIn('s.id', $allowedStandarIds))
+                ->groupBy('s.id', 's.nama_standar')
+                ->orderBy('s.nama_standar')
+                ->get();
+        });
 
-        // Query utama: hanya program dari tahun aktif
-        $stats = DB::table('komite.tb_standar as s')
-            ->leftJoin('komite.tb_program_kegiatan as pk', function ($join) use ($tahunAktifId) {
-                $join->on('pk.id_standar', '=', 's.id')
-                    ->where('pk.fk_id_pagu_tahun_anggaran', '=', $tahunAktifId);
-            })
-            ->select(
-                's.nama_standar',
-                DB::raw('COUNT(pk.id) as jumlah_program'),
-                DB::raw('COALESCE(SUM(pk.total), 0) as total_pagu')
-            )
-            ->when(!$isSuperAdmin && $allowedStandarIds, function ($q) use ($allowedStandarIds) {
-                return $q->whereIn('s.id', $allowedStandarIds);
-            })
-            ->groupBy('s.id', 's.nama_standar')
-            ->orderBy('s.nama_standar')
-            ->get();
-
-        // Total keseluruhan
-        $totalKeseluruhan = $stats->sum('total_pagu');
-        $jumlahStandar = $stats->count();
+        $totalPagu = $stats->sum('total_pagu');
+        $totalProgram = $stats->sum('jumlah_program');
 
         $cards = [];
 
-        // Opsional: Tampilkan total keseluruhan di atas
-        $cards[] = Stat::make('Total Pagu Tahun ' . DB::table('komite.tb_pagu_tahun_anggaran')->where('id', $tahunAktifId)->value('tahun'),
-                'Rp ' . number_format($totalKeseluruhan, 0, ',', '.'))
-            ->description("{$jumlahStandar} standar • {$stats->sum('jumlah_program')} program")
+        $cards[] = Stat::make("Total Pagu Tahun {$tahunAnggaran}", 'Rp ' . number_format($totalPagu, 0, ',', '.'))
+            ->description("{$stats->count()} standar • {$totalProgram} program aktif")
             ->descriptionIcon('heroicon-m-banknotes')
             ->color('primary');
 
-        // Card per standar
         foreach ($stats as $item) {
             $cards[] = Stat::make($item->nama_standar, 'Rp ' . number_format($item->total_pagu, 0, ',', '.'))
-                ->description($item->jumlah_program . ' program')
-                ->descriptionIcon('heroicon-m-document-text')
+                ->description("{$item->jumlah_program} program")
+                ->descriptionIcon($this->getIconByStandar($item->nama_standar))
                 ->color($this->getColorByStandar($item->nama_standar));
         }
 
         return $cards;
+    }
+
+    private function getTahunAktifId(): ?int
+    {
+        $id = Cache::remember('tahun_anggaran_aktif_id', now()->addHours(6), fn() =>
+            DB::table('komite.tb_pagu_tahun_anggaran')->where('status_aktif', 1)->value('id')
+        );
+        return $id !== null ? (int) $id : null;
     }
 
     private function getColorByStandar(string $nama): string
@@ -100,5 +121,18 @@ class StandarPaguOverview extends BaseWidget
         };
     }
 
-
+    private function getIconByStandar(string $nama): string
+    {
+        return match (true) {
+            str_contains($nama, 'Proses')       => 'heroicon-m-cog-8-tooth',
+            str_contains($nama, 'Isi')          => 'heroicon-m-book-open',
+            str_contains($nama, 'Penilaian')    => 'heroicon-m-clipboard-document-check',
+            str_contains($nama, 'Pengelolaan')  => 'heroicon-m-building-office-2',
+            str_contains($nama, 'PTT')          => 'heroicon-m-user-group',
+            str_contains($nama, 'Sarpras')      => 'heroicon-m-building-library',
+            str_contains($nama, 'Kelulusan')    => 'heroicon-m-academic-cap',
+            str_contains($nama, 'Pembiayaan')   => 'heroicon-m-banknotes',
+            default                             => 'heroicon-m-document-text',
+        };
+    }
 }
