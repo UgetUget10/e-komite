@@ -136,7 +136,7 @@ class ProgramKegiatansTable
                         $tahun = \App\Models\PaguTahunAnggaran::where('status_aktif', 1)->value('tahun');
                         return "Tahun Anggaran Aktif: " . ($tahun ?? 'Tidak ada');
                     })
-                    ->color('success')
+                    ->color('secondary'),
             ])
 
             ->toolbarActions([

@@ -1,0 +1,95 @@
+@import "../../../../vendor/filament/filament/resources/css/theme.css";
+
+@source '../../../../app/Filament/**/*';
+@source '../../../../resources/views/filament/**/*';
+
+@theme {
+    --color-main-primary: rgb(242, 241, 235);
+    --color-main-secondary: rgb(284, 197, 181);
+    --color-main-black: #1e1e1e;
+    --color-main-white: #ffffff;
+    --color-main-accent: #3b82f6;
+    --color-main-hover: #fff8d4;
+}
+
+.fi-body {
+    @apply bg-main-primary text-main-black;
+}
+
+.fi-topbar {
+    @apply bg-main-primary shadow-none ring-0;
+}
+
+.fi-sidebar {
+    @apply bg-main-white rounded-t-2xl ml-2 hover:shadow-lg;
+}
+
+/* .fi-body-has-topbar .fi-sidebar {
+    height: calc(100vh - 6rem);
+} */
+
+.fi-sidebar-item > .fi-sidebar-item-btn {
+    @apply rounded-2xl hover:bg-main-secondary/100;
+}
+
+.fi-sidebar-item.fi-active > .fi-sidebar-item-btn {
+    @apply bg-main-primary/100 font-bold;
+}
+
+.fi-bg-color-600 {
+    @apply bg-main-secondary text-main-black;
+}
+
+/* .fi-ta-header {
+    @apply bg-main-secondary text-main-black rounded-tr-xl;
+} */
+
+.fi-text-color-900 {
+    @apply text-main-black;
+}
+
+.fi-color-secondary {
+    @apply bg-main-secondary text-main-black;
+}
+
+.fi-input-wrp {
+    @apply rounded-2xl;
+}
+
+.fi-btn {
+    @apply rounded-2xl;
+}
+
+.fi-ta-ctn {
+    @apply rounded-2xl bg-main-white p-4;
+}
+
+.fi-ta-ctn {
+    & .fi-ta-header-ctn {
+        @apply rounded-2xl bg-main-secondary;
+    }
+}
+
+.fi-ta-table {
+    & > thead {
+        & > tr {
+            @apply text-main-black bg-main-white;
+        }
+    }
+}
+
+.fi-icon-btn {
+    @apply rounded-2xl bg-main-secondary text-main-black hover:bg-main-secondary;
+}
+
+.fi-sc-form {
+    @apply rounded-2xl p-4;
+}
+
+.fi-simple-main fi-width-lg {
+    @apply bg-main-white rounded-2xl;
+}
+
+.filamentFormButton {
+    @apply rounded-2xl text-main-black shadow-md hover:bg-main-secondary;
+}
