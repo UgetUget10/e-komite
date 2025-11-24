@@ -21,4 +21,9 @@ class PaguTahunAnggaran extends Model
         'nominal_dana',
         'status_aktif',
     ];
+
+    public static function getActive()
+    {
+        return self::where('status_aktif', 1)->first();
+    }
 }
