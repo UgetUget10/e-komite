@@ -41,7 +41,7 @@ class ProgramKegiatan extends Model
     ];
     // <<< END >>>
 
-    public function standar()
+    public function standars()
     {
         return $this->belongsTo(Standar::class, 'id_standar', 'id');
     }

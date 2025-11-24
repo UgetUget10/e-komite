@@ -15,21 +15,27 @@ class UraianProgramsTable
     {
         return $table
             ->columns([
-                TextColumn::make('id')
-                    ->label('ID')
+                // TextColumn::make('id')
+                //     ->label('ID')
+                //     ->searchable(),
+                TextColumn::make('standars.nama_standar')
+                    ->label('Standar')
                     ->searchable(),
-                TextColumn::make('id_standar')
-                    ->searchable(),
-                TextColumn::make('id_program_kegiatan')
+                TextColumn::make('programKegiatan.judul_program')
+                    ->label('Program Kegiatan')
                     ->searchable(),
                 TextColumn::make('nama_uraian')
+                    ->label('Nama Uraian')
                     ->searchable(),
                 TextColumn::make('banyaknya')
+                    ->label('Banyaknya')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('satuan')
+                    ->label('Satuan')
                     ->searchable(),
                 TextColumn::make('jumlah')
+                    ->label('Jumlah')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('created_at')

@@ -39,12 +39,14 @@ class ProgramKegiatansTable
                 // TextColumn::make('id')
                 //     ->label('ID')
                 //     ->searchable(),
-                TextColumn::make('standar.nama_standar')
+                TextColumn::make('standars.nama_standar')
+                    ->label('Standar')
                     ->searchable(),
                 TextColumn::make('judul_program')
                     ->label('Judul Program')
                     ->searchable(),
                 TextColumn::make('total')
+                    ->label('Total Diajukan')
                     ->numeric()
                     ->sortable(),
                 // TextColumn::make('pagu_dipa')

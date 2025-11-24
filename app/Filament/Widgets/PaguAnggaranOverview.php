@@ -9,8 +9,12 @@ use Illuminate\Support\Facades\Auth;
 
 class PaguAnggaranOverview extends BaseWidget
 {
+
     protected static ?int $sort = 1;
     protected int | string | array $columnSpan = 'full';
+
+    // custom dashboard view
+    // protected string $view = 'filament.kelola.widgets.pagu-anggaran-overview';
 
     protected function getColumns(): int
     {
@@ -90,21 +94,21 @@ class PaguAnggaranOverview extends BaseWidget
 
         return [
             // 1. Total Pagu
-            Stat::make("Total Pagu Anggaran {$tahun}", 'Rp. ' . number_format($totalPagu, 0, ',', '.'))
+            Stat::make("Total Pendapatan {$tahun}", 'Rp. ' . number_format($totalPagu, 0, ',', '.'))
                 ->description($isAktif ? 'Aktif' : 'Tidak Aktif')
                 ->descriptionIcon($isAktif ? 'heroicon-m-check-circle' : 'heroicon-m-x-circle')
                 ->color($isAktif ? 'success' : 'warning')
                 ->extraAttributes(['class' => 'text-2xl font-bold']),
 
             // 2. Pagu Diajukan (User)
-            Stat::make('Pagu Diajukan', 'Rp. ' . number_format($paguDiajukan, 0, ',', '.'))
+            Stat::make('Total Keperluan Dana', 'Rp. ' . number_format($paguDiajukan, 0, ',', '.'))
                 ->description($desc)
                 ->descriptionIcon($icon)
                 ->color($color),
 
             // 3. Sisa Pagu (Global)
-            Stat::make('Sisa Pagu', 'Rp. ' . number_format($sisaPagu, 0, ',', '.'))
-                ->description($sisaPagu < 0 ? 'Melebihi pagu!' : ($sisaPagu == 0 ? 'Habis' : 'Tersedia'))
+            Stat::make('Sisa Anggaran', 'Rp. ' . number_format($sisaPagu, 0, ',', '.'))
+                ->description($sisaPagu < 0 ? 'Melebihi Anggaran Pendapatan!' : ($sisaPagu == 0 ? 'Habis' : 'Tersedia'))
                 ->descriptionIcon(
                     $sisaPagu < 0
                         ? 'heroicon-m-exclamation-triangle'

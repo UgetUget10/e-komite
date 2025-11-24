@@ -6,6 +6,7 @@ use Andreia\FilamentNordTheme\FilamentNordThemePlugin;
 use App\Filament\Widgets\BlogPostsChart;
 use App\Filament\Widgets\PaguAnggaranCard;
 use App\Filament\Widgets\PaguAnggaranOverview;
+use App\Filament\Widgets\PendapatanAnggaranOverview;
 use App\Filament\Widgets\StandarPaguChart;
 use App\Filament\Widgets\StandarPaguOverview;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;

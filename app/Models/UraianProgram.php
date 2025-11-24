@@ -57,4 +57,9 @@ class UraianProgram extends Model
     {
         return $this->belongsTo(ProgramKegiatan::class, 'id_program_kegiatan');
     }
+
+    public function standars()
+    {
+        return $this->belongsTo(Standar::class, 'id_standar');
+    }
 }

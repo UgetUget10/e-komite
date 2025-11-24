@@ -18,16 +18,16 @@ class StandarPaguOverview extends BaseWidget
         return '30s';
     }
 
-    protected function getColumns(): int | array
-    {
-        return [
-            'default' => 1,
-            'sm' => 2,
-            'md' => 3,
-            'lg' => 4,
-            'xl' => 5,
-        ];
-    }
+    // protected function getColumns(): int | array
+    // {
+    //     return [
+    //         'default' => 1,
+    //         'sm' => 2,
+    //         'md' => 3,
+    //         'lg' => 4,
+    //         'xl' => 5,
+    //     ];
+    // }
 
     // CUSTOM HEADER — INI YANG BIKIN TOMBOL MUNCUL!
     protected function getHeader(): ?string
@@ -58,7 +58,7 @@ class StandarPaguOverview extends BaseWidget
         );
 
         $isSuperAdmin = $user->hasRole('Super Admin');
-        $allowedStandarIds = $isSuperAdmin ? null : $user->standar()->pluck('standar_id')->toArray();
+        $allowedStandarIds = $isSuperAdmin ? null : $user->standars()->pluck('standar_id')->toArray();
 
         $stats = Cache::remember("widget_pagu_{$user->id}_{$tahunAktifId}", now()->addMinutes(15), function () use ($tahunAktifId, $isSuperAdmin, $allowedStandarIds) {
             return DB::table('komite.tb_standar as s')
@@ -83,13 +83,13 @@ class StandarPaguOverview extends BaseWidget
 
         $cards = [];
 
-        $cards[] = Stat::make("Total Pagu Tahun {$tahunAnggaran}", 'Rp ' . number_format($totalPagu, 0, ',', '.'))
+        $cards[] = Stat::make("Total Keperluan Dana {$tahunAnggaran}", 'Rp ' . number_format($totalPagu, 0, ',', '.'))
             ->description("{$stats->count()} standar • {$totalProgram} program aktif")
             ->descriptionIcon('heroicon-m-banknotes')
             ->color('primary');
 
         foreach ($stats as $item) {
-            $cards[] = Stat::make($item->nama_standar, 'Rp ' . number_format($item->total_pagu, 0, ',', '.'))
+            $cards[] = Stat::make("Keperluan Dana " . $item->nama_standar, 'Rp ' . number_format($item->total_pagu, 0, ',', '.'))
                 ->description("{$item->jumlah_program} program")
                 ->descriptionIcon($this->getIconByStandar($item->nama_standar))
                 ->color($this->getColorByStandar($item->nama_standar));
