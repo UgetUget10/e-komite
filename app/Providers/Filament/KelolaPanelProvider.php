@@ -46,8 +46,7 @@ class KelolaPanelProvider extends PanelProvider
             // )
             ->login()
             ->colors([
-                'primary' => Color::Amber[500],
-                // 'secondary' => \Filament\Support\Colors\Color::Blue,
+                'primary' => Color::Amber[500]
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
@@ -98,6 +97,7 @@ class KelolaPanelProvider extends PanelProvider
             // ->viteTheme('resources/css/filament/kelola/theme.css')
             ->sidebarFullyCollapsibleOnDesktop()
             ->sidebarWidth('19rem')
-            ->darkMode(false);
+            ->darkMode(false)
+            ->font('Inter');
     }
 }
