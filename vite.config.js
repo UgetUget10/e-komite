@@ -12,6 +12,8 @@ export default defineConfig({
                 // "vendor/osamanagi/filament-abyss-theme/resources/css/theme.css",
                 // "vendor/andreia/filament-nord-theme/resources/css/theme.css",
                 // "resources/css/filament/kelola/theme.css",
+
+                // "resources/css/filament/kelola/theme.css",
             ],
             refresh: true,
         }),
