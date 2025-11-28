@@ -8,9 +8,10 @@ export default defineConfig({
             input: [
                 "resources/css/app.css",
                 "resources/js/app.js",
-                "vendor/resma/filament-awin-theme/resources/css/theme.css",
-                "vendor/osamanagi/filament-abyss-theme/resources/css/theme.css",
-                "vendor/andreia/filament-nord-theme/resources/css/theme.css",
+                // "vendor/resma/filament-awin-theme/resources/css/theme.css",
+                // "vendor/osamanagi/filament-abyss-theme/resources/css/theme.css",
+                // "vendor/andreia/filament-nord-theme/resources/css/theme.css",
+                // "resources/css/filament/kelola/theme.css",
             ],
             refresh: true,
         }),

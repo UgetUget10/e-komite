@@ -40,10 +40,14 @@ class KelolaPanelProvider extends PanelProvider
             ->default()
             ->id('kelola')
             ->path('kelola')
+            // ->renderHook(
+            //     'panels::body.end',
+            //     fn () => view('filament.custom-styles')
+            // )
             ->login()
             ->colors([
-                'primary' => Color::Blue,
-                'secondary' => \Filament\Support\Colors\Color::Blue,
+                'primary' => Color::Amber[500],
+                // 'secondary' => \Filament\Support\Colors\Color::Blue,
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
@@ -73,19 +77,19 @@ class KelolaPanelProvider extends PanelProvider
             ])
             ->plugins([
                 FilamentShieldPlugin::make(),
-                FilamentAwinTheme::make()
-                    ->primaryColor('#3b82f6'),
+                // FilamentAwinTheme::make()
+                //     ->primaryColor('#3b82f6'),
                 // FilamentAbyssThemePlugin::make(),
                 // FilamentNordThemePlugin::make(),
                 // BriskTheme::make(),
-                SlickScrollbarPlugin::make()
-                    ->size('6px')                   // scrollbar width/height (default: 8px)
-                    ->palette('secondary')            // force panel palette ('primary' or 'secondary')
-                    ->color(Color::Blue)           // use a Filament palette (500 normal, 600 auto for hover)
-                    ->hoverColor(Color::Blue, 700) // pick a custom shade
-                    ->color('#3b82f6')              // hex
-                    ->hoverColor('rgb(220 38 38)')  // rgb()
-                    ->color('var(--secondary-500)'),
+                // SlickScrollbarPlugin::make()
+                //     ->size('6px')                   // scrollbar width/height (default: 8px)
+                //     ->palette('secondary')            // force panel palette ('primary' or 'secondary')
+                //     ->color(Color::Blue)           // use a Filament palette (500 normal, 600 auto for hover)
+                //     ->hoverColor(Color::Blue, 700) // pick a custom shade
+                //     ->color('#3b82f6')              // hex
+                //     ->hoverColor('rgb(220 38 38)')  // rgb()
+                //     ->color('var(--secondary-500)'),
                 FilamentApexChartsPlugin::make(),
             ])
             ->authMiddleware([
@@ -93,6 +97,7 @@ class KelolaPanelProvider extends PanelProvider
             ])
             // ->viteTheme('resources/css/filament/kelola/theme.css')
             ->sidebarFullyCollapsibleOnDesktop()
-            ->sidebarWidth('19rem');
+            ->sidebarWidth('19rem')
+            ->darkMode(false);
     }
 }
