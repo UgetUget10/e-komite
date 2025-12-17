@@ -5,7 +5,9 @@ namespace App\Providers\Filament;
 use Andreia\FilamentNordTheme\FilamentNordThemePlugin;
 use App\Filament\Widgets\BlogPostsChart;
 use App\Filament\Widgets\PaguAnggaranCard;
+use App\Filament\Widgets\PaguAnggaranChart;
 use App\Filament\Widgets\PaguAnggaranOverview;
+use App\Filament\Widgets\PaguPerStandarChart;
 use App\Filament\Widgets\PendapatanAnggaranOverview;
 use App\Filament\Widgets\StandarPaguChart;
 use App\Filament\Widgets\StandarPaguOverview;
@@ -41,12 +43,33 @@ class KelolaPanelProvider extends PanelProvider
             ->id('kelola')
             ->path('kelola')
             // ->renderHook(
-            //     'panels::body.end',
-            //     fn () => view('filament.custom-styles')
+            //     'panels::styles.after',
+            //         fn () => '<style>
+            //             .fi-simple-layout {
+            //                 padding-left: 0 !important;
+            //                 padding-right: 0 !important;
+            //             }
+
+            //             .fi-simple-layout > div {
+            //                 max-width: 100% !important;
+            //             }
+
+            //             /* Atau hapus semua padding */
+            //             body .fi-simple-page {
+            //                 padding: 0 !important;
+            //             }
+            //         </style>'
             // )
             ->login()
+            ->brandLogo(null) // Hilangkan logo
+            ->brandName('KOMITE')
             ->colors([
-                'primary' => Color::Amber[500]
+                'primary' => Color::Amber[500],
+                'danger' => Color::Rose[500],
+                // 'gray' => Color::Gray[500],
+                'info' => Color::Blue[500],
+                'success' => Color::Emerald[500],
+                'warning' => Color::Orange[500],
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
@@ -59,10 +82,16 @@ class KelolaPanelProvider extends PanelProvider
                 // FilamentInfoWidget::class,
                 PaguAnggaranOverview::class,
                 StandarPaguOverview::class,
+                // PaguAnggaranChart::class,
+                // PaguPerStandarChart::class,
                 // StandarPaguChart::class,
                 // BlogPostsChart::class,
                 // PaguAnggaranCard::class,
             ])
+            // ->pages([
+            //     Dashboard::class,
+            // ])
+            // ->topbar(false)
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
@@ -94,10 +123,10 @@ class KelolaPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])
-            // ->viteTheme('resources/css/filament/kelola/theme.css')
+            ->viteTheme('resources/css/filament/kelola/theme.css')
             ->sidebarFullyCollapsibleOnDesktop()
             ->sidebarWidth('19rem')
             ->darkMode(false)
-            ->font('Inter');
+            ->font('Poppins');
     }
 }

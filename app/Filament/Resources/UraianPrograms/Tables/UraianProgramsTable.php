@@ -6,8 +6,14 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class UraianProgramsTable
 {
@@ -37,7 +43,14 @@ class UraianProgramsTable
                 TextColumn::make('jumlah')
                     ->label('Jumlah')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->summarize(
+                        Sum::make()
+                            ->label('Total')   // Ini yang diubah
+                            ->money('IDR')
+                            ->formatStateUsing(fn ($state) => 'Rp ' . number_format($state, 0, ',', '.'))
+                            ->extraAttributes(['class' => 'font-bold text-primary-600'])
+                    ),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -48,7 +61,14 @@ class UraianProgramsTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                // Filter berdasarkan Standar (relationship)
+                SelectFilter::make('standars_id')
+                    ->label('Standar')
+                    ->relationship('standars', 'nama_standar')
+                    ->searchable()
+                    ->preload()
+                    ->multiple(), // Tambahan di v4: support multiple select lebih smooth
+
             ])
             ->recordActions([
                 ViewAction::make(),

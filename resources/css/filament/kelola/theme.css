@@ -3,6 +3,139 @@
 @source '../../../../app/Filament/**/*';
 @source '../../../../resources/views/filament/**/*';
 
-.fi-simple-main-ctn {
-    @apply justify-end;
+/* body,
+html {
+    @apply m-0 p-0 h-full w-full;
 }
+
+.fi-simple-main-ctn {
+    @apply min-h-screen w-full justify-end bg-[url('/images/kelola/gerbang-depan.png')] bg-no-repeat bg-center bg-cover;
+}
+
+.fi-simple-main {
+    @apply rounded-none h-screen m-0 flex flex-col justify-center items-center;
+
+    & .fi-simple-page {
+        @apply max-w-none w-full;
+    }
+} */
+
+@theme {
+    --color-main-primary: rgb(242, 241, 235);
+    --color-main-secondary: rgb(204, 197, 181);
+    --color-main-black: rgb(40, 43, 47);
+    --color-main-white: rgb(255, 255, 255);
+    --color-main-accent: rgb(241, 202, 59);
+    --color-main-amber: rgb(255, 152, 0);
+}
+
+.fi-body {
+    @apply bg-main-primary text-main-black;
+}
+
+.fi-topbar {
+    @apply bg-main-primary shadow-none ring-0;
+}
+
+.fi-sidebar {
+    @apply bg-main-white rounded-t-2xl shadow-lg;
+}
+
+/* .fi-body-has-topbar .fi-sidebar {
+    height: calc(100vh - 5rem);
+} */
+.fi-sidebar-item > .fi-sidebar-item-btn {
+    @apply rounded-2xl hover:bg-main-primary;
+}
+
+.fi-sidebar-item {
+    &.fi-active {
+        & > .fi-sidebar-item-btn {
+            @apply bg-main-primary;
+        }
+    }
+}
+
+.fi-sidebar-item {
+    &.fi-active {
+        & > .fi-sidebar-item-btn {
+            & > .fi-icon {
+                @apply text-main-amber hover:text-main-amber;
+            }
+        }
+    }
+}
+
+.fi-sidebar-item {
+    &.fi-active {
+        & > .fi-sidebar-item-btn {
+            & > .fi-sidebar-item-label {
+                @apply text-main-amber hover:text-main-amber;
+            }
+        }
+    }
+}
+
+.fi-sidebar-item-btn {
+    & > .fi-icon {
+        @apply text-main-black;
+    }
+}
+
+.fi-btn {
+    @apply rounded-2xl;
+}
+
+.fi-input-wrp {
+    @apply rounded-2xl bg-main-white shadow-none ring-0;
+}
+
+.fi-ta-ctn {
+    @apply rounded-3xl shadow-lg bg-main-white p-4;
+}
+
+.fi-ta-ctn {
+    & .fi-ta-header-ctn {
+        @apply rounded-2xl bg-main-amber;
+    }
+}
+
+.fi-ta-ctn {
+    & .fi-ta-header-toolbar {
+        @apply border-b-0;
+    }
+}
+
+.fi-ta-table {
+    & > thead {
+        & > tr {
+            @apply text-main-black bg-main-white;
+        }
+    }
+}
+
+.fi-icon-btn {
+    @apply rounded-2xl bg-main-amber text-main-black hover:text-main-black;
+}
+
+.fi-icon fi-size-md {
+    @apply bg-main-amber text-main-black hover:text-main-black;
+}
+
+.fi-sc-form {
+    @apply bg-main-white rounded-2xl p-4;
+}
+
+.fi-sc-form .fi-input-wrp {
+    @apply rounded-2xl bg-main-primary shadow-none ring-0;
+}
+/*
+.fi-sc-form .fi-input-wrp .fi-input-wrp-prefix,
+.fi-sc-form .fi-input-wrp .fi-input-wrp-suffix {
+    @apply rounded-2xl bg-main-white shadow-none ring-0;
+}
+
+.fi-sc-form .fi-input-wrp .fi-input-wrp-prefix .fi-icon,
+.fi-sc-form .fi-input-wrp .fi-input-wrp-suffix .fi-icon {
+    @apply text-main-black;
+} */

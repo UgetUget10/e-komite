@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 
 class StandarPaguOverview extends BaseWidget
 {
-    protected static ?int $sort = 2;
+    protected static ?int $sort = 5;
     protected int|string|array $columnSpan = 'full';
 
     public function getPollingInterval(): ?string
@@ -18,16 +18,10 @@ class StandarPaguOverview extends BaseWidget
         return '30s';
     }
 
-    // protected function getColumns(): int | array
-    // {
-    //     return [
-    //         'default' => 1,
-    //         'sm' => 2,
-    //         'md' => 3,
-    //         'lg' => 4,
-    //         'xl' => 5,
-    //     ];
-    // }
+    protected function getColumns(): int
+    {
+        return 2;
+    }
 
     // CUSTOM HEADER — INI YANG BIKIN TOMBOL MUNCUL!
     protected function getHeader(): ?string
@@ -81,15 +75,15 @@ class StandarPaguOverview extends BaseWidget
         $totalPagu = $stats->sum('total_pagu');
         $totalProgram = $stats->sum('jumlah_program');
 
-        $cards = [];
+        // $cards = [];
 
-        $cards[] = Stat::make("Total Keperluan Dana {$tahunAnggaran}", 'Rp ' . number_format($totalPagu, 0, ',', '.'))
-            ->description("{$stats->count()} standar • {$totalProgram} program aktif")
-            ->descriptionIcon('heroicon-m-banknotes')
-            ->color('primary');
+        // $cards[] = Stat::make("Total Keperluan Dana {$tahunAnggaran}", 'Rp. ' . number_format($totalPagu, 0, ',', '.'))
+        //     ->description("{$stats->count()} standar • {$totalProgram} program aktif")
+        //     ->descriptionIcon('heroicon-m-banknotes')
+        //     ->color('primary');
 
         foreach ($stats as $item) {
-            $cards[] = Stat::make("Keperluan Dana " . $item->nama_standar, 'Rp ' . number_format($item->total_pagu, 0, ',', '.'))
+            $cards[] = Stat::make("Keperluan Dana " . $item->nama_standar, 'Rp. ' . number_format($item->total_pagu, 0, ',', '.'))
                 ->description("{$item->jumlah_program} program")
                 ->descriptionIcon($this->getIconByStandar($item->nama_standar))
                 ->color($this->getColorByStandar($item->nama_standar));

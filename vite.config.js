@@ -13,7 +13,7 @@ export default defineConfig({
                 // "vendor/andreia/filament-nord-theme/resources/css/theme.css",
                 // "resources/css/filament/kelola/theme.css",
 
-                // "resources/css/filament/kelola/theme.css",
+                "resources/css/filament/kelola/theme.css",
             ],
             refresh: true,
         }),

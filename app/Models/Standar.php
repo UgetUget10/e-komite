@@ -11,6 +11,7 @@ class Standar extends Model
 {
     use HasRoles, HasUuids;
 
+    protected $connection = 'mysql';
     protected $table = 'tb_standar'; // ✅ beri tahu Laravel nama tabel aslinya
 
     public $incrementing = false;
