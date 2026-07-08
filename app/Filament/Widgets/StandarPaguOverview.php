@@ -47,40 +47,49 @@ class StandarPaguOverview extends BaseWidget
             ];
         }
 
-        $tahunAnggaran = Cache::remember("tahun_label_{$tahunAktifId}", now()->addDay(), fn() =>
+        $tahunAnggaran = Cache::remember(
+            "tahun_label_{$tahunAktifId}",
+            now()->addDay(),
+            fn() =>
             DB::table('komite.tb_pagu_tahun_anggaran')->where('id', $tahunAktifId)->value('tahun')
         );
 
         $isSuperAdmin = $user->hasRole('Super Admin');
         $allowedStandarIds = $isSuperAdmin ? null : $user->standars()->pluck('standar_id')->toArray();
 
-        $stats = Cache::remember("widget_pagu_{$user->id}_{$tahunAktifId}", now()->addMinutes(15), function () use ($tahunAktifId, $isSuperAdmin, $allowedStandarIds) {
-            return DB::table('komite.tb_standar as s')
-                ->leftJoin('komite.tb_program_kegiatan as pk', fn($j) => $j
+        $stats = DB::table('komite.tb_standar as s')
+            ->leftJoin(
+                'komite.tb_program_kegiatan as pk',
+                fn($j) => $j
                     ->on('pk.id_standar', '=', 's.id')
                     ->where('pk.fk_id_pagu_tahun_anggaran', $tahunAktifId)
-                )
-                ->select(
-                    's.id',
-                    's.nama_standar',
-                    DB::raw('COUNT(pk.id) as jumlah_program'),
-                    DB::raw('COALESCE(SUM(pk.total), 0) as total_pagu')
-                )
-                ->when(!$isSuperAdmin && $allowedStandarIds, fn($q) => $q->whereIn('s.id', $allowedStandarIds))
-                ->groupBy('s.id', 's.nama_standar')
-                ->orderBy('s.nama_standar')
-                ->get();
-        });
+            )
+            ->select(
+                's.id',
+                's.nama_standar',
+                DB::raw('COUNT(pk.id) as jumlah_program'),
+                DB::raw('COALESCE(SUM(pk.pagu_komite), 0) as total_pagu'),
+                DB::raw('COALESCE(SUM(pk.total), 0) as total_kebutuhan')
+            )
+            ->when(!$isSuperAdmin && $allowedStandarIds, fn($q) => $q->whereIn('s.id', $allowedStandarIds))
+            ->groupBy('s.id', 's.nama_standar')
+            ->orderBy('s.nama_standar')
+            ->get();
 
         $totalPagu = $stats->sum('total_pagu');
+        $totalKebutuhan = $stats->sum('total_kebutuhan');
         $totalProgram = $stats->sum('jumlah_program');
 
-        // $cards = [];
+        // Ambil nominal dana dari tahun anggaran aktif
+        $paguTahunAnggaran = DB::table('komite.tb_pagu_tahun_anggaran')
+            ->where('id', $tahunAktifId)
+            ->first(['nominal_dana', 'tahun']);
 
-        // $cards[] = Stat::make("Total Keperluan Dana {$tahunAnggaran}", 'Rp. ' . number_format($totalPagu, 0, ',', '.'))
-        //     ->description("{$stats->count()} standar • {$totalProgram} program aktif")
-        //     ->descriptionIcon('heroicon-m-banknotes')
-        //     ->color('primary');
+        $nominalDana = $paguTahunAnggaran?->nominal_dana ?? 0;
+        $tahunLabelText = $paguTahunAnggaran?->tahun ?? $tahunAnggaran;
+        $sisaAnggaran = $nominalDana - $totalKebutuhan;
+
+        $cards = [];
 
         foreach ($stats as $item) {
             $cards[] = Stat::make("Keperluan Dana " . $item->nama_standar, 'Rp. ' . number_format($item->total_pagu, 0, ',', '.'))
@@ -89,14 +98,26 @@ class StandarPaguOverview extends BaseWidget
                 ->color($this->getColorByStandar($item->nama_standar));
         }
 
+        // Tambah card TOTAL di akhir
+        $cards[] = Stat::make("Total Keperluan Dana {$tahunLabelText}", 'Rp. ' . number_format($totalPagu, 0, ',', '.'))
+            ->description("{$stats->count()} standar • {$totalProgram} program")
+            ->descriptionIcon('heroicon-m-banknotes')
+            ->color('primary')
+            ->columnSpanFull();
+
+        $cards[] = Stat::make('Total Sisa Anggaran', 'Rp. ' . number_format($sisaAnggaran, 0, ',', '.'))
+            ->description($sisaAnggaran < 0 ? 'Melebihi Anggaran!' : 'Tersedia')
+            ->descriptionIcon($sisaAnggaran < 0 ? 'heroicon-o-exclamation-triangle' : 'heroicon-o-check-circle')
+            ->color($sisaAnggaran < 0 ? 'danger' : 'success')
+            ->columnSpanFull();
+
         return $cards;
     }
 
     private function getTahunAktifId(): ?int
     {
-        $id = Cache::remember('tahun_anggaran_aktif_id', now()->addHours(6), fn() =>
-            DB::table('komite.tb_pagu_tahun_anggaran')->where('status_aktif', 1)->value('id')
-        );
+        // Query langsung tanpa cache untuk selalu ambil tahun aktif terbaru
+        $id = DB::table('komite.tb_pagu_tahun_anggaran')->where('status_aktif', 1)->value('id');
         return $id !== null ? (int) $id : null;
     }
 
