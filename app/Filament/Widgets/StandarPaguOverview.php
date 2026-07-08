@@ -47,13 +47,6 @@ class StandarPaguOverview extends BaseWidget
             ];
         }
 
-        $tahunAnggaran = Cache::remember(
-            "tahun_label_{$tahunAktifId}",
-            now()->addDay(),
-            fn() =>
-            DB::table('komite.tb_pagu_tahun_anggaran')->where('id', $tahunAktifId)->value('tahun')
-        );
-
         $isSuperAdmin = $user->hasRole('Super Admin');
         $allowedStandarIds = $isSuperAdmin ? null : $user->standars()->pluck('standar_id')->toArray();
 
@@ -68,26 +61,12 @@ class StandarPaguOverview extends BaseWidget
                 's.id',
                 's.nama_standar',
                 DB::raw('COUNT(pk.id) as jumlah_program'),
-                DB::raw('COALESCE(SUM(pk.pagu_komite), 0) as total_pagu'),
-                DB::raw('COALESCE(SUM(pk.total), 0) as total_kebutuhan')
+                DB::raw('COALESCE(SUM(pk.pagu_komite), 0) as total_pagu')
             )
             ->when(!$isSuperAdmin && $allowedStandarIds, fn($q) => $q->whereIn('s.id', $allowedStandarIds))
             ->groupBy('s.id', 's.nama_standar')
             ->orderBy('s.nama_standar')
             ->get();
-
-        $totalPagu = $stats->sum('total_pagu');
-        $totalKebutuhan = $stats->sum('total_kebutuhan');
-        $totalProgram = $stats->sum('jumlah_program');
-
-        // Ambil nominal dana dari tahun anggaran aktif
-        $paguTahunAnggaran = DB::table('komite.tb_pagu_tahun_anggaran')
-            ->where('id', $tahunAktifId)
-            ->first(['nominal_dana', 'tahun']);
-
-        $nominalDana = $paguTahunAnggaran?->nominal_dana ?? 0;
-        $tahunLabelText = $paguTahunAnggaran?->tahun ?? $tahunAnggaran;
-        $sisaAnggaran = $nominalDana - $totalKebutuhan;
 
         $cards = [];
 
@@ -97,19 +76,6 @@ class StandarPaguOverview extends BaseWidget
                 ->descriptionIcon($this->getIconByStandar($item->nama_standar))
                 ->color($this->getColorByStandar($item->nama_standar));
         }
-
-        // Tambah card TOTAL di akhir
-        $cards[] = Stat::make("Total Keperluan Dana {$tahunLabelText}", 'Rp. ' . number_format($totalPagu, 0, ',', '.'))
-            ->description("{$stats->count()} standar • {$totalProgram} program")
-            ->descriptionIcon('heroicon-m-banknotes')
-            ->color('primary')
-            ->columnSpanFull();
-
-        $cards[] = Stat::make('Total Sisa Anggaran', 'Rp. ' . number_format($sisaAnggaran, 0, ',', '.'))
-            ->description($sisaAnggaran < 0 ? 'Melebihi Anggaran!' : 'Tersedia')
-            ->descriptionIcon($sisaAnggaran < 0 ? 'heroicon-o-exclamation-triangle' : 'heroicon-o-check-circle')
-            ->color($sisaAnggaran < 0 ? 'danger' : 'success')
-            ->columnSpanFull();
 
         return $cards;
     }
