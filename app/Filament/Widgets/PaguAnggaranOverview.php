@@ -60,13 +60,13 @@ class PaguAnggaranOverview extends BaseWidget
         if ($isPrivileged) {
             // SUPER ADMIN / PELAKSANA KOMITE
             $paguDiajukan = $baseQuery->sum(DB::raw('pagu_dipa + pagu_komite')) ?? 0;
-            $sisaAnggaran = $totalPagu - $paguDiajukan; // Pendapatan - Keperluan Dana
+            $sisaAnggaran = $baseQuery->sum('sisa_anggaran_perprogram') ?? 0; // Basis realisasi: pagu_komite - realisasi per program
 
             $descDiajukan = 'Semua Standar';
             $iconDiajukan = 'heroicon-m-shield-check';
             $colorDiajukan = 'success';
 
-            $descSisa = $sisaAnggaran < 0 ? 'Melebihi Anggaran!' : ($sisaAnggaran == 0 ? 'Habis' : 'Tersedia') . ' - Keseluruhan';
+            $descSisa = ($sisaAnggaran < 0 ? 'Melebihi Anggaran!' : ($sisaAnggaran == 0 ? 'Habis' : 'Tersedia')) . ' - Belum Direalisasikan';
             $iconSisa = $sisaAnggaran < 0 ? 'heroicon-m-exclamation-triangle' : ($sisaAnggaran == 0 ? 'heroicon-m-minus-circle' : 'heroicon-m-banknotes');
             $colorSisa = $sisaAnggaran < 0 ? 'danger' : ($sisaAnggaran == 0 ? 'warning' : 'success');
         } else {
