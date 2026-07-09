@@ -110,8 +110,7 @@ class ProgramKegiatansTable
                         // Jika $state kosong atau null → tidak filter (tampilkan semua)
                     })
                     ->default('')
-                    ->reactive() // Auto-apply filter saat pilih opsi
-            ], layout: FiltersLayout::AboveContent)
+            ], layout: FiltersLayout::Dropdown)
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
