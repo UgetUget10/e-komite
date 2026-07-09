@@ -68,11 +68,26 @@ class StandarPaguOverview extends BaseWidget
             ->orderBy('s.nama_standar')
             ->get();
 
+        // Query realisasi per standar (terpisah untuk menghindari fan-out akibat join multiple tables)
+        $realisasiPerStandar = DB::table('komite.tb_realisasi_nominal as rn')
+            ->where('rn.fk_id_pagu_tahun_anggaran', $tahunAktifId)
+            ->whereNull('rn.deleted_at') // Exclude soft-deleted realisasi
+            ->select('rn.fk_id_standar', DB::raw('COALESCE(SUM(rn.nominal), 0) as total_realisasi'))
+            ->when(!$isSuperAdmin && $allowedStandarIds, fn($q) => $q->whereIn('rn.fk_id_standar', $allowedStandarIds))
+            ->groupBy('rn.fk_id_standar')
+            ->pluck('total_realisasi', 'fk_id_standar');
+
         $cards = [];
 
         foreach ($stats as $item) {
+            $totalRealisasi = (float) ($realisasiPerStandar[$item->id] ?? 0);
+            $sisaStandar = $item->total_pagu - $totalRealisasi;
+
             $cards[] = Stat::make("Keperluan Dana " . $item->nama_standar, 'Rp. ' . number_format($item->total_pagu, 0, ',', '.'))
-                ->description("{$item->jumlah_program} program")
+                ->description(
+                    "{$item->jumlah_program} program • Realisasi: Rp " . number_format($totalRealisasi, 0, ',', '.') .
+                    " • Sisa: Rp " . number_format($sisaStandar, 0, ',', '.')
+                )
                 ->descriptionIcon($this->getIconByStandar($item->nama_standar))
                 ->color($this->getColorByStandar($item->nama_standar));
         }
