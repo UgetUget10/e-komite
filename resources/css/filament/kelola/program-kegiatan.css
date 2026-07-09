@@ -212,6 +212,11 @@
     @apply flex-1;
 }
 
+/* Align button with input field in horizontal layout */
+.fi-page-program-kegiatan .fi-ta-filters-form .fi-btn {
+    @apply mb-0;
+}
+
 /* ===== Infolist repeater styling (View page) ===== */
 .fi-page-program-kegiatan .fi-infolist-item-repeater-item-ctn {
     @apply rounded-2xl border border-main-secondary/20 bg-main-primary/20 p-3 transition-all duration-200;
