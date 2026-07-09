@@ -43,6 +43,21 @@ class UraianProgramResource extends Resource
         return UraianProgramsTable::configure($table);
     }
 
+    public static function getTableQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        $user = auth()->user();
+        $query = parent::getTableQuery();
+
+        // Super Admin bisa lihat semua data tanpa filter
+        if ($user->hasRole('Super Admin')) {
+            return $query;
+        }
+
+        // Role lain: filter ke standar yang ditangani user
+        $standarIds = $user->standars()->pluck('id');
+        return $query->whereIn('id_standar', $standarIds);
+    }
+
     public static function getRelations(): array
     {
         return [
