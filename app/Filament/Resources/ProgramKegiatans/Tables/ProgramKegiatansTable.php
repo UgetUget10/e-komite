@@ -110,7 +110,7 @@ class ProgramKegiatansTable
                         // Jika $state kosong atau null → tidak filter (tampilkan semua)
                     })
                     ->default('') // Default ke "Semua" jika super admin
-            ], layout: FiltersLayout::AboveContentCollapsible)
+            ], layout: FiltersLayout::AboveContent)
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),

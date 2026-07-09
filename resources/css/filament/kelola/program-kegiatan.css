@@ -199,19 +199,9 @@
     background: color-mix(in srgb, var(--color-main-primary) 45%, white);
 }
 
-/* ===== Filter styling (AboveContentCollapsible) ===== */
-.fi-page-program-kegiatan .fi-ta-filters-above-content-collapsible-ctn {
+/* ===== Filter styling (AboveContent - permanent, no collapse) ===== */
+.fi-page-program-kegiatan .fi-ta-filters-above-content-ctn {
     @apply border-b border-gray-950/5 bg-main-white p-6 mb-6;
-}
-
-.fi-page-program-kegiatan .fi-ta-filters-heading {
-    @apply relative pl-3 text-base font-bold text-main-black;
-}
-
-.fi-page-program-kegiatan .fi-ta-filters-heading::before {
-    content: '';
-    @apply absolute left-0 top-1/2 h-4 w-1 -translate-y-1/2 rounded-full;
-    background: var(--color-main-amber);
 }
 
 /* ===== Infolist repeater styling (View page) ===== */
