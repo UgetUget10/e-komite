@@ -110,7 +110,8 @@ class ProgramKegiatansTable
                         // Jika $state kosong atau null → tidak filter (tampilkan semua)
                     })
                     ->default('')
-            ], layout: FiltersLayout::Dropdown)
+                    ->attribute('id_standar') // Ensure attribute binding
+            ], layout: FiltersLayout::AboveContent)
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),

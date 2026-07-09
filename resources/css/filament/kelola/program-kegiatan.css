@@ -199,7 +199,25 @@
     background: color-mix(in srgb, var(--color-main-primary) 45%, white);
 }
 
-/* Filter styling removed - using dropdown layout next to search toolbar */
+/* ===== Filter styling - dropdown direct display without heading ===== */
+.fi-page-program-kegiatan .fi-ta-filters-above-content-ctn {
+    @apply border-b border-gray-950/5 bg-main-white p-6 mb-6;
+}
+
+/* Hide filter heading label */
+.fi-page-program-kegiatan .fi-ta-filters-heading {
+    @apply hidden;
+}
+
+/* Hide filter icon button */
+.fi-page-program-kegiatan .fi-ta-filters-above-content-ctn svg {
+    @apply hidden;
+}
+
+/* Dropdown field full width */
+.fi-page-program-kegiatan .fi-ta-filters-form .fi-input-wrp {
+    @apply w-full;
+}
 
 /* ===== Infolist repeater styling (View page) ===== */
 .fi-page-program-kegiatan .fi-infolist-item-repeater-item-ctn {
