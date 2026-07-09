@@ -88,7 +88,7 @@ class StandarPaguOverview extends BaseWidget
             $descText = new HtmlString(
                 "Realisasi: Rp " . number_format($totalRealisasi, 0, ',', '.') .
                 "<br>Sisa: Rp " . number_format($sisaStandar, 0, ',', '.') .
-                "<br>{$item->jumlah_program} program <i class='{$icon}'></i>"
+                "<br>{$item->jumlah_program} program {$icon}"
             );
 
             $cards[] = Stat::make("Keperluan Dana " . $item->nama_standar, 'Rp. ' . number_format($item->total_pagu, 0, ',', '.'))
@@ -124,15 +124,15 @@ class StandarPaguOverview extends BaseWidget
     private function getIconByStandar(string $nama): string
     {
         return match (true) {
-            str_contains($nama, 'Proses')       => 'heroicon-m-cog-8-tooth',
-            str_contains($nama, 'Isi')          => 'heroicon-m-book-open',
-            str_contains($nama, 'Penilaian')    => 'heroicon-m-clipboard-document-check',
-            str_contains($nama, 'Pengelolaan')  => 'heroicon-m-building-office-2',
-            str_contains($nama, 'PTT')          => 'heroicon-m-user-group',
-            str_contains($nama, 'Sarpras')      => 'heroicon-m-building-library',
-            str_contains($nama, 'Kelulusan')    => 'heroicon-m-academic-cap',
-            str_contains($nama, 'Pembiayaan')   => 'heroicon-m-banknotes',
-            default                             => 'heroicon-m-document-text',
+            str_contains($nama, 'Proses')       => '⚙️',
+            str_contains($nama, 'Isi')          => '📖',
+            str_contains($nama, 'Penilaian')    => '✓',
+            str_contains($nama, 'Pengelolaan')  => '🏢',
+            str_contains($nama, 'PTT')          => '👥',
+            str_contains($nama, 'Sarpras')      => '📚',
+            str_contains($nama, 'Kelulusan')    => '🎓',
+            str_contains($nama, 'Pembiayaan')   => '💰',
+            default                             => '📄',
         };
     }
 }
