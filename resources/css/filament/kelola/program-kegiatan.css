@@ -199,23 +199,22 @@
     background: color-mix(in srgb, var(--color-main-primary) 45%, white);
 }
 
-/* ===== Filter styling - dropdown direct display without heading ===== */
-.fi-page-program-kegiatan .fi-ta-filters-above-content-ctn {
-    @apply border-b border-gray-950/5 bg-main-white p-6 mb-6;
+/* ===== Filter styling - sidebar di sebelah kiri tabel (BeforeContent) ===== */
+.fi-page-program-kegiatan .fi-ta-filters-before-content-ctn {
+    @apply rounded-3xl bg-main-white p-6 shadow-lg ring-1 ring-black/5;
 }
 
-/* Hide filter heading label */
 .fi-page-program-kegiatan .fi-ta-filters-heading {
-    @apply hidden;
+    @apply relative pl-3 text-base font-bold text-main-black;
 }
 
-/* Hide filter icon button */
-.fi-page-program-kegiatan .fi-ta-filters-above-content-ctn svg {
-    @apply hidden;
+.fi-page-program-kegiatan .fi-ta-filters-heading::before {
+    content: '';
+    @apply absolute left-0 top-1/2 h-4 w-1 -translate-y-1/2 rounded-full;
+    background: var(--color-main-amber);
 }
 
-/* Dropdown field full width */
-.fi-page-program-kegiatan .fi-ta-filters-form .fi-input-wrp {
+.fi-page-program-kegiatan .fi-ta-filters-before-content .fi-input-wrp {
     @apply w-full;
 }
 
