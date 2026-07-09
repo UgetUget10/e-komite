@@ -212,9 +212,9 @@
     @apply flex-1;
 }
 
-/* Align button with input field in horizontal layout */
+/* Hide apply filter button - use auto-filter on change */
 .fi-page-program-kegiatan .fi-ta-filters-form .fi-btn {
-    @apply mb-0;
+    @apply hidden;
 }
 
 /* ===== Infolist repeater styling (View page) ===== */
