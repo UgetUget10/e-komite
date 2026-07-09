@@ -45,9 +45,16 @@ class ProgramKegiatanResource extends Resource
     public static function getTableQuery(): \Illuminate\Database\Eloquent\Builder
     {
         $user = auth()->user();
-        $standarIds = $user->standars()->pluck('id');
+        $query = parent::getTableQuery();
 
-        return parent::getTableQuery()->whereIn('id_standar', $standarIds);
+        // Super Admin bisa lihat semua data tanpa filter
+        if ($user->hasRole('Super Admin')) {
+            return $query;
+        }
+
+        // Role lain: filter ke standar yang ditangani user
+        $standarIds = $user->standars()->pluck('id');
+        return $query->whereIn('id_standar', $standarIds);
     }
 
 
