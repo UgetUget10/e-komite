@@ -7,6 +7,7 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\HtmlString;
 
 class StandarPaguOverview extends BaseWidget
 {
@@ -83,9 +84,11 @@ class StandarPaguOverview extends BaseWidget
             $totalRealisasi = (float) ($realisasiPerStandar[$item->id] ?? 0);
             $sisaStandar = $item->total_pagu - $totalRealisasi;
 
-            $descText = "Realisasi: Rp " . number_format($totalRealisasi, 0, ',', '.') .
-                        "<br>Sisa: Rp " . number_format($sisaStandar, 0, ',', '.') .
-                        "<br>{$item->jumlah_program} program";
+            $descText = new HtmlString(
+                "Realisasi: Rp " . number_format($totalRealisasi, 0, ',', '.') .
+                "<br>Sisa: Rp " . number_format($sisaStandar, 0, ',', '.') .
+                "<br>{$item->jumlah_program} program"
+            );
 
             $cards[] = Stat::make("Keperluan Dana " . $item->nama_standar, 'Rp. ' . number_format($item->total_pagu, 0, ',', '.'))
                 ->description($descText)
