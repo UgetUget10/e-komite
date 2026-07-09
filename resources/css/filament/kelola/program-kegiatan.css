@@ -204,6 +204,14 @@
     @apply border-b border-gray-950/5 bg-main-white p-6 mb-6;
 }
 
+.fi-page-program-kegiatan .fi-ta-filters-form {
+    @apply flex flex-col gap-4;
+}
+
+.fi-page-program-kegiatan .fi-ta-filters-form .fi-input-wrp {
+    @apply w-full;
+}
+
 /* ===== Infolist repeater styling (View page) ===== */
 .fi-page-program-kegiatan .fi-infolist-item-repeater-item-ctn {
     @apply rounded-2xl border border-main-secondary/20 bg-main-primary/20 p-3 transition-all duration-200;
