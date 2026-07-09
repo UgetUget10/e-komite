@@ -85,9 +85,9 @@ class StandarPaguOverview extends BaseWidget
 
             $cards[] = Stat::make("Keperluan Dana " . $item->nama_standar, 'Rp. ' . number_format($item->total_pagu, 0, ',', '.'))
                 ->description(
-                    "{$item->jumlah_program} program\n" .
                     "Realisasi: Rp " . number_format($totalRealisasi, 0, ',', '.') . "\n" .
-                    "Sisa: Rp " . number_format($sisaStandar, 0, ',', '.')
+                    "Sisa: Rp " . number_format($sisaStandar, 0, ',', '.') . "\n" .
+                    "{$item->jumlah_program} program"
                 )
                 ->descriptionIcon($this->getIconByStandar($item->nama_standar))
                 ->color($this->getColorByStandar($item->nama_standar));
