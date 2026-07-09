@@ -109,7 +109,8 @@ class ProgramKegiatansTable
                         }
                         // Jika $state kosong atau null → tidak filter (tampilkan semua)
                     })
-                    ->default('') // Default ke "Semua" jika super admin
+                    ->default('')
+                    ->reactive() // Auto-apply filter saat pilih opsi
             ], layout: FiltersLayout::AboveContent)
             ->recordActions([
                 ViewAction::make(),
