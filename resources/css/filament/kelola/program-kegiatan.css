@@ -213,8 +213,8 @@
 }
 
 /* Hide apply filter button - use auto-filter on change */
-.fi-page-program-kegiatan .fi-ta-filters-form .fi-btn {
-    @apply hidden;
+.fi-page-program-kegiatan .fi-ta-filters-above-content-ctn button {
+    display: none !important;
 }
 
 /* ===== Infolist repeater styling (View page) ===== */
