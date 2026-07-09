@@ -199,17 +199,17 @@
     background: color-mix(in srgb, var(--color-main-primary) 45%, white);
 }
 
-/* ===== Filter styling (AboveContent - permanent, no collapse) ===== */
+/* ===== Filter styling (AboveContent - horizontal layout) ===== */
 .fi-page-program-kegiatan .fi-ta-filters-above-content-ctn {
     @apply border-b border-gray-950/5 bg-main-white p-6 mb-6;
 }
 
 .fi-page-program-kegiatan .fi-ta-filters-form {
-    @apply flex flex-col gap-4;
+    @apply flex flex-row items-end gap-4;
 }
 
 .fi-page-program-kegiatan .fi-ta-filters-form .fi-input-wrp {
-    @apply w-full;
+    @apply flex-1;
 }
 
 /* ===== Infolist repeater styling (View page) ===== */
