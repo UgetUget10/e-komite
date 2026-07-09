@@ -60,15 +60,10 @@ class PaguAnggaranOverview extends BaseWidget
         if ($isPrivileged) {
             // SUPER ADMIN / PELAKSANA KOMITE
             $paguDiajukan = $baseQuery->sum(DB::raw('pagu_dipa + pagu_komite')) ?? 0;
-            $sisaAnggaran = $baseQuery->sum('sisa_anggaran_perprogram') ?? 0; // Basis realisasi: pagu_komite - realisasi per program
 
             $descDiajukan = 'Semua Standar';
             $iconDiajukan = 'heroicon-m-shield-check';
             $colorDiajukan = 'success';
-
-            $descSisa = ($sisaAnggaran < 0 ? 'Melebihi Anggaran!' : ($sisaAnggaran == 0 ? 'Habis' : 'Tersedia')) . ' - Belum Direalisasikan';
-            $iconSisa = $sisaAnggaran < 0 ? 'heroicon-m-exclamation-triangle' : ($sisaAnggaran == 0 ? 'heroicon-m-minus-circle' : 'heroicon-m-banknotes');
-            $colorSisa = $sisaAnggaran < 0 ? 'danger' : ($sisaAnggaran == 0 ? 'warning' : 'success');
         } else {
             // USER BIASA → Hanya pagu_komite dan sisa dari field
             $handledStandarIds = DB::table('komite.tb_standar_user')
@@ -78,15 +73,10 @@ class PaguAnggaranOverview extends BaseWidget
 
             if (empty($handledStandarIds)) {
                 $paguDiajukan = 0;
-                $sisaAnggaran = 0;
 
                 $descDiajukan = 'Tidak ada akses standar';
                 $iconDiajukan = 'heroicon-m-lock-closed';
                 $colorDiajukan = 'gray';
-
-                $descSisa = 'Tidak ada data standar';
-                $iconSisa = 'heroicon-m-lock-closed';
-                $colorSisa = 'gray';
             } else {
                 $allowedProgramIds = DB::table('komite.tb_uraian_program')
                     ->whereIn('id_standar', $handledStandarIds)
@@ -96,31 +86,27 @@ class PaguAnggaranOverview extends BaseWidget
 
                 if (empty($allowedProgramIds)) {
                     $paguDiajukan = 0;
-                    $sisaAnggaran = 0;
 
                     $descDiajukan = 'Standar Anda (belum ada program)';
                     $iconDiajukan = 'heroicon-m-information-circle';
                     $colorDiajukan = 'warning';
-
-                    $descSisa = 'Belum ada program - Standar Anda';
-                    $iconSisa = 'heroicon-m-information-circle';
-                    $colorSisa = 'warning';
                 } else {
                     $filteredQuery = $baseQuery->whereIn('id', $allowedProgramIds);
 
                     $paguDiajukan = $filteredQuery->sum('pagu_komite') ?? 0; // Hanya pagu_komite
-                    $sisaAnggaran = $filteredQuery->sum('sisa_anggaran_perprogram') ?? 0;
 
                     $descDiajukan = 'Standar Anda';
                     $iconDiajukan = 'heroicon-m-arrow-up-tray';
                     $colorDiajukan = 'primary';
-
-                    $descSisa = ($sisaAnggaran < 0 ? 'Melebihi Anggaran!' : ($sisaAnggaran == 0 ? 'Habis' : 'Tersedia')) . ' - Standar Anda';
-                    $iconSisa = $sisaAnggaran < 0 ? 'heroicon-m-exclamation-triangle' : ($sisaAnggaran == 0 ? 'heroicon-m-minus-circle' : 'heroicon-m-banknotes');
-                    $colorSisa = $sisaAnggaran < 0 ? 'danger' : ($sisaAnggaran == 0 ? 'warning' : 'success');
                 }
             }
         }
+
+        // Sisa Anggaran = Total Pendapatan - Total Keperluan Dana (sama untuk semua role)
+        $sisaAnggaran = $totalPagu - $paguDiajukan;
+        $descSisa = $sisaAnggaran < 0 ? 'Melebihi Anggaran!' : ($sisaAnggaran == 0 ? 'Habis' : 'Tersedia');
+        $iconSisa = $sisaAnggaran < 0 ? 'heroicon-m-exclamation-triangle' : ($sisaAnggaran == 0 ? 'heroicon-m-minus-circle' : 'heroicon-m-banknotes');
+        $colorSisa = $sisaAnggaran < 0 ? 'danger' : ($sisaAnggaran == 0 ? 'warning' : 'success');
 
         return [
             Stat::make("Total Pendapatan {$tahun}", $format($totalPagu))
