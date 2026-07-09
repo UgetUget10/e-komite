@@ -137,25 +137,22 @@ class ProgramKegiatansTable
                         return "Tahun Anggaran Aktif: " . ($tahun ?? 'Tidak ada');
                     })
                     ->color('secondary'),
+                Action::make('total_diajukan')
+                    ->label(function () {
+                        $total = \App\Models\ProgramKegiatan::where('fk_id_pagu_tahun_anggaran',
+                            \App\Models\PaguTahunAnggaran::where('status_aktif', 1)->value('id')
+                        )->sum('total');
+                        return "Total Diajukan: Rp " . number_format($total, 0, ',', '.');
+                    })
+                    ->color('success')
+                    ->disabled(),
             ])
 
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-            ])
-            ->footer(function ($table) {
-                $records = $table->getFilteredSortedPaginatedRecords();
-                $total = $records->sum('total');
-
-                return \Illuminate\Support\HtmlString::class === get_class(new \Illuminate\Support\HtmlString(''))
-                    ? new \Illuminate\Support\HtmlString(
-                        '<div class="fi-ta-footer-text">' .
-                        '<strong>Total Diajukan:</strong> Rp ' . number_format($total, 0, ',', '.') .
-                        '</div>'
-                    )
-                    : 'Total Diajukan: Rp ' . number_format($total, 0, ',', '.');
-            });
+            ]);
 
     }
 }
