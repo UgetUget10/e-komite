@@ -83,12 +83,12 @@ class StandarPaguOverview extends BaseWidget
             $totalRealisasi = (float) ($realisasiPerStandar[$item->id] ?? 0);
             $sisaStandar = $item->total_pagu - $totalRealisasi;
 
+            $descText = "Realisasi: Rp " . number_format($totalRealisasi, 0, ',', '.') .
+                        "<br>Sisa: Rp " . number_format($sisaStandar, 0, ',', '.') .
+                        "<br>{$item->jumlah_program} program";
+
             $cards[] = Stat::make("Keperluan Dana " . $item->nama_standar, 'Rp. ' . number_format($item->total_pagu, 0, ',', '.'))
-                ->description(
-                    "Realisasi: Rp " . number_format($totalRealisasi, 0, ',', '.') . "\n" .
-                    "Sisa: Rp " . number_format($sisaStandar, 0, ',', '.') . "\n" .
-                    "{$item->jumlah_program} program"
-                )
+                ->description($descText)
                 ->descriptionIcon($this->getIconByStandar($item->nama_standar))
                 ->color($this->getColorByStandar($item->nama_standar));
         }
