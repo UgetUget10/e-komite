@@ -88,7 +88,7 @@ class StandarPaguOverview extends BaseWidget
             $descText = new HtmlString(
                 "Realisasi: Rp " . number_format($totalRealisasi, 0, ',', '.') .
                 "<br>Sisa: Rp " . number_format($sisaStandar, 0, ',', '.') .
-                "<br><i class='{$icon}'></i> {$item->jumlah_program} program"
+                "<br>{$item->jumlah_program} program <i class='{$icon}'></i>"
             );
 
             $cards[] = Stat::make("Keperluan Dana " . $item->nama_standar, 'Rp. ' . number_format($item->total_pagu, 0, ',', '.'))
