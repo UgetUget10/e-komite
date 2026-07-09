@@ -20,7 +20,7 @@ class StandarPaguOverview extends BaseWidget
 
     protected function getColumns(): int
     {
-        return 1;
+        return 2;
     }
 
     // CUSTOM HEADER — INI YANG BIKIN TOMBOL MUNCUL!
