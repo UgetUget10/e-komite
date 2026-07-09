@@ -143,7 +143,19 @@ class ProgramKegiatansTable
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->footer(function ($table) {
+                $records = $table->getFilteredSortedPaginatedRecords();
+                $total = $records->sum('total');
+
+                return \Illuminate\Support\HtmlString::class === get_class(new \Illuminate\Support\HtmlString(''))
+                    ? new \Illuminate\Support\HtmlString(
+                        '<div class="fi-ta-footer-text">' .
+                        '<strong>Total Diajukan:</strong> Rp ' . number_format($total, 0, ',', '.') .
+                        '</div>'
+                    )
+                    : 'Total Diajukan: Rp ' . number_format($total, 0, ',', '.');
+            });
 
     }
 }

@@ -218,6 +218,11 @@
     @apply w-full;
 }
 
+/* ===== Table footer styling ===== */
+.fi-page-program-kegiatan .fi-ta-footer-text {
+    @apply font-semibold text-main-black p-4;
+}
+
 /* ===== Infolist repeater styling (View page) ===== */
 .fi-page-program-kegiatan .fi-infolist-item-repeater-item-ctn {
     @apply rounded-2xl border border-main-secondary/20 bg-main-primary/20 p-3 transition-all duration-200;
