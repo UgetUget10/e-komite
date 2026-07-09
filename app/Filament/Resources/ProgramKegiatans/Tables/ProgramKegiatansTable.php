@@ -10,6 +10,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
@@ -48,7 +49,14 @@ class ProgramKegiatansTable
                 TextColumn::make('total')
                     ->label('Total Diajukan')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->summarize(
+                        Sum::make()
+                            ->label('Total Diajukan')
+                            ->money('IDR')
+                            ->formatStateUsing(fn ($state) => 'Rp ' . number_format($state, 0, ',', '.'))
+                            ->extraAttributes(['class' => 'font-bold text-primary-600'])
+                    ),
                 // TextColumn::make('pagu_dipa')
                 //     ->numeric()
                 //     ->sortable(),
@@ -137,15 +145,6 @@ class ProgramKegiatansTable
                         return "Tahun Anggaran Aktif: " . ($tahun ?? 'Tidak ada');
                     })
                     ->color('secondary'),
-                Action::make('total_diajukan')
-                    ->label(function () {
-                        $total = \App\Models\ProgramKegiatan::where('fk_id_pagu_tahun_anggaran',
-                            \App\Models\PaguTahunAnggaran::where('status_aktif', 1)->value('id')
-                        )->sum('total');
-                        return "Total Diajukan: Rp " . number_format($total, 0, ',', '.');
-                    })
-                    ->color('success')
-                    ->disabled(),
             ])
 
             ->toolbarActions([
