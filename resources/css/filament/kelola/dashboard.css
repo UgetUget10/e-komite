@@ -135,7 +135,10 @@ body.fi-dashboard-page {
    tetap terasa "mengambang" di atas dot pattern, konsisten dengan gaya yang
    sudah ada; cuma judul + accent bar amber yang menandai tiap grup. */
 .fi-page-dashboard .fi-section {
-    @apply bg-transparent shadow-none ring-0;
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    outline: none !important;
 }
 
 .fi-page-dashboard .fi-section:not(:first-of-type) {
@@ -149,7 +152,12 @@ body.fi-dashboard-page {
 .fi-page-dashboard .fi-section:nth-child(5) { animation-delay: 0.4s; }
 
 .fi-page-dashboard .fi-section-header {
-    @apply relative mb-4 border-none bg-transparent p-0 pl-3 transition-all duration-300;
+    background: transparent !important;
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    padding-left: 0.75rem !important;
+    transition: all 0.3s ease;
 }
 
 .fi-page-dashboard .fi-section-header::before {
