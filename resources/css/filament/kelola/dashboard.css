@@ -4,8 +4,26 @@
    dan terpisah dari CSS halaman login. */
 
 /* ===== Full-width background untuk dashboard ===== */
+/* Apply background ke semua parent elements */
+html, body {
+    background: linear-gradient(135deg,
+        rgba(245, 244, 241, 1) 0%,
+        var(--color-main-white) 50%,
+        rgba(254, 241, 211, 1) 100%
+    ) !important;
+}
+
 /* Apply background ke body ketika di dashboard page */
 body.fi-dashboard-page {
+    background: linear-gradient(135deg,
+        rgba(245, 244, 241, 1) 0%,
+        var(--color-main-white) 50%,
+        rgba(254, 241, 211, 1) 100%
+    ) !important;
+}
+
+/* Apply to content wrapper */
+.fi-page-dashboard-wrapper {
     background: linear-gradient(135deg,
         rgba(245, 244, 241, 1) 0%,
         var(--color-main-white) 50%,
