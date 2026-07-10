@@ -1,0 +1,321 @@
+/* ===== Custom Table and Card Styling — polished dengan visual hierarchy ===== */
+
+/* ===== Table Styling ===== */
+
+/* Table container */
+.fi-table-container {
+    @apply relative rounded-2xl overflow-hidden;
+    animation: fi-table-in 0.4s ease-out both;
+}
+
+.fi-table-container::before {
+    content: '';
+    @apply pointer-events-none absolute top-0 left-0 right-0 h-px;
+    background: linear-gradient(90deg, transparent, rgba(255, 152, 0, 0.2), transparent);
+    z-index: 1;
+}
+
+/* Table itself */
+.fi-table {
+    @apply w-full border-collapse;
+    background: linear-gradient(135deg, var(--color-main-white) 0%, color-mix(in srgb, var(--color-main-white) 99%, var(--color-main-amber)) 100%);
+}
+
+/* Table header */
+.fi-table thead {
+    background: linear-gradient(135deg, color-mix(in srgb, var(--color-main-black) 3%, transparent) 0%, color-mix(in srgb, var(--color-main-amber) 5%, transparent) 100%);
+}
+
+.fi-table thead th {
+    @apply px-6 py-4 font-semibold text-main-black text-left;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    border-bottom: 2px solid color-mix(in srgb, var(--color-main-amber) 25%, transparent);
+    transition: all 0.3s ease;
+}
+
+.fi-table thead th:hover {
+    background: color-mix(in srgb, var(--color-main-amber) 8%, transparent);
+    text-shadow: 0 0 4px rgba(255, 152, 0, 0.1);
+}
+
+/* Table body rows */
+.fi-table tbody tr {
+    @apply border-b border-main-primary/20 transition-all duration-200;
+    animation: fi-table-row-in 0.3s ease-out both;
+}
+
+.fi-table tbody tr:nth-child(1) { animation-delay: 0ms; }
+.fi-table tbody tr:nth-child(2) { animation-delay: 40ms; }
+.fi-table tbody tr:nth-child(3) { animation-delay: 80ms; }
+.fi-table tbody tr:nth-child(4) { animation-delay: 120ms; }
+.fi-table tbody tr:nth-child(5) { animation-delay: 160ms; }
+.fi-table tbody tr:nth-child(n+6) { animation-delay: 200ms; }
+
+.fi-table tbody tr:hover {
+    background: linear-gradient(90deg, rgba(255, 152, 0, 0.04), transparent);
+    transform: scale(1.01);
+    box-shadow: 0 4px 12px -4px rgba(255, 152, 0, 0.2) inset;
+}
+
+.fi-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+/* Table cells */
+.fi-table td {
+    @apply px-6 py-4 text-sm text-main-black;
+    transition: color 0.2s ease;
+}
+
+.fi-table tbody tr:hover td {
+    @apply text-main-black;
+}
+
+/* Sortable header */
+.fi-table thead th.fi-sortable {
+    @apply cursor-pointer select-none;
+}
+
+.fi-table thead th.fi-sortable:hover {
+    background: color-mix(in srgb, var(--color-main-amber) 12%, transparent);
+}
+
+.fi-table thead th .fi-sort-icon {
+    @apply ml-2 inline-block opacity-50 transition-all duration-200;
+}
+
+.fi-table thead th.fi-sorted .fi-sort-icon {
+    @apply opacity-100 text-main-amber;
+}
+
+/* Sticky header (for scrollable tables) */
+.fi-table thead th.fi-sticky {
+    @apply sticky top-0 z-10;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--color-main-black) 5%, transparent) 0%, color-mix(in srgb, var(--color-main-amber) 8%, transparent) 100%);
+}
+
+/* ===== Card Styling ===== */
+
+/* Card container */
+.fi-card {
+    @apply relative rounded-2xl overflow-hidden transition-all duration-300;
+    background: linear-gradient(135deg, var(--color-main-white) 0%, color-mix(in srgb, var(--color-main-white) 98%, var(--color-main-amber)) 100%);
+    border: 1px solid rgba(255, 152, 0, 0.1);
+    box-shadow: 0 10px 30px -15px rgba(0, 0, 0, 0.1);
+    animation: fi-card-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.fi-card::before {
+    content: '';
+    @apply pointer-events-none absolute top-0 left-0 right-0 h-px;
+    background: linear-gradient(90deg, transparent, rgba(255, 152, 0, 0.2), transparent);
+}
+
+.fi-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.15);
+    border-color: rgba(255, 152, 0, 0.2);
+}
+
+.fi-card:nth-child(1) { animation-delay: 0ms; }
+.fi-card:nth-child(2) { animation-delay: 60ms; }
+.fi-card:nth-child(3) { animation-delay: 120ms; }
+.fi-card:nth-child(4) { animation-delay: 180ms; }
+.fi-card:nth-child(n+5) { animation-delay: 240ms; }
+
+/* Card header */
+.fi-card-header {
+    @apply px-6 py-4 border-b border-main-primary/20;
+    background: linear-gradient(90deg, transparent, rgba(255, 152, 0, 0.02));
+}
+
+.fi-card-header-title {
+    @apply text-lg font-bold text-main-black;
+    letter-spacing: -0.3px;
+}
+
+.fi-card-header-subtitle {
+    @apply mt-1 text-xs text-main-secondary font-medium;
+}
+
+/* Card content */
+.fi-card-content {
+    @apply px-6 py-4;
+}
+
+/* Card footer */
+.fi-card-footer {
+    @apply px-6 py-4 border-t border-main-primary/20;
+    background: linear-gradient(180deg, transparent 0%, rgba(255, 152, 0, 0.01) 100%);
+}
+
+/* ===== Badge Styling ===== */
+
+/* Badge base */
+.fi-badge {
+    @apply inline-flex items-center justify-center px-3 py-1 rounded-full font-semibold text-xs;
+    letter-spacing: 0.3px;
+    transition: all 0.3s ease;
+}
+
+/* Badge variants */
+.fi-badge-primary {
+    background: linear-gradient(135deg, rgba(255, 152, 0, 0.15), rgba(255, 152, 0, 0.08));
+    color: rgba(255, 152, 0, 0.8);
+    border: 1px solid rgba(255, 152, 0, 0.2);
+}
+
+.fi-badge-success {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(34, 197, 94, 0.08));
+    color: rgb(34, 197, 94);
+    border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.fi-badge-danger {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.08));
+    color: rgb(239, 68, 68);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.fi-badge-warning {
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.15), rgba(251, 191, 36, 0.08));
+    color: rgb(251, 146, 60);
+    border: 1px solid rgba(251, 191, 36, 0.2);
+}
+
+.fi-badge-info {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(59, 130, 246, 0.08));
+    color: rgb(59, 130, 246);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.fi-badge-gray {
+    background: linear-gradient(135deg, rgba(107, 114, 128, 0.15), rgba(107, 114, 128, 0.08));
+    color: rgb(107, 114, 128);
+    border: 1px solid rgba(107, 114, 128, 0.2);
+}
+
+/* Badge hover */
+.fi-badge:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px -2px currentColor;
+}
+
+/* ===== Status Badge Styling ===== */
+
+.fi-status-badge {
+    @apply inline-flex items-center gap-2 px-3 py-1.5 rounded-full font-semibold text-xs;
+    letter-spacing: 0.3px;
+    transition: all 0.3s ease;
+}
+
+.fi-status-badge::before {
+    content: '';
+    @apply inline-block w-2 h-2 rounded-full;
+}
+
+.fi-status-active::before {
+    background: rgb(34, 197, 94);
+    animation: fi-pulse-green 2s ease-in-out infinite;
+}
+
+.fi-status-inactive::before {
+    background: rgb(156, 163, 175);
+}
+
+.fi-status-pending::before {
+    background: rgb(251, 146, 60);
+    animation: fi-pulse-orange 2s ease-in-out infinite;
+}
+
+.fi-status-error::before {
+    background: rgb(239, 68, 68);
+    animation: fi-pulse-red 2s ease-in-out infinite;
+}
+
+/* ===== Animations ===== */
+
+@keyframes fi-table-in {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fi-table-row-in {
+    from {
+        opacity: 0;
+        transform: translateX(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fi-card-in {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+@keyframes fi-pulse-green {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4);
+    }
+    50% {
+        box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.2);
+    }
+}
+
+@keyframes fi-pulse-orange {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(251, 146, 60, 0.4);
+    }
+    50% {
+        box-shadow: 0 0 0 4px rgba(251, 146, 60, 0.2);
+    }
+}
+
+@keyframes fi-pulse-red {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+    }
+    50% {
+        box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.2);
+    }
+}
+
+/* ===== Responsive adjustments ===== */
+
+@media (max-width: 768px) {
+    .fi-table {
+        font-size: 0.85rem;
+    }
+
+    .fi-table thead th,
+    .fi-table td {
+        @apply px-4 py-3;
+    }
+
+    .fi-card {
+        @apply rounded-xl;
+    }
+
+    .fi-card-header,
+    .fi-card-content,
+    .fi-card-footer {
+        @apply px-4 py-3;
+    }
+}
