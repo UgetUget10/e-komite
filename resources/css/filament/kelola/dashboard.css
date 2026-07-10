@@ -154,6 +154,8 @@ body.fi-dashboard-page {
 .fi-page-dashboard .fi-section-header {
     background: transparent !important;
     border: none !important;
+    border-bottom: none !important;
+    border-top: none !important;
     margin: 0 !important;
     padding: 0 !important;
     padding-left: 0.75rem !important;
