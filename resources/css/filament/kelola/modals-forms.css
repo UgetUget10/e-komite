@@ -1,0 +1,335 @@
+/* ===== Custom Modal and Form Elements Styling — polished dengan consistent design language ===== */
+
+/* Modal backdrop */
+.fi-modal-backdrop {
+    @apply fixed inset-0 bg-black/40 backdrop-blur-sm;
+    animation: fi-modal-fade-in 0.2s ease-out both;
+}
+
+/* Modal container */
+.fi-modal {
+    @apply relative rounded-2xl bg-main-white shadow-2xl overflow-hidden;
+    animation: fi-modal-scale-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.fi-modal::before {
+    content: '';
+    @apply pointer-events-none absolute top-0 left-0 right-0 h-px;
+    background: linear-gradient(90deg, transparent, rgba(255, 152, 0, 0.2), transparent);
+}
+
+/* Modal header */
+.fi-modal-header {
+    @apply relative px-8 py-6 border-b border-main-primary/30;
+    background: linear-gradient(135deg, var(--color-main-white) 0%, color-mix(in srgb, var(--color-main-white) 98%, var(--color-main-amber)) 100%);
+}
+
+.fi-modal-header::after {
+    content: '';
+    @apply absolute bottom-0 left-8 right-8 h-px opacity-0;
+    background: linear-gradient(90deg, transparent, rgba(255, 152, 0, 0.3), transparent);
+    transition: opacity 0.3s ease;
+}
+
+.fi-modal-header:hover::after {
+    opacity: 1;
+}
+
+.fi-modal-heading {
+    @apply text-2xl font-bold text-main-black;
+    letter-spacing: -0.5px;
+}
+
+.fi-modal-description {
+    @apply mt-1 text-sm text-main-secondary;
+}
+
+/* Modal close button */
+.fi-modal-close-btn {
+    @apply p-2 rounded-lg text-main-secondary transition-all duration-200;
+    background: rgba(255, 152, 0, 0.05);
+    border: 1px solid rgba(255, 152, 0, 0.1);
+}
+
+.fi-modal-close-btn:hover {
+    @apply text-main-black;
+    background: rgba(255, 152, 0, 0.12);
+    border-color: rgba(255, 152, 0, 0.2);
+    transform: rotate(90deg);
+}
+
+/* Modal content */
+.fi-modal-content {
+    @apply px-8 py-6 overflow-y-auto;
+    max-height: calc(80vh - 200px);
+}
+
+/* Modal footer */
+.fi-modal-footer {
+    @apply flex items-center justify-end gap-3 px-8 py-4 border-t border-main-primary/30;
+    background: linear-gradient(180deg, transparent 0%, rgba(255, 152, 0, 0.02) 100%);
+}
+
+/* ===== Form Elements Styling ===== */
+
+/* Form group wrapper */
+.fi-form-group {
+    @apply mb-6;
+    animation: fi-form-group-in 0.3s ease-out both;
+}
+
+.fi-form-group:nth-child(1) { animation-delay: 0ms; }
+.fi-form-group:nth-child(2) { animation-delay: 40ms; }
+.fi-form-group:nth-child(3) { animation-delay: 80ms; }
+.fi-form-group:nth-child(4) { animation-delay: 120ms; }
+.fi-form-group:nth-child(n+5) { animation-delay: 160ms; }
+
+/* Form label */
+.fi-form-label {
+    @apply block text-sm font-semibold text-main-black mb-2;
+    letter-spacing: 0.3px;
+}
+
+.fi-form-label .fi-required::after {
+    content: ' *';
+    color: rgb(239, 68, 68);
+}
+
+/* Input wrapper — with focus state enhancement */
+.fi-input-wrp {
+    @apply relative transition-all duration-200;
+}
+
+.fi-input-wrp input,
+.fi-input-wrp textarea,
+.fi-input-wrp select {
+    @apply w-full px-4 py-2.5 rounded-lg border border-main-primary/30;
+    background: linear-gradient(135deg, var(--color-main-white) 0%, color-mix(in srgb, var(--color-main-white) 99%, var(--color-main-amber)) 100%);
+    color: var(--color-main-black);
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+.fi-input-wrp input::placeholder,
+.fi-input-wrp textarea::placeholder {
+    color: var(--color-main-secondary);
+}
+
+.fi-input-wrp input:focus,
+.fi-input-wrp textarea:focus,
+.fi-input-wrp select:focus {
+    outline: none;
+    border-color: var(--color-main-amber);
+    box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.1), 0 0 12px rgba(255, 152, 0, 0.15);
+    background: linear-gradient(135deg, var(--color-main-white) 0%, color-mix(in srgb, var(--color-main-white) 98%, var(--color-main-amber)) 100%);
+}
+
+.fi-input-wrp input:disabled,
+.fi-input-wrp textarea:disabled,
+.fi-input-wrp select:disabled {
+    @apply bg-main-primary/50 text-main-secondary cursor-not-allowed;
+}
+
+/* Input with icon */
+.fi-input-wrp.fi-has-icon-left input {
+    @apply pl-10;
+}
+
+.fi-input-wrp .fi-input-icon {
+    @apply absolute left-3 top-1/2 transform -translate-y-1/2 text-main-secondary;
+    transition: all 0.3s ease;
+}
+
+.fi-input-wrp input:focus ~ .fi-input-icon {
+    @apply text-main-amber;
+}
+
+/* Error state */
+.fi-input-wrp.fi-error input,
+.fi-input-wrp.fi-error textarea,
+.fi-input-wrp.fi-error select {
+    border-color: rgb(239, 68, 68);
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1), 0 0 12px rgba(239, 68, 68, 0.15);
+}
+
+.fi-error-message {
+    @apply mt-2 text-sm text-red-600 font-medium;
+}
+
+/* Help text */
+.fi-help-text {
+    @apply mt-1 text-xs text-main-secondary font-normal;
+}
+
+/* ===== Button Styling ===== */
+
+/* Primary button */
+.fi-btn-primary {
+    @apply px-6 py-2.5 rounded-lg font-semibold text-sm transition-all duration-200;
+    background: linear-gradient(135deg, var(--color-main-amber), rgb(255, 152, 0));
+    color: var(--color-main-black);
+    border: 1px solid transparent;
+    box-shadow: 0 8px 16px -4px rgba(255, 152, 0, 0.3);
+}
+
+.fi-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px -6px rgba(255, 152, 0, 0.4);
+}
+
+.fi-btn-primary:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 12px -2px rgba(255, 152, 0, 0.3);
+}
+
+.fi-btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* Secondary button */
+.fi-btn-secondary {
+    @apply px-6 py-2.5 rounded-lg font-semibold text-sm transition-all duration-200;
+    background: transparent;
+    color: var(--color-main-black);
+    border: 2px solid var(--color-main-black);
+}
+
+.fi-btn-secondary:hover {
+    @apply bg-main-black text-main-white;
+    box-shadow: 0 8px 16px -4px rgba(40, 43, 47, 0.3);
+    transform: translateY(-2px);
+}
+
+.fi-btn-secondary:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 12px -2px rgba(40, 43, 47, 0.2);
+}
+
+/* Destructive button */
+.fi-btn-danger {
+    @apply px-6 py-2.5 rounded-lg font-semibold text-sm transition-all duration-200;
+    background: linear-gradient(135deg, rgb(239, 68, 68), rgb(220, 38, 38));
+    color: var(--color-main-white);
+    border: 1px solid transparent;
+    box-shadow: 0 8px 16px -4px rgba(239, 68, 68, 0.3);
+}
+
+.fi-btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px -6px rgba(239, 68, 68, 0.4);
+}
+
+.fi-btn-danger:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 12px -2px rgba(239, 68, 68, 0.3);
+}
+
+/* Ghost/Link button */
+.fi-btn-ghost {
+    @apply px-3 py-2 rounded-lg font-medium text-sm text-main-secondary transition-all duration-200;
+    background: transparent;
+    border: none;
+}
+
+.fi-btn-ghost:hover {
+    @apply text-main-black bg-main-primary/30;
+}
+
+/* Button group */
+.fi-button-group {
+    @apply flex items-center gap-3 flex-wrap;
+}
+
+/* ===== Checkbox and Radio ===== */
+
+.fi-checkbox,
+.fi-radio {
+    @apply appearance-none w-5 h-5 rounded border-2 border-main-primary/50;
+    background: linear-gradient(135deg, var(--color-main-white) 0%, color-mix(in srgb, var(--color-main-white) 99%, var(--color-main-amber)) 100%);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.fi-radio {
+    border-radius: 50%;
+}
+
+.fi-checkbox:checked,
+.fi-radio:checked {
+    background: linear-gradient(135deg, var(--color-main-amber), rgb(255, 152, 0));
+    border-color: var(--color-main-amber);
+    box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.1);
+}
+
+.fi-checkbox:focus,
+.fi-radio:focus {
+    outline: none;
+    border-color: var(--color-main-amber);
+    box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.1);
+}
+
+.fi-checkbox:disabled,
+.fi-radio:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* ===== Animations ===== */
+
+@keyframes fi-modal-fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fi-modal-scale-in {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(16px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+@keyframes fi-form-group-in {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===== Responsive adjustments ===== */
+
+@media (max-width: 640px) {
+    .fi-modal {
+        @apply rounded-xl;
+        max-width: 100% !important;
+        margin: 1rem;
+    }
+
+    .fi-modal-header,
+    .fi-modal-content,
+    .fi-modal-footer {
+        @apply px-4;
+    }
+
+    .fi-button-group {
+        flex-direction: column;
+    }
+
+    .fi-button-group button {
+        width: 100%;
+    }
+}
