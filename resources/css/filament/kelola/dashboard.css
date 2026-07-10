@@ -1,0 +1,410 @@
+/* Styling khusus halaman Dashboard — di-scope ke .fi-page-dashboard supaya
+   tidak bocor ke halaman lain. Reuse token --color-main-* yang didefinisikan
+   di theme.css (@theme, global panel-wide), tapi file ini sengaja mandiri
+   dan terpisah dari CSS halaman login. */
+
+/* ===== Background halaman: gradient + pola dot halus ===== */
+.fi-page-dashboard {
+    position: relative;
+    background: linear-gradient(135deg,
+        color-mix(in srgb, var(--color-main-white) 95%, var(--color-main-black)) 0%,
+        var(--color-main-white) 50%,
+        color-mix(in srgb, var(--color-main-white) 98%, var(--color-main-amber)) 100%
+    );
+    min-height: 100vh;
+}
+
+.fi-page-dashboard::before {
+    content: '';
+    @apply pointer-events-none absolute inset-0 opacity-[0.03];
+    background-image: radial-gradient(var(--color-main-black) 1px, transparent 1px);
+    background-size: 24px 24px;
+    z-index: 0;
+}
+
+.fi-page-dashboard::after {
+    content: '';
+    @apply pointer-events-none absolute inset-0 opacity-[0.02];
+    background-image:
+        linear-gradient(90deg, transparent 24%, rgba(255, 152, 0, 0.05) 25%, rgba(255, 152, 0, 0.05) 26%, transparent 27%, transparent 74%, rgba(255, 152, 0, 0.05) 75%, rgba(255, 152, 0, 0.05) 76%, transparent 77%, transparent),
+        linear-gradient(0deg, transparent 24%, rgba(255, 152, 0, 0.05) 25%, rgba(255, 152, 0, 0.05) 26%, transparent 27%, transparent 74%, rgba(255, 152, 0, 0.05) 75%, rgba(255, 152, 0, 0.05) 76%, transparent 77%, transparent);
+    background-size: 50px 50px;
+    z-index: 0;
+}
+
+.fi-page-dashboard > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* ===== Header band: gradient gelap senada panel branding login ===== */
+.fi-page-dashboard .fi-header {
+    @apply relative mb-6 overflow-hidden rounded-3xl px-8 py-10;
+    background: radial-gradient(
+            circle at 15% 15%,
+            color-mix(in srgb, var(--color-main-amber) 35%, transparent) 0%,
+            transparent 45%
+        ),
+        linear-gradient(
+            135deg,
+            var(--color-main-black) 0%,
+            #1c1e21 55%,
+            color-mix(in srgb, var(--color-main-black) 70%, var(--color-main-amber)) 100%
+        );
+}
+
+.fi-page-dashboard .fi-header::before {
+    content: '';
+    @apply pointer-events-none absolute inset-0 opacity-[0.08];
+    background-image: repeating-linear-gradient(
+            45deg,
+            var(--color-main-accent) 0,
+            var(--color-main-accent) 1px,
+            transparent 1px,
+            transparent 32px
+        ),
+        repeating-linear-gradient(
+            -45deg,
+            var(--color-main-accent) 0,
+            var(--color-main-accent) 1px,
+            transparent 1px,
+            transparent 32px
+        );
+}
+
+.fi-page-dashboard .fi-header > * {
+    position: relative;
+    z-index: 1;
+}
+
+.fi-page-dashboard .fi-header-heading {
+    @apply text-3xl font-extrabold tracking-tight text-main-white;
+    text-shadow: 0 2px 24px color-mix(in srgb, var(--color-main-accent) 40%, transparent);
+}
+
+.fi-page-dashboard .fi-header-subheading {
+    @apply mt-1 text-sm text-main-primary/90;
+}
+
+/* ===== Judul section per grup widget (Ringkasan Pagu, Kebutuhan per Standar) =====
+   getHeading()/getDescription() widget dibungkus Section::make() oleh Filament
+   sendiri — beda dari getHeader() yang dead code (tidak pernah dipanggil).
+   Section dibuat transparan (bukan card baru) supaya kartu-kartu di bawahnya
+   tetap terasa "mengambang" di atas dot pattern, konsisten dengan gaya yang
+   sudah ada; cuma judul + accent bar amber yang menandai tiap grup. */
+.fi-page-dashboard .fi-section {
+    @apply bg-transparent shadow-none ring-0;
+}
+
+.fi-page-dashboard .fi-section:not(:first-of-type) {
+    @apply mt-8;
+    animation: fi-dashboard-scale-in 0.5s ease-out both;
+}
+
+.fi-page-dashboard .fi-section:nth-child(2) { animation-delay: 0.1s; }
+.fi-page-dashboard .fi-section:nth-child(3) { animation-delay: 0.2s; }
+.fi-page-dashboard .fi-section:nth-child(4) { animation-delay: 0.3s; }
+.fi-page-dashboard .fi-section:nth-child(5) { animation-delay: 0.4s; }
+
+.fi-page-dashboard .fi-section-header {
+    @apply relative mb-4 border-none bg-transparent p-0 pl-3 transition-all duration-300;
+}
+
+.fi-page-dashboard .fi-section-header::before {
+    content: '';
+    @apply absolute left-0 top-1 h-6 w-1 rounded-full transition-all duration-300;
+    background: var(--color-main-amber);
+}
+
+.fi-page-dashboard .fi-section:hover .fi-section-header::before {
+    width: 1.5px;
+    height: 8px;
+    box-shadow: 0 0 8px var(--color-main-amber);
+}
+
+.fi-page-dashboard .fi-section-header-heading {
+    @apply text-2xl font-black text-main-black;
+}
+
+.fi-page-dashboard .fi-section-header-description {
+    @apply mt-1 text-sm text-main-secondary font-medium;
+}
+
+/* ===== Stat card ===== */
+@keyframes fi-dashboard-card-in {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fi-dashboard-pulse-glow {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(241, 202, 59, 0.4);
+    }
+    50% {
+        box-shadow: 0 0 0 8px rgba(241, 202, 59, 0);
+    }
+}
+
+@keyframes fi-dashboard-scale-in {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes fi-dashboard-float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-4px);
+    }
+}
+
+.fi-page-dashboard .fi-wi-stats-overview-stat {
+    --stat-accent: var(--color-main-amber);
+    @apply relative overflow-hidden rounded-3xl p-6 transition-all duration-300;
+    background: linear-gradient(135deg, var(--color-main-white) 0%, color-mix(in srgb, var(--color-main-white) 99%, var(--color-main-black)) 100%);
+    border-left: 4px solid var(--stat-accent);
+    box-shadow: 0 10px 30px -15px var(--stat-accent), 0 0 1px rgba(0,0,0,0.1);
+    animation: fi-dashboard-card-in 0.5s ease-out both;
+}
+
+.fi-page-dashboard .fi-wi-stats-overview-stat::after {
+    content: '';
+    @apply pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full opacity-[0.06] transition-all duration-300;
+    background: var(--stat-accent);
+    filter: blur(20px);
+    z-index: 0;
+}
+
+.fi-page-dashboard .fi-wi-stats-overview-stat > * {
+    position: relative;
+    z-index: 1;
+}
+
+.fi-page-dashboard .fi-wi-stats-overview-stat:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 25px 45px -15px var(--stat-accent), 0 0 2px rgba(0,0,0,0.15);
+    border-left: 4px solid var(--stat-accent);
+}
+
+.fi-page-dashboard .fi-wi-stats-overview-stat:hover::after {
+    transform: scale(1.3);
+    opacity: 0.1;
+}
+
+.fi-page-dashboard .fi-wi-stats-overview-stat:nth-child(1) {
+    animation-delay: 0ms;
+}
+
+.fi-page-dashboard .fi-wi-stats-overview-stat:nth-child(2) {
+    animation-delay: 60ms;
+}
+
+.fi-page-dashboard .fi-wi-stats-overview-stat:nth-child(3) {
+    animation-delay: 120ms;
+}
+
+.fi-page-dashboard .fi-wi-stats-overview-stat:nth-child(4) {
+    animation-delay: 180ms;
+}
+
+.fi-page-dashboard .fi-wi-stats-overview-stat:nth-child(5) {
+    animation-delay: 240ms;
+}
+
+.fi-page-dashboard .fi-wi-stats-overview-stat:nth-child(6) {
+    animation-delay: 300ms;
+}
+
+.fi-page-dashboard .fi-wi-stats-overview-stat:nth-child(7) {
+    animation-delay: 360ms;
+}
+
+.fi-page-dashboard .fi-wi-stats-overview-stat:nth-child(8) {
+    animation-delay: 420ms;
+}
+
+.fi-page-dashboard .fi-wi-stats-overview-stat:nth-child(n+9) {
+    animation-delay: 480ms;
+}
+
+.fi-page-dashboard .fi-wi-stats-overview-stat-label {
+    @apply text-xs font-semibold text-main-secondary uppercase tracking-widest;
+    transition: color 0.3s ease;
+}
+
+.fi-page-dashboard .fi-wi-stats-overview-stat:hover .fi-wi-stats-overview-stat-label {
+    color: var(--stat-accent);
+}
+
+.fi-page-dashboard .fi-wi-stats-overview-stat-label-ctn .fi-icon {
+    color: var(--stat-accent, var(--color-main-amber));
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.fi-page-dashboard .fi-wi-stats-overview-stat:hover .fi-wi-stats-overview-stat-label-ctn .fi-icon {
+    transform: scale(1.15) rotate(5deg);
+}
+
+.fi-page-dashboard .fi-wi-stats-overview-stat-value {
+    @apply text-3xl font-black text-main-black mt-3;
+    letter-spacing: -0.5px;
+}
+
+.fi-page-dashboard .fi-wi-stats-overview-stat-description {
+    @apply text-xs mt-2 font-medium;
+    transition: color 0.3s ease;
+}
+
+/* ===== Quick Actions grid — raw CSS (bukan utility class) supaya tidak
+   kalah cascade-layer terhadap CSS core Filament yang di-@import duluan
+   di file ini. Grid ini WAJIB pakai display:grid eksplisit + !important
+   pada properti layout intinya. ===== */
+.quick-actions-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 0.75rem;
+    width: 100%;
+}
+
+.quick-action-card {
+    display: flex !important;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    border: 2px solid rgb(243 244 246);
+    background: var(--color-main-white);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    text-decoration: none;
+    min-width: 0;
+    animation: fi-dashboard-scale-in 0.4s ease-out both;
+}
+
+.quick-action-card:nth-child(1) { animation-delay: 0.05s; }
+.quick-action-card:nth-child(2) { animation-delay: 0.1s; }
+.quick-action-card:nth-child(3) { animation-delay: 0.15s; }
+.quick-action-card:nth-child(4) { animation-delay: 0.2s; }
+
+.quick-action-card:hover {
+    box-shadow: 0 15px 25px -5px rgb(0 0 0 / 0.15);
+    transform: translateY(-2px);
+}
+
+.quick-action-card--primary:hover { border-color: var(--color-main-amber); }
+.quick-action-card--info:hover { border-color: rgb(96 165 250); }
+.quick-action-card--success:hover { border-color: rgb(74 222 128); }
+.quick-action-card--warning:hover { border-color: rgb(251 191 36); }
+
+.quick-action-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 0.5rem;
+}
+
+.quick-action-icon svg {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+.quick-action-card--primary .quick-action-icon { background: color-mix(in srgb, var(--color-main-amber) 12%, transparent); color: var(--color-main-amber); }
+.quick-action-card--info .quick-action-icon { background: rgb(59 130 246 / 0.1); color: rgb(59 130 246); }
+.quick-action-card--success .quick-action-icon { background: rgb(34 197 94 / 0.1); color: rgb(34 197 94); }
+.quick-action-card--warning .quick-action-icon { background: rgb(245 158 11 / 0.1); color: rgb(245 158 11); }
+
+.quick-action-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.quick-action-title {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--color-main-black);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.quick-action-subtitle {
+    font-size: 0.75rem;
+    color: var(--color-main-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ===== Progress bar realisasi di dalam card standar ===== */
+.fi-page-dashboard .stat-progress-track {
+    @apply mt-2 mb-1.5 h-1.5 w-full overflow-hidden rounded-full bg-black/5;
+}
+
+.fi-page-dashboard .stat-progress-fill {
+    @apply h-full rounded-full transition-all duration-700 ease-out;
+}
+
+.fi-page-dashboard .stat-progress-label {
+    @apply mb-2 text-xs font-semibold text-main-secondary;
+}
+
+/* ===== Table widget animations ===== */
+.fi-page-dashboard .fi-wi-table table {
+    background: linear-gradient(135deg, var(--color-main-white) 0%, color-mix(in srgb, var(--color-main-white) 99%, var(--color-main-black)) 100%);
+}
+
+.fi-page-dashboard .fi-wi-table table thead th {
+    background: linear-gradient(135deg, color-mix(in srgb, var(--color-main-black) 5%, transparent), color-mix(in srgb, var(--color-main-amber) 8%, transparent));
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid color-mix(in srgb, var(--color-main-amber) 30%, transparent);
+}
+
+.fi-page-dashboard .fi-wi-table table tbody tr {
+    animation: fi-dashboard-card-in 0.3s ease-out both;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.fi-page-dashboard .fi-wi-table table tbody tr:hover {
+    background: linear-gradient(90deg, rgba(255, 152, 0, 0.04), transparent);
+    transform: scale(1.01);
+    box-shadow: 0 4px 12px -4px rgba(255, 152, 0, 0.2) inset;
+}
+
+.fi-page-dashboard .fi-wi-table table tbody tr:nth-child(1) { animation-delay: 0.05s; }
+.fi-page-dashboard .fi-wi-table table tbody tr:nth-child(2) { animation-delay: 0.1s; }
+.fi-page-dashboard .fi-wi-table table tbody tr:nth-child(3) { animation-delay: 0.15s; }
+.fi-page-dashboard .fi-wi-table table tbody tr:nth-child(4) { animation-delay: 0.2s; }
+.fi-page-dashboard .fi-wi-table table tbody tr:nth-child(5) { animation-delay: 0.25s; }
+.fi-page-dashboard .fi-wi-table table tbody tr:nth-child(n+6) { animation-delay: 0.3s; }
+
+.fi-page-dashboard .fi-wi-table table tbody td {
+    transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+/* ===== Smooth fade-in for all cards ===== */
+.fi-page-dashboard .fi-wi-stats-overview-widget,
+.fi-page-dashboard .fi-wi-chart-widget,
+.fi-page-dashboard .fi-wi-table-widget {
+    animation: fi-dashboard-scale-in 0.5s ease-out both;
+}
