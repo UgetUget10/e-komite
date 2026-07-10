@@ -3,23 +3,6 @@
 @source '../../../../app/Filament/**/*';
 @source '../../../../resources/views/filament/**/*';
 
-/* body,
-html {
-    @apply m-0 p-0 h-full w-full;
-}
-
-.fi-simple-main-ctn {
-    @apply min-h-screen w-full justify-end bg-[url('/images/kelola/gerbang-depan.png')] bg-no-repeat bg-center bg-cover;
-}
-
-.fi-simple-main {
-    @apply rounded-none h-screen m-0 flex flex-col justify-center items-center;
-
-    & .fi-simple-page {
-        @apply max-w-none w-full;
-    }
-} */
-
 @theme {
     --color-main-primary: rgb(242, 241, 235);
     --color-main-secondary: rgb(204, 197, 181);
@@ -29,113 +12,198 @@ html {
     --color-main-amber: rgb(255, 152, 0);
 }
 
-.fi-body {
-    @apply bg-main-primary text-main-black;
+/* ===== Preview berkas/dokumen (dipakai lintas resource: Upload Berkas, Realisasi Nominal, dst) ===== */
+.upload-berkas-preview-frame {
+    @apply w-full rounded-2xl ring-1 ring-black/5;
+    height: 40rem;
+    border: none;
 }
 
-.fi-topbar {
-    @apply bg-main-primary shadow-none ring-0;
+.upload-berkas-preview-fallback {
+    @apply flex items-center gap-x-2 rounded-2xl bg-main-primary/40 p-4 text-sm;
 }
 
-.fi-sidebar {
-    @apply bg-main-white rounded-t-2xl shadow-lg;
+@import "./dashboard.css";
+@import "./sidebar.css";
+@import "./upload-berkas.css";
+@import "./peran.css";
+@import "./pagu-tahun-anggaran.css";
+@import "./program-kegiatan.css";
+@import "./uraian-program.css";
+@import "./realisasi-bulan.css";
+@import "./realisasi-nominal.css";
+@import "./user.css";
+@import "./standar.css";
+@import "./detail-keperluan-dana.css";
+
+/* ===== Split-screen login ===== */
+/* CSS mentah (bukan @apply) sengaja dipakai di sini supaya pasti menang
+   atas utility class bawaan Filament untuk .fi-simple-main, terlepas dari
+   urutan internal Tailwind's utilities layer. */
+
+.fi-simple-layout {
+    min-height: 100vh;
 }
 
-/* .fi-body-has-topbar .fi-sidebar {
-    height: calc(100vh - 5rem);
-} */
-.fi-sidebar-item > .fi-sidebar-item-btn {
-    @apply rounded-2xl hover:bg-main-primary;
+.fi-simple-main-ctn {
+    width: 100%;
+    min-height: 100vh;
+    padding: 0;
+    margin: 0;
 }
 
-.fi-sidebar-item {
-    &.fi-active {
-        & > .fi-sidebar-item-btn {
-            @apply bg-main-primary;
+.fi-simple-main {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    border-radius: 0;
+    box-shadow: none;
+    outline: none;
+    height: 100vh;
+}
+
+.fi-auth-split-screen {
+    @apply grid h-screen w-full grid-cols-1 lg:grid-cols-2;
+}
+
+/* Kiri: panel branding */
+.fi-auth-split-branding {
+    @apply relative hidden overflow-hidden lg:flex lg:flex-col lg:justify-center lg:px-16;
+    background: radial-gradient(
+            circle at 15% 15%,
+            color-mix(in srgb, var(--color-main-amber) 35%, transparent) 0%,
+            transparent 45%
+        ),
+        linear-gradient(
+            135deg,
+            var(--color-main-black) 0%,
+            #1c1e21 55%,
+            color-mix(in srgb, var(--color-main-black) 70%, var(--color-main-amber)) 100%
+        );
+}
+
+.fi-auth-split-branding-pattern {
+    @apply pointer-events-none absolute inset-0 opacity-[0.08];
+    background-image: repeating-linear-gradient(
+            45deg,
+            var(--color-main-accent) 0,
+            var(--color-main-accent) 1px,
+            transparent 1px,
+            transparent 32px
+        ),
+        repeating-linear-gradient(
+            -45deg,
+            var(--color-main-accent) 0,
+            var(--color-main-accent) 1px,
+            transparent 1px,
+            transparent 32px
+        );
+}
+
+.fi-auth-split-branding-content {
+    @apply relative z-10 max-w-md;
+}
+
+.fi-auth-split-brand-wordmark {
+    @apply block text-5xl font-extrabold tracking-tight text-main-white;
+    letter-spacing: 0.02em;
+    text-shadow: 0 2px 24px color-mix(in srgb, var(--color-main-accent) 40%, transparent);
+}
+
+.fi-auth-split-brand-tagline {
+    @apply mt-5 text-base leading-relaxed text-main-secondary;
+}
+
+.fi-auth-split-brand-highlights {
+    @apply mt-8 space-y-3 border-t border-white/10 pt-6 text-sm text-main-primary/90;
+
+    & li {
+        @apply relative pl-5;
+
+        &::before {
+            content: '';
+            @apply absolute left-0 top-2 h-1.5 w-1.5 rounded-full bg-main-accent;
         }
     }
 }
 
-.fi-sidebar-item {
-    &.fi-active {
-        & > .fi-sidebar-item-btn {
-            & > .fi-icon {
-                @apply text-main-amber hover:text-main-amber;
-            }
-        }
+/* Kanan: kolom form */
+.fi-auth-split-form-ctn {
+    @apply relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-main-primary px-6 py-12 lg:px-12;
+}
+
+.fi-auth-split-form-decor {
+    @apply pointer-events-none absolute rounded-full blur-3xl;
+}
+
+.fi-auth-split-form-decor-1 {
+    @apply -right-24 -top-24 h-96 w-96;
+    background: color-mix(in srgb, var(--color-main-amber) 22%, transparent);
+}
+
+.fi-auth-split-form-decor-2 {
+    @apply -bottom-32 -left-16 h-80 w-80;
+    background: color-mix(in srgb, var(--color-main-accent) 20%, transparent);
+}
+
+.fi-auth-split-form-pattern {
+    @apply pointer-events-none absolute inset-0 opacity-[0.05];
+    background-image: radial-gradient(var(--color-main-black) 1px, transparent 1px);
+    background-size: 24px 24px;
+}
+
+.fi-auth-split-form-wrap {
+    @apply relative z-10 flex w-full max-w-md flex-col items-center;
+}
+
+.fi-auth-split-form-card {
+    @apply w-full max-w-md rounded-3xl bg-main-white p-8 shadow-lg ring-1 ring-black/5 sm:p-10;
+    animation: fi-auth-card-in 0.5s ease-out both;
+}
+
+.fi-auth-split-form-footer {
+    @apply mt-6 text-center text-xs text-main-secondary;
+}
+
+@keyframes fi-auth-card-in {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 
-.fi-sidebar-item {
-    &.fi-active {
-        & > .fi-sidebar-item-btn {
-            & > .fi-sidebar-item-label {
-                @apply text-main-amber hover:text-main-amber;
-            }
-        }
+.fi-auth-split-form-card .fi-simple-header-heading {
+    @apply text-2xl font-bold text-main-black;
+}
+
+.fi-auth-split-form-card .fi-simple-header-subheading {
+    @apply mt-1 text-sm text-main-secondary;
+}
+
+.fi-auth-split-form-card .fi-input-wrp {
+    @apply transition-all duration-200;
+
+    &:focus-within {
+        @apply ring-2 ring-main-accent/60;
     }
 }
 
-.fi-sidebar-item-btn {
-    & > .fi-icon {
-        @apply text-main-black;
-    }
+/* ===== Breadcrumb di dalam header gelap: teks putih di semua halaman ===== */
+.fi-header .fi-breadcrumbs-item {
+    @apply text-main-white/70;
 }
 
-.fi-btn {
-    @apply rounded-2xl;
+.fi-header .fi-breadcrumbs-item a:hover {
+    @apply text-main-white;
 }
 
-.fi-input-wrp {
-    @apply rounded-2xl bg-main-white shadow-none ring-0;
+.fi-header .fi-breadcrumbs-item .fi-icon {
+    @apply text-main-white/50;
 }
 
-.fi-ta-ctn {
-    @apply rounded-3xl shadow-lg bg-main-white p-4;
-}
-
-.fi-ta-ctn {
-    & .fi-ta-header-ctn {
-        @apply rounded-2xl bg-main-amber;
-    }
-}
-
-.fi-ta-ctn {
-    & .fi-ta-header-toolbar {
-        @apply border-b-0;
-    }
-}
-
-.fi-ta-table {
-    & > thead {
-        & > tr {
-            @apply text-main-black bg-main-white;
-        }
-    }
-}
-
-.fi-icon-btn {
-    @apply rounded-2xl bg-main-amber text-main-black hover:text-main-black;
-}
-
-.fi-icon fi-size-md {
-    @apply bg-main-amber text-main-black hover:text-main-black;
-}
-
-.fi-sc-form {
-    @apply bg-main-white rounded-2xl p-4;
-}
-
-.fi-sc-form .fi-input-wrp {
-    @apply rounded-2xl bg-main-primary shadow-none ring-0;
-}
-/*
-.fi-sc-form .fi-input-wrp .fi-input-wrp-prefix,
-.fi-sc-form .fi-input-wrp .fi-input-wrp-suffix {
-    @apply rounded-2xl bg-main-white shadow-none ring-0;
-}
-
-.fi-sc-form .fi-input-wrp .fi-input-wrp-prefix .fi-icon,
-.fi-sc-form .fi-input-wrp .fi-input-wrp-suffix .fi-icon {
-    @apply text-main-black;
-} */
