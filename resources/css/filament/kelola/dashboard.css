@@ -10,8 +10,20 @@
         rgba(245, 244, 241, 1) 0%,
         var(--color-main-white) 50%,
         rgba(254, 241, 211, 1) 100%
-    );
-    min-height: 100vh;
+    ) !important;
+    min-height: 100vh !important;
+    width: 100% !important;
+}
+
+/* Override main container width constraint for full-width background */
+.fi-page-dashboard .fi-main {
+    width: 100% !important;
+    max-width: none !important;
+}
+
+.fi-page-dashboard .fi-width-7xl {
+    width: 100% !important;
+    max-width: none !important;
 }
 
 .fi-page-dashboard::before {
