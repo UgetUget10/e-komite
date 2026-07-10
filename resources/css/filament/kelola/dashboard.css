@@ -160,7 +160,8 @@ body.fi-dashboard-page {
     transition: all 0.3s ease;
 }
 
-.fi-page-dashboard .fi-section-header::before {
+/* Section header left accent bar (hanya untuk .fi-section, bukan .fi-header) */
+.fi-page-dashboard .fi-section .fi-section-header::before {
     content: '';
     @apply absolute left-0 top-1 h-6 w-1 rounded-full transition-all duration-300;
     background: var(--color-main-amber);
@@ -170,6 +171,11 @@ body.fi-dashboard-page {
     width: 1.5px;
     height: 8px;
     box-shadow: 0 0 8px var(--color-main-amber);
+}
+
+/* Jangan tampilkan bar oranye di page header */
+.fi-page-dashboard .fi-header::before {
+    display: none !important;
 }
 
 .fi-page-dashboard .fi-section-header-heading {
