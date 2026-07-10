@@ -1,0 +1,138 @@
+/* Styling khusus halaman Detail Keperluan Dana — di-scope ke
+   .fi-page-detail-keperluan-dana supaya tidak bocor ke halaman lain. */
+
+.fi-page-detail-keperluan-dana {
+    position: relative;
+}
+
+.fi-page-detail-keperluan-dana::before {
+    content: '';
+    @apply pointer-events-none absolute inset-0 opacity-[0.05];
+    background-image: radial-gradient(var(--color-main-black) 1px, transparent 1px);
+    background-size: 24px 24px;
+    z-index: 0;
+}
+
+.fi-page-detail-keperluan-dana > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* ===== Tab switch (Keperluan Dana / Realisasi) ===== */
+.dkd-tabs {
+    @apply mb-4 flex gap-2;
+}
+
+.dkd-tab {
+    @apply inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-main-secondary transition-all duration-200;
+    @apply bg-main-white ring-1 ring-black/5;
+}
+
+.dkd-tab:hover {
+    @apply text-main-black shadow-sm;
+    transform: translateY(-1px);
+}
+
+.dkd-tab-active {
+    @apply bg-main-amber text-white shadow-md ring-0;
+}
+
+.dkd-tab-active:hover {
+    @apply text-white;
+}
+
+/* ===== Card pembungkus tabel ===== */
+.dkd-card {
+    @apply overflow-hidden rounded-3xl bg-main-white shadow-lg ring-1 ring-black/5;
+    animation: dkd-fade-in 0.4s ease-out both;
+}
+
+@keyframes dkd-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dkd-table-scroll {
+    @apply overflow-x-auto p-2 sm:p-4;
+}
+
+/* ===== Tabel ===== */
+.dkd-table {
+    @apply w-full border-collapse text-sm;
+}
+
+.dkd-table-compact {
+    @apply text-xs;
+}
+
+.dkd-table-compact .dkd-th,
+.dkd-table-compact .dkd-td,
+.dkd-table-compact .dkd-td-foot {
+    @apply whitespace-nowrap p-2 text-[11px];
+}
+
+.dkd-th {
+    @apply border-b-2 border-main-secondary/20 bg-main-primary/40 p-3 text-center text-xs font-bold uppercase tracking-wide text-main-black;
+}
+
+.dkd-th-left {
+    @apply text-left;
+}
+
+.dkd-th-no {
+    width: 44px;
+}
+
+.dkd-td {
+    @apply border-b border-main-secondary/10 p-3 align-middle text-main-black;
+}
+
+.dkd-td-center {
+    @apply text-center;
+}
+
+.dkd-td-right {
+    @apply text-right tabular-nums;
+}
+
+.dkd-row {
+    @apply transition-colors duration-150;
+}
+
+.dkd-row:hover {
+    background: rgba(242, 241, 235, 0.45);
+}
+
+.dkd-row .dkd-td:first-child {
+    @apply font-semibold text-main-secondary;
+}
+
+.dkd-empty {
+    @apply p-8 text-main-secondary;
+}
+
+.dkd-td-foot {
+    @apply border-t-2 border-main-secondary/20 bg-main-primary/30 p-3 font-bold text-main-black;
+}
+
+.dkd-foot-highlight {
+    @apply bg-rose-50 text-rose-700;
+}
+
+.dkd-foot-success {
+    @apply bg-emerald-50 text-emerald-700;
+}
+
+.dkd-text-success {
+    @apply font-semibold text-emerald-600;
+}
+
+.dkd-text-danger {
+    @apply font-semibold text-rose-600;
+}

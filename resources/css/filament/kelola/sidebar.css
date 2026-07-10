@@ -2,7 +2,7 @@
 
 /* Sidebar container — gradient background + pattern */
 .fi-sidebar {
-    @apply relative overflow-hidden bg-gradient-to-b from-main-black to-color-mix(in srgb, var(--color-main-black) 95%, var(--color-main-amber));
+    @apply relative overflow-hidden bg-gradient-to-b from-main-black to-amber-900;
     border-right: 1px solid rgba(255, 255, 255, 0.05);
 }
 

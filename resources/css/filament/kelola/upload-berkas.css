@@ -1,0 +1,227 @@
+/* Styling khusus resource Upload Berkas (list/create/edit/view) — di-scope ke
+   .fi-page-upload-berkas supaya tidak bocor ke halaman lain. Reuse token
+   --color-main-* dari theme.css (@theme, global panel-wide), tapi file ini
+   sengaja mandiri dan terpisah dari CSS halaman login & dashboard. */
+
+/* ===== Background halaman: pola dot halus ===== */
+.fi-page-upload-berkas {
+    position: relative;
+}
+
+.fi-page-upload-berkas::before {
+    content: '';
+    @apply pointer-events-none absolute inset-0 opacity-[0.05];
+    background-image: radial-gradient(var(--color-main-black) 1px, transparent 1px);
+    background-size: 24px 24px;
+    /* Negatif, bukan positif: dot pattern otomatis tenggelam di bawah semua
+       konten normal tanpa perlu memaksa setiap child jadi stacking context
+       sendiri (lihat catatan di bawah kenapa itu berbahaya). */
+    z-index: -1;
+}
+
+/* ===== Header band: gradient gelap senada dashboard & login ===== */
+.fi-page-upload-berkas .fi-header {
+    @apply relative mb-6 overflow-hidden rounded-3xl px-8 py-10;
+    background: radial-gradient(
+            circle at 15% 15%,
+            rgba(255, 152, 0, 0.35) 0%,
+            transparent 45%
+        ),
+        linear-gradient(
+            135deg,
+            var(--color-main-black) 0%,
+            #1c1e21 55%,
+            rgba(147, 97, 24, 1) 100%
+        );
+}
+
+/* Blob glow dekoratif — dipasang di pseudo-elemen ::after (bukan elemen
+   nyata), jadi tidak punya anak sama sekali. Aman dianimasikan permanen
+   karena tidak ada popover/dropdown yang bisa "terjebak" di dalamnya —
+   beda kasus dengan animasi di card berisi form/tabel (lihat catatan di
+   bawah). */
+@keyframes fi-upload-berkas-blob-pulse {
+    0%, 100% {
+        transform: scale(1) translate(0, 0);
+        opacity: 0.6;
+    }
+    50% {
+        transform: scale(1.2) translate(12px, -8px);
+        opacity: 0.9;
+    }
+}
+
+.fi-page-upload-berkas .fi-header::after {
+    content: '';
+    @apply pointer-events-none absolute -right-10 -top-16 h-56 w-56 rounded-full blur-3xl;
+    background: rgba(255, 152, 0, 0.45);
+    animation: fi-upload-berkas-blob-pulse 8s ease-in-out infinite;
+}
+
+.fi-page-upload-berkas .fi-header::before {
+    content: '';
+    @apply pointer-events-none absolute inset-0 opacity-[0.08];
+    background-image: repeating-linear-gradient(
+            45deg,
+            var(--color-main-accent) 0,
+            var(--color-main-accent) 1px,
+            transparent 1px,
+            transparent 32px
+        ),
+        repeating-linear-gradient(
+            -45deg,
+            var(--color-main-accent) 0,
+            var(--color-main-accent) 1px,
+            transparent 1px,
+            transparent 32px
+        );
+}
+
+.fi-page-upload-berkas .fi-header > * {
+    position: relative;
+    z-index: 1;
+}
+
+.fi-page-upload-berkas .fi-header-heading {
+    @apply text-3xl font-extrabold tracking-tight text-main-white;
+    text-shadow: 0 2px 24px rgba(241, 202, 59, 0.4);
+}
+
+.fi-page-upload-berkas .fi-header-subheading {
+    @apply mt-1 text-sm text-main-primary/90;
+}
+
+/* Catatan penting: entrance animation (opacity/transform) SENGAJA TIDAK
+   dipakai di container manapun yang bisa berisi popover/dropdown (Section
+   form, filter card, tabel) — CSS animation pada opacity/transform membuat
+   elemen tersebut jadi stacking context baru secara permanen (spec CSS,
+   bukan bug browser), sehingga popover di dalamnya (datepicker, select,
+   dropdown aksi) akan "terjebak" dan muncul di BAWAH card lain yang letaknya
+   lebih akhir di DOM (mis. tabel menutupi kalender filter). Makanya di sini
+   hanya dipakai shadow/radius statis, tanpa animasi. */
+
+/* ===== Section (form & infolist) ===== */
+/* transition + hover:* aman dipakai (tidak seperti "animation") karena
+   transform/shadow hanya aktif SELAMA state :hover berlangsung — begitu
+   mouse pergi, propertinya kembali none dan stacking context ikut hilang,
+   jadi tidak pernah "menjebak" popover secara permanen. */
+.fi-page-upload-berkas .fi-section {
+    @apply rounded-3xl bg-main-white shadow-lg ring-1 ring-black/5 transition-shadow duration-200;
+}
+
+.fi-page-upload-berkas .fi-section:hover {
+    @apply shadow-xl;
+}
+
+.fi-page-upload-berkas .fi-section-header {
+    @apply rounded-t-3xl;
+}
+
+.fi-page-upload-berkas .fi-section-header-heading {
+    @apply text-base font-bold text-main-black;
+}
+
+.fi-page-upload-berkas .fi-section-header-description {
+    @apply text-sm text-main-secondary;
+}
+
+/* ===== Input focus ring ===== */
+.fi-page-upload-berkas .fi-input-wrp {
+    @apply transition-all duration-200;
+
+    &:focus-within {
+        @apply ring-2 ring-main-accent/60;
+    }
+}
+
+/* ===== File upload dropzone ===== */
+.fi-page-upload-berkas .fi-fo-file-upload-input-ctn {
+    @apply rounded-2xl border-2 border-dashed border-main-secondary/60 bg-main-primary/40 transition-all duration-200;
+}
+
+.fi-page-upload-berkas .fi-fo-file-upload-input-ctn:hover {
+    @apply bg-main-amber/5;
+    border-color: var(--color-main-amber);
+}
+
+/* ===== Tombol ===== */
+.fi-page-upload-berkas .fi-btn {
+    @apply transition-all duration-200;
+}
+
+.fi-page-upload-berkas .fi-btn:hover {
+    @apply shadow-md;
+    transform: translateY(-1px);
+}
+
+/* ===== Badge/chip (Jenis, Lihat Berkas, tanggal di infolist) ===== */
+.fi-page-upload-berkas .fi-badge {
+    @apply font-semibold tracking-wide shadow-sm transition-transform duration-150;
+}
+
+.fi-page-upload-berkas a .fi-badge:hover {
+    transform: translateY(-1px) scale(1.03);
+}
+
+/* ===== Filter di atas tabel ===== */
+/* Filter ini secara DOM sudah berada di dalam .fi-ta-ctn yang sama dengan
+   tabel (lihat vendor/filament/tables .../index.blade.php) — jadi TIDAK
+   diberi bg/shadow/ring/radius sendiri (itu yang bikin terlihat seperti card
+   terpisah). Cukup padding + garis pembatas bawah supaya menyatu jadi satu
+   card dengan tabel di bawahnya. */
+.fi-page-upload-berkas .fi-ta-filters-above-content-ctn {
+    @apply border-b border-gray-950/5 bg-main-white p-6;
+}
+
+.fi-page-upload-berkas .fi-ta-filters-heading {
+    @apply relative pl-3 text-base font-bold text-main-black;
+}
+
+.fi-page-upload-berkas .fi-ta-filters-heading::before {
+    content: '';
+    @apply absolute left-0 top-1/2 h-4 w-1 -translate-y-1/2 rounded-full;
+    background: var(--color-main-amber);
+}
+
+/* ===== Tabel list ===== */
+/* overflow-hidden sengaja HANYA di .fi-ta-ctn (kontainer terluar, sama
+   seperti perilaku default Filament), bukan di .fi-ta-content-ctn — supaya
+   dropdown menu kolom/aksi baris di dalam tabel tidak ikut terpotong. */
+.fi-page-upload-berkas .fi-ta-ctn {
+    @apply overflow-hidden rounded-3xl shadow-lg ring-1 ring-black/5;
+}
+
+.fi-page-upload-berkas .fi-ta-content-ctn {
+    @apply rounded-3xl;
+}
+
+.fi-page-upload-berkas .fi-ta-header-ctn {
+    @apply bg-main-white;
+}
+
+.fi-page-upload-berkas .fi-ta-header-heading {
+    @apply text-xl font-bold text-main-black;
+}
+
+.fi-page-upload-berkas table.fi-ta-table thead {
+    background: rgba(242, 241, 235, 0.7);
+}
+
+.fi-page-upload-berkas .fi-ta-header-cell {
+    @apply text-main-black;
+}
+
+.fi-page-upload-berkas .fi-ta-row {
+    @apply transition-colors duration-150;
+}
+
+.fi-page-upload-berkas .fi-ta-row:hover {
+    background: rgba(242, 241, 235, 0.45);
+}
+
+/* ===== Badge "Lihat Berkas" ===== */
+.fi-page-upload-berkas .fi-ta-text-item-label {
+    transition: color 0.15s ease;
+}
+
+/* Preview berkas (form & infolist) — ukuran dasar diatur global di theme.css */

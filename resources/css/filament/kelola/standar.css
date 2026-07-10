@@ -1,0 +1,224 @@
+/* Styling khusus resource Standar — di-scope ke
+   .fi-page-standar supaya tidak bocor ke halaman lain. Reuse token
+   --color-main-* dari theme.css (@theme, global panel-wide).
+
+   Pattern: Upload Berkas design dengan animated blob glow, enhanced text shadow,
+   interactive hover effects, repeater styling, dan calculation field highlights. */
+
+/* ===== Background halaman: pola dot halus ===== */
+.fi-page-standar {
+    position: relative;
+}
+
+.fi-page-standar::before {
+    content: '';
+    @apply pointer-events-none absolute inset-0 opacity-[0.05];
+    background-image: radial-gradient(var(--color-main-black) 1px, transparent 1px);
+    background-size: 24px 24px;
+    z-index: -1;
+}
+
+/* ===== Header band: gradient gelap dengan animated blob glow ===== */
+.fi-page-standar .fi-header {
+    @apply relative mb-6 overflow-hidden rounded-3xl px-8 py-10;
+    background: radial-gradient(
+            circle at 15% 15%,
+            rgba(255, 152, 0, 0.35) 0%,
+            transparent 45%
+        ),
+        linear-gradient(
+            135deg,
+            var(--color-main-black) 0%,
+            #1c1e21 55%,
+            rgba(147, 97, 24, 1) 100%
+        );
+}
+
+/* Animated blob glow (hanya pseudo-element, tidak menjebak popover) */
+@keyframes fi-standar-blob-pulse {
+    0%, 100% {
+        transform: scale(1) translate(0, 0);
+        opacity: 0.6;
+    }
+    50% {
+        transform: scale(1.2) translate(12px, -8px);
+        opacity: 0.9;
+    }
+}
+
+.fi-page-standar .fi-header::after {
+    content: '';
+    @apply pointer-events-none absolute -right-10 -top-16 h-56 w-56 rounded-full blur-3xl;
+    background: rgba(255, 152, 0, 0.45);
+    animation: fi-standar-blob-pulse 8s ease-in-out infinite;
+}
+
+.fi-page-standar .fi-header::before {
+    content: '';
+    @apply pointer-events-none absolute inset-0 opacity-[0.08];
+    background-image: repeating-linear-gradient(
+            45deg,
+            var(--color-main-accent) 0,
+            var(--color-main-accent) 1px,
+            transparent 1px,
+            transparent 32px
+        ),
+        repeating-linear-gradient(
+            -45deg,
+            var(--color-main-accent) 0,
+            var(--color-main-accent) 1px,
+            transparent 1px,
+            transparent 32px
+        );
+}
+
+.fi-page-standar .fi-header > * {
+    position: relative;
+    z-index: 1;
+}
+
+.fi-page-standar .fi-header-heading {
+    @apply text-3xl font-extrabold tracking-tight text-main-white;
+    text-shadow: 0 2px 24px rgba(241, 202, 59, 0.4);
+}
+
+.fi-page-standar .fi-header-subheading {
+    @apply mt-1 text-sm text-main-primary/90;
+}
+
+/* ===== Section: card styling dengan enhanced hover ===== */
+.fi-page-standar .fi-section {
+    @apply rounded-3xl bg-main-white shadow-lg ring-1 ring-black/5 transition-shadow duration-200;
+}
+
+.fi-page-standar .fi-section:hover {
+    @apply shadow-xl;
+}
+
+.fi-page-standar .fi-section-header {
+    @apply rounded-t-3xl;
+}
+
+.fi-page-standar .fi-section-header-heading {
+    @apply text-base font-bold text-main-black;
+}
+
+.fi-page-standar .fi-section-header-description {
+    @apply text-sm text-main-secondary;
+}
+
+/* ===== Input focus ring ===== */
+.fi-page-standar .fi-input-wrp {
+    @apply transition-all duration-200;
+}
+
+.fi-page-standar .fi-input-wrp:focus-within {
+    @apply ring-2 ring-main-accent/60;
+}
+
+/* ===== Repeater styling ===== */
+.fi-page-standar .fi-fo-repeater-item-ctn {
+    @apply rounded-2xl border-2 border-main-secondary/30 bg-main-primary/30 p-4 transition-all duration-200;
+}
+
+.fi-page-standar .fi-fo-repeater-item-ctn:hover {
+    @apply border-main-amber/60 bg-main-amber/5;
+}
+
+.fi-page-standar .fi-fo-repeater-item-ctn:focus-within {
+    @apply border-main-accent ring-2 ring-main-accent/20;
+}
+
+/* Repeater header styling */
+.fi-page-standar .fi-fo-repeater-item-heading {
+    @apply text-sm font-semibold text-main-black;
+}
+
+/* ===== Placeholder fields (calculated totals) styling ===== */
+.fi-page-standar .fi-fo-placeholder {
+    @apply rounded-xl bg-main-amber/10 px-4 py-3 ring-1 ring-main-accent/40;
+}
+
+.fi-page-standar .fi-fo-placeholder-label {
+    @apply text-sm font-semibold text-main-secondary;
+}
+
+.fi-page-standar .fi-fo-placeholder-value {
+    @apply text-lg font-bold text-main-black mt-1;
+}
+
+/* ===== Tombol dengan lift effect ===== */
+.fi-page-standar .fi-btn {
+    @apply transition-all duration-200;
+}
+
+.fi-page-standar .fi-btn:hover {
+    @apply shadow-md;
+    transform: translateY(-1px);
+}
+
+/* ===== Badge/chip styling ===== */
+.fi-page-standar .fi-badge {
+    @apply font-semibold tracking-wide shadow-sm transition-transform duration-150;
+}
+
+.fi-page-standar a .fi-badge:hover {
+    transform: translateY(-1px) scale(1.03);
+}
+
+/* ===== Tabel list Standar ===== */
+.fi-page-standar .fi-ta-ctn {
+    @apply overflow-hidden rounded-3xl shadow-lg ring-1 ring-black/5;
+}
+
+.fi-page-standar .fi-ta-content-ctn {
+    @apply rounded-3xl;
+}
+
+.fi-page-standar .fi-ta-header-ctn {
+    @apply bg-main-white;
+}
+
+.fi-page-standar .fi-ta-header-heading {
+    @apply text-xl font-bold text-main-black;
+}
+
+.fi-page-standar table.fi-ta-table thead {
+    background: rgba(242, 241, 235, 0.7);
+}
+
+.fi-page-standar .fi-ta-header-cell {
+    @apply text-main-black;
+}
+
+.fi-page-standar .fi-ta-row {
+    @apply transition-colors duration-150;
+}
+
+.fi-page-standar .fi-ta-row:hover {
+    background: rgba(242, 241, 235, 0.45);
+}
+
+/* ===== Filter styling ===== */
+.fi-page-standar .fi-ta-filters-above-content-ctn {
+    @apply border-b border-gray-950/5 bg-main-white p-6;
+}
+
+.fi-page-standar .fi-ta-filters-heading {
+    @apply relative pl-3 text-base font-bold text-main-black;
+}
+
+.fi-page-standar .fi-ta-filters-heading::before {
+    content: '';
+    @apply absolute left-0 top-1/2 h-4 w-1 -translate-y-1/2 rounded-full;
+    background: var(--color-main-amber);
+}
+
+/* ===== Infolist repeater styling (View page) ===== */
+.fi-page-standar .fi-infolist-item-repeater-item-ctn {
+    @apply rounded-2xl border border-main-secondary/20 bg-main-primary/20 p-3 transition-all duration-200;
+}
+
+.fi-page-standar .fi-infolist-item-repeater-item-ctn:hover {
+    @apply border-main-amber/40 bg-main-amber/5;
+}

@@ -1,0 +1,199 @@
+/* Styling khusus resource Peran/Roles (list/create/edit/view) — di-scope ke
+   .fi-page-peran supaya tidak bocor ke halaman lain. Reuse token
+   --color-main-* dari theme.css (@theme, global panel-wide), tapi file ini
+   sengaja mandiri dan terpisah dari CSS halaman login/dashboard/upload-berkas.
+
+   Catatan penting: TIDAK ada CSS `animation` (opacity/transform) permanen di
+   container manapun di file ini — pelajaran dari bug sebelumnya (lihat
+   upload-berkas.css): animation pada opacity/transform bikin elemen jadi
+   stacking context baru secara permanen, menjebak popover/dropdown di
+   dalamnya. Semua efek "hidup" di sini pakai transition + :hover saja. */
+
+/* ===== Background halaman: pola dot halus ===== */
+.fi-page-peran {
+    position: relative;
+}
+
+.fi-page-peran::before {
+    content: '';
+    @apply pointer-events-none absolute inset-0 opacity-[0.05];
+    background-image: radial-gradient(var(--color-main-black) 1px, transparent 1px);
+    background-size: 24px 24px;
+    z-index: -1;
+}
+
+/* ===== Header band: gradient gelap senada halaman lain ===== */
+.fi-page-peran .fi-header {
+    @apply relative mb-6 overflow-hidden rounded-3xl px-8 py-10;
+    background: radial-gradient(
+            circle at 15% 15%,
+            rgba(255, 152, 0, 0.35) 0%,
+            transparent 45%
+        ),
+        linear-gradient(
+            135deg,
+            var(--color-main-black) 0%,
+            #1c1e21 55%,
+            rgba(147, 97, 24, 1) 100%
+        );
+}
+
+.fi-page-peran .fi-header::before {
+    content: '';
+    @apply pointer-events-none absolute inset-0 opacity-[0.08];
+    background-image: repeating-linear-gradient(
+            45deg,
+            var(--color-main-accent) 0,
+            var(--color-main-accent) 1px,
+            transparent 1px,
+            transparent 32px
+        ),
+        repeating-linear-gradient(
+            -45deg,
+            var(--color-main-accent) 0,
+            var(--color-main-accent) 1px,
+            transparent 1px,
+            transparent 32px
+        );
+}
+
+.fi-page-peran .fi-header > * {
+    position: relative;
+    z-index: 1;
+}
+
+.fi-page-peran .fi-header-heading {
+    @apply text-3xl font-extrabold tracking-tight text-main-white;
+    text-shadow: 0 2px 24px rgba(241, 202, 59, 0.4);
+}
+
+.fi-page-peran .fi-header-subheading {
+    @apply mt-1 text-sm text-main-primary/90;
+}
+
+/* ===== Section utama (Informasi Peran) =====
+   Selector ini sengaja generik ".fi-section" (kena semua Section, termasuk
+   yang nested di dalam tab) supaya semua dapat radius+warna dasar yang
+   konsisten; section nested di tab Resources di-override lagi di bawah
+   supaya levelnya lebih ringan (lihat blok "Section nested di dalam Tabs"). */
+.fi-page-peran .fi-section {
+    @apply rounded-3xl bg-main-white shadow-lg ring-1 ring-black/5 transition-shadow duration-200;
+}
+
+.fi-page-peran .fi-section:hover {
+    @apply shadow-xl;
+}
+
+.fi-page-peran .fi-section-header-heading {
+    @apply text-base font-bold text-main-black;
+}
+
+.fi-page-peran .fi-section-header-description {
+    @apply text-sm text-main-secondary;
+}
+
+/* ===== Input focus ring ===== */
+.fi-page-peran .fi-input-wrp {
+    @apply transition-all duration-200;
+
+    &:focus-within {
+        @apply ring-2 ring-main-accent/60;
+    }
+}
+
+/* ===== Tabs (Resources / Pages / Widgets) ===== */
+.fi-page-peran .fi-tabs {
+    @apply mb-4 gap-x-1 rounded-2xl bg-main-white p-1.5 shadow-sm ring-1 ring-black/5;
+}
+
+.fi-page-peran .fi-tabs-item {
+    @apply rounded-xl text-sm font-medium text-main-secondary transition-colors duration-150;
+}
+
+.fi-page-peran .fi-tabs-item:hover {
+    @apply text-main-black;
+}
+
+.fi-page-peran .fi-tabs-item.fi-active {
+    @apply bg-main-black text-main-white shadow-sm;
+}
+
+.fi-page-peran .fi-tabs-item.fi-active svg {
+    color: var(--color-main-amber);
+}
+
+/* ===== Section nested di dalam Tabs (satu per resource Filament) =====
+   Level lebih ringan daripada Section utama: tanpa shadow besar, cuma
+   border tipis, supaya puluhan card ini tidak bikin halaman berat/ramai. */
+.fi-page-peran .fi-tabs .fi-section {
+    @apply rounded-xl bg-main-white/70 shadow-none ring-1 ring-black/5;
+}
+
+.fi-page-peran .fi-tabs .fi-section:hover {
+    @apply shadow-none ring-black/10;
+}
+
+.fi-page-peran .fi-tabs .fi-section-header-heading {
+    @apply text-sm font-semibold text-main-black;
+}
+
+/* ===== CheckboxList (daftar permission) ===== */
+.fi-page-peran .fi-fo-checkbox-list-option {
+    @apply rounded-lg px-2 py-1 transition-colors duration-150;
+}
+
+.fi-page-peran .fi-fo-checkbox-list-option:hover {
+    @apply bg-main-amber/10;
+}
+
+.fi-page-peran .fi-fo-checkbox-list-option input[type='checkbox'] {
+    accent-color: var(--color-main-amber);
+}
+
+.fi-page-peran .fi-fo-checkbox-list-option-label {
+    @apply text-sm text-main-black;
+}
+
+/* ===== Tabel List Peran ===== */
+.fi-page-peran .fi-ta-ctn {
+    @apply overflow-hidden rounded-3xl shadow-lg ring-1 ring-black/5;
+}
+
+.fi-page-peran .fi-ta-header-ctn {
+    @apply bg-main-white;
+}
+
+.fi-page-peran .fi-ta-header-heading {
+    @apply text-xl font-bold text-main-black;
+}
+
+.fi-page-peran table.fi-ta-table thead {
+    background: rgba(242, 241, 235, 0.7);
+}
+
+.fi-page-peran .fi-ta-header-cell {
+    @apply text-main-black;
+}
+
+.fi-page-peran .fi-ta-row {
+    @apply transition-colors duration-150;
+}
+
+.fi-page-peran .fi-ta-row:hover {
+    background: rgba(242, 241, 235, 0.45);
+}
+
+/* ===== Badge (guard_name, permissions_count) ===== */
+.fi-page-peran .fi-badge {
+    @apply font-semibold tracking-wide shadow-sm;
+}
+
+/* ===== Tombol ===== */
+.fi-page-peran .fi-btn {
+    @apply transition-all duration-200;
+}
+
+.fi-page-peran .fi-btn:hover {
+    @apply shadow-md;
+    transform: translateY(-1px);
+}

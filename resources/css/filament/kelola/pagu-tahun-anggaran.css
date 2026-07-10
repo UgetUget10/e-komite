@@ -1,0 +1,194 @@
+/* Styling khusus resource Pagu Tahun Anggaran — di-scope ke
+   .fi-page-pagu-tahun-anggaran supaya tidak bocor ke halaman lain. Reuse token
+   --color-main-* dari theme.css (@theme, global panel-wide).
+
+   Pattern: sesuai dengan upload-berkas.css dengan animated header blob glow,
+   enhanced text shadow, dan interactive hover effects. */
+
+/* ===== Background halaman: pola dot halus ===== */
+.fi-page-pagu-tahun-anggaran {
+    position: relative;
+}
+
+.fi-page-pagu-tahun-anggaran::before {
+    content: '';
+    @apply pointer-events-none absolute inset-0 opacity-[0.05];
+    background-image: radial-gradient(var(--color-main-black) 1px, transparent 1px);
+    background-size: 24px 24px;
+    z-index: -1;
+}
+
+/* ===== Header band: gradient gelap dengan animated blob glow ===== */
+.fi-page-pagu-tahun-anggaran .fi-header {
+    @apply relative mb-6 overflow-hidden rounded-3xl px-8 py-10;
+    background: radial-gradient(
+            circle at 15% 15%,
+            rgba(255, 152, 0, 0.35) 0%,
+            transparent 45%
+        ),
+        linear-gradient(
+            135deg,
+            var(--color-main-black) 0%,
+            #1c1e21 55%,
+            rgba(147, 97, 24, 1) 100%
+        );
+}
+
+/* Animated blob glow (hanya pseudo-element, tidak menjebak popover) */
+@keyframes fi-pagu-tahun-anggaran-blob-pulse {
+    0%, 100% {
+        transform: scale(1) translate(0, 0);
+        opacity: 0.6;
+    }
+    50% {
+        transform: scale(1.2) translate(12px, -8px);
+        opacity: 0.9;
+    }
+}
+
+.fi-page-pagu-tahun-anggaran .fi-header::after {
+    content: '';
+    @apply pointer-events-none absolute -right-10 -top-16 h-56 w-56 rounded-full blur-3xl;
+    background: rgba(255, 152, 0, 0.45);
+    animation: fi-pagu-tahun-anggaran-blob-pulse 8s ease-in-out infinite;
+}
+
+.fi-page-pagu-tahun-anggaran .fi-header::before {
+    content: '';
+    @apply pointer-events-none absolute inset-0 opacity-[0.08];
+    background-image: repeating-linear-gradient(
+            45deg,
+            var(--color-main-accent) 0,
+            var(--color-main-accent) 1px,
+            transparent 1px,
+            transparent 32px
+        ),
+        repeating-linear-gradient(
+            -45deg,
+            var(--color-main-accent) 0,
+            var(--color-main-accent) 1px,
+            transparent 1px,
+            transparent 32px
+        );
+}
+
+.fi-page-pagu-tahun-anggaran .fi-header > * {
+    position: relative;
+    z-index: 1;
+}
+
+.fi-page-pagu-tahun-anggaran .fi-header-heading {
+    @apply text-3xl font-extrabold tracking-tight text-main-white;
+    text-shadow: 0 2px 24px rgba(241, 202, 59, 0.4);
+}
+
+.fi-page-pagu-tahun-anggaran .fi-header-subheading {
+    @apply mt-1 text-sm text-main-primary/90;
+}
+
+/* ===== Section: card styling dengan enhanced hover ===== */
+/* Catatan: TIDAK ada animation (hanya transition) di container interaktif
+   supaya tidak membuat permanent stacking context yang menjebak popover. */
+.fi-page-pagu-tahun-anggaran .fi-section {
+    @apply rounded-3xl bg-main-white shadow-lg ring-1 ring-black/5 transition-shadow duration-200;
+}
+
+.fi-page-pagu-tahun-anggaran .fi-section:hover {
+    @apply shadow-xl;
+}
+
+.fi-page-pagu-tahun-anggaran .fi-section-header {
+    @apply rounded-t-3xl;
+}
+
+.fi-page-pagu-tahun-anggaran .fi-section-header-heading {
+    @apply text-base font-bold text-main-black;
+}
+
+.fi-page-pagu-tahun-anggaran .fi-section-header-description {
+    @apply text-sm text-main-secondary;
+}
+
+/* ===== Input focus ring ===== */
+.fi-page-pagu-tahun-anggaran .fi-input-wrp {
+    @apply transition-all duration-200;
+}
+
+.fi-page-pagu-tahun-anggaran .fi-input-wrp:focus-within {
+    @apply ring-2 ring-main-accent/60;
+}
+
+/* ===== Tombol dengan lift effect ===== */
+.fi-page-pagu-tahun-anggaran .fi-btn {
+    @apply transition-all duration-200;
+}
+
+.fi-page-pagu-tahun-anggaran .fi-btn:hover {
+    @apply shadow-md;
+    transform: translateY(-1px);
+}
+
+/* ===== Badge/chip (status, action links) ===== */
+.fi-page-pagu-tahun-anggaran .fi-badge {
+    @apply font-semibold tracking-wide shadow-sm transition-transform duration-150;
+}
+
+.fi-page-pagu-tahun-anggaran a .fi-badge:hover {
+    transform: translateY(-1px) scale(1.03);
+}
+
+/* ===== Tabel list Pagu Tahun Anggaran ===== */
+.fi-page-pagu-tahun-anggaran .fi-ta-ctn {
+    @apply overflow-hidden rounded-3xl shadow-lg ring-1 ring-black/5;
+}
+
+.fi-page-pagu-tahun-anggaran .fi-ta-content-ctn {
+    @apply rounded-3xl;
+}
+
+.fi-page-pagu-tahun-anggaran .fi-ta-header-ctn {
+    @apply bg-main-white;
+}
+
+.fi-page-pagu-tahun-anggaran .fi-ta-header-heading {
+    @apply text-xl font-bold text-main-black;
+}
+
+.fi-page-pagu-tahun-anggaran table.fi-ta-table thead {
+    background: rgba(242, 241, 235, 0.7);
+}
+
+.fi-page-pagu-tahun-anggaran .fi-ta-header-cell {
+    @apply text-main-black;
+}
+
+.fi-page-pagu-tahun-anggaran .fi-ta-row {
+    @apply transition-colors duration-150;
+}
+
+.fi-page-pagu-tahun-anggaran .fi-ta-row:hover {
+    background: rgba(242, 241, 235, 0.45);
+}
+
+/* ===== Toggle column styling ===== */
+.fi-page-pagu-tahun-anggaran .fi-to {
+    @apply transition-transform duration-200;
+}
+
+.fi-page-pagu-tahun-anggaran .fi-to:hover {
+    transform: scale(1.15);
+}
+
+/* ===== Infolist: kartu Total Nominal Dana ===== */
+.fi-page-pagu-tahun-anggaran .ptha-stat-box {
+    @apply rounded-2xl border border-emerald-200 bg-emerald-50 p-4 transition-all duration-200;
+}
+
+.fi-page-pagu-tahun-anggaran .ptha-stat-box:hover {
+    @apply shadow-md;
+    transform: translateY(-2px);
+}
+
+.fi-page-pagu-tahun-anggaran .ptha-stat-box .fi-in-entry-label {
+    @apply text-xs font-semibold uppercase tracking-wide text-main-secondary;
+}

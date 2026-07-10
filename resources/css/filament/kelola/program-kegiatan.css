@@ -23,14 +23,14 @@
     @apply relative mb-6 overflow-hidden rounded-3xl px-8 py-10;
     background: radial-gradient(
             circle at 15% 15%,
-            color-mix(in srgb, var(--color-main-amber) 35%, transparent) 0%,
+            rgba(255, 152, 0, 0.35) 0%,
             transparent 45%
         ),
         linear-gradient(
             135deg,
             var(--color-main-black) 0%,
             #1c1e21 55%,
-            color-mix(in srgb, var(--color-main-black) 70%, var(--color-main-amber)) 100%
+            rgba(147, 97, 24, 1) 100%
         );
 }
 
@@ -49,7 +49,7 @@
 .fi-page-program-kegiatan .fi-header::after {
     content: '';
     @apply pointer-events-none absolute -right-10 -top-16 h-56 w-56 rounded-full blur-3xl;
-    background: color-mix(in srgb, var(--color-main-amber) 45%, transparent);
+    background: rgba(255, 152, 0, 0.45);
     animation: fi-program-kegiatan-blob-pulse 8s ease-in-out infinite;
 }
 
@@ -79,7 +79,7 @@
 
 .fi-page-program-kegiatan .fi-header-heading {
     @apply text-3xl font-extrabold tracking-tight text-main-white;
-    text-shadow: 0 2px 24px color-mix(in srgb, var(--color-main-accent) 40%, transparent);
+    text-shadow: 0 2px 24px rgba(241, 202, 59, 0.4);
 }
 
 .fi-page-program-kegiatan .fi-header-subheading {
@@ -184,7 +184,7 @@
 }
 
 .fi-page-program-kegiatan table.fi-ta-table thead {
-    background: color-mix(in srgb, var(--color-main-primary) 70%, white);
+    background: rgba(242, 241, 235, 0.7);
 }
 
 .fi-page-program-kegiatan .fi-ta-header-cell {
@@ -196,7 +196,7 @@
 }
 
 .fi-page-program-kegiatan .fi-ta-row:hover {
-    background: color-mix(in srgb, var(--color-main-primary) 45%, white);
+    background: rgba(242, 241, 235, 0.45);
 }
 
 /* ===== Filter styling - sidebar di sebelah kiri tabel (BeforeContent) ===== */
@@ -230,4 +230,68 @@
 
 .fi-page-program-kegiatan .fi-infolist-item-repeater-item-ctn:hover {
     @apply border-main-amber/40 bg-main-amber/5;
+}
+
+/* ===== Infolist section spacing & header (View page) ===== */
+.fi-page-program-kegiatan .fi-in-section + .fi-in-section,
+.fi-page-program-kegiatan .fi-section + .fi-section {
+    @apply mt-6;
+}
+
+.fi-page-program-kegiatan .fi-in-section .fi-section-header-icon,
+.fi-page-program-kegiatan .fi-section-header-icon {
+    @apply text-main-amber;
+}
+
+/* ===== Ringkasan Anggaran: kartu statistik, 3 kolom berjajar ===== */
+.fi-page-program-kegiatan .anggaran-stat-box {
+    @apply h-full w-full rounded-2xl border p-4 transition-all duration-200;
+}
+
+.fi-page-program-kegiatan .anggaran-stat-box:hover {
+    @apply shadow-md;
+    transform: translateY(-2px);
+}
+
+.fi-page-program-kegiatan .anggaran-stat-box .fi-in-entry-label {
+    @apply text-xs font-semibold uppercase tracking-wide text-main-secondary;
+}
+
+.fi-page-program-kegiatan .anggaran-stat-success {
+    @apply border-emerald-200 bg-emerald-50;
+}
+
+.fi-page-program-kegiatan .anggaran-stat-info {
+    @apply border-blue-200 bg-blue-50;
+}
+
+.fi-page-program-kegiatan .anggaran-stat-warning {
+    @apply border-amber-200 bg-amber-50;
+}
+
+.fi-page-program-kegiatan .anggaran-stat-danger {
+    @apply border-rose-200 bg-rose-50;
+}
+
+.fi-page-program-kegiatan .anggaran-stat-gray {
+    @apply border-gray-200 bg-gray-50;
+}
+
+/* ===== Informasi Program: kartu netral, 3 kolom berjajar ===== */
+.fi-page-program-kegiatan .info-stat-box {
+    @apply h-full w-full rounded-2xl border border-main-secondary/20 bg-main-primary/20 p-4 transition-all duration-200;
+}
+
+.fi-page-program-kegiatan .info-stat-box:hover {
+    @apply border-main-amber/40 bg-main-amber/5 shadow-md;
+    transform: translateY(-2px);
+}
+
+.fi-page-program-kegiatan .info-stat-box .fi-in-entry-label {
+    @apply text-xs font-semibold uppercase tracking-wide text-main-secondary;
+}
+
+/* ===== Info Program: kode badge lebih menonjol ===== */
+.fi-page-program-kegiatan .fi-in-entry .fi-badge {
+    @apply text-sm px-3 py-1;
 }

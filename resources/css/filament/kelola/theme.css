@@ -75,17 +75,8 @@
 /* Kiri: panel branding */
 .fi-auth-split-branding {
     @apply relative hidden overflow-hidden lg:flex lg:flex-col lg:justify-center lg:px-16;
-    background: radial-gradient(
-            circle at 15% 15%,
-            color-mix(in srgb, var(--color-main-amber) 35%, transparent) 0%,
-            transparent 45%
-        ),
-        linear-gradient(
-            135deg,
-            var(--color-main-black) 0%,
-            #1c1e21 55%,
-            color-mix(in srgb, var(--color-main-black) 70%, var(--color-main-amber)) 100%
-        );
+    background: radial-gradient(circle at 15% 15%, rgba(255, 152, 0, 0.35) 0%, transparent 45%),
+        linear-gradient(135deg, rgb(40, 43, 47) 0%, #1c1e21 55%, rgba(255, 152, 0, 0.25) 100%);
 }
 
 .fi-auth-split-branding-pattern {
@@ -113,7 +104,7 @@
 .fi-auth-split-brand-wordmark {
     @apply block text-5xl font-extrabold tracking-tight text-main-white;
     letter-spacing: 0.02em;
-    text-shadow: 0 2px 24px color-mix(in srgb, var(--color-main-accent) 40%, transparent);
+    text-shadow: 0 2px 24px rgba(241, 202, 59, 0.4);
 }
 
 .fi-auth-split-brand-tagline {
@@ -144,12 +135,12 @@
 
 .fi-auth-split-form-decor-1 {
     @apply -right-24 -top-24 h-96 w-96;
-    background: color-mix(in srgb, var(--color-main-amber) 22%, transparent);
+    background: rgba(255, 152, 0, 0.22);
 }
 
 .fi-auth-split-form-decor-2 {
     @apply -bottom-32 -left-16 h-80 w-80;
-    background: color-mix(in srgb, var(--color-main-accent) 20%, transparent);
+    background: rgba(241, 202, 59, 0.2);
 }
 
 .fi-auth-split-form-pattern {
