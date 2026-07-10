@@ -165,13 +165,18 @@ body.fi-dashboard-page {
 /* Section header left accent bar (hanya untuk .fi-section, bukan .fi-header) */
 .fi-page-dashboard .fi-section .fi-section-header::before {
     content: '';
-    @apply absolute left-0 top-1 h-6 w-1 rounded-full transition-all duration-300;
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 1px;
+    width: 0.5rem;
     background: var(--color-main-amber);
+    transition: all 0.3s ease;
 }
 
 .fi-page-dashboard .fi-section:hover .fi-section-header::before {
-    width: 1.5px;
-    height: 8px;
+    width: 0.75rem;
     box-shadow: 0 0 8px var(--color-main-amber);
 }
 
