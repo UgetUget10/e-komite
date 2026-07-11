@@ -11,9 +11,15 @@ class BudgetVsRealisasiChart extends ChartWidget
 {
     use ScopesToUserStandar;
 
-    protected ?string $heading = 'Budget vs Realisasi - Trend Bulanan';
+    protected ?string $heading = 'Budget vs Realisasi';
     protected static ?int $sort = 2;
     protected int|string|array $columnSpan = 'full';
+    protected ?string $maxHeight = '320px';
+
+    public function getDescription(): ?string
+    {
+        return 'Perbandingan pagu komite dengan realisasi belanja per bulan pada tahun anggaran berjalan';
+    }
 
     protected function getData(): array
     {
@@ -77,22 +83,32 @@ class BudgetVsRealisasiChart extends ChartWidget
             'labels' => $months,
             'datasets' => [
                 [
-                    'label' => 'Budget Komite (Rp)',
+                    'label' => 'Pagu Komite',
                     'data' => $budgetDataPoints,
-                    'borderColor' => '#FF9800',
-                    'backgroundColor' => 'rgba(255, 152, 0, 0.1)',
+                    'borderColor' => '#F59E0B',
+                    'backgroundColor' => 'rgba(245, 158, 11, 0.08)',
+                    'pointBackgroundColor' => '#F59E0B',
+                    'pointBorderColor' => '#fff',
+                    'pointBorderWidth' => 2,
+                    'pointRadius' => 4,
+                    'pointHoverRadius' => 6,
                     'fill' => true,
                     'tension' => 0.4,
-                    'borderWidth' => 2,
+                    'borderWidth' => 3,
                 ],
                 [
-                    'label' => 'Realisasi (Rp)',
+                    'label' => 'Realisasi',
                     'data' => $realisasiDataPoints,
-                    'borderColor' => '#4CAF50',
-                    'backgroundColor' => 'rgba(76, 175, 80, 0.1)',
+                    'borderColor' => '#10B981',
+                    'backgroundColor' => 'rgba(16, 185, 129, 0.08)',
+                    'pointBackgroundColor' => '#10B981',
+                    'pointBorderColor' => '#fff',
+                    'pointBorderWidth' => 2,
+                    'pointRadius' => 4,
+                    'pointHoverRadius' => 6,
                     'fill' => true,
                     'tension' => 0.4,
-                    'borderWidth' => 2,
+                    'borderWidth' => 3,
                 ],
             ],
         ];
@@ -110,8 +126,23 @@ class BudgetVsRealisasiChart extends ChartWidget
                 'legend' => [
                     'display' => true,
                     'position' => 'top',
+                    'align' => 'end',
+                    'labels' => [
+                        'usePointStyle' => true,
+                        'pointStyle' => 'circle',
+                        'padding' => 20,
+                        'font' => [
+                            'size' => 12,
+                            'weight' => '600',
+                        ],
+                    ],
                 ],
                 'tooltip' => [
+                    'backgroundColor' => 'rgba(17, 24, 39, 0.95)',
+                    'padding' => 12,
+                    'cornerRadius' => 8,
+                    'titleFont' => ['size' => 13, 'weight' => '600'],
+                    'bodyFont' => ['size' => 12],
                     'callbacks' => [
                         'label' => 'function(context) { return context.dataset.label + ": Rp " + new Intl.NumberFormat("id-ID").format(context.parsed.y); }',
                     ],
@@ -120,8 +151,20 @@ class BudgetVsRealisasiChart extends ChartWidget
             'scales' => [
                 'y' => [
                     'beginAtZero' => true,
+                    'grid' => [
+                        'color' => 'rgba(0, 0, 0, 0.05)',
+                    ],
                     'ticks' => [
                         'callback' => 'function(value) { return "Rp " + new Intl.NumberFormat("id-ID", {notation: "compact"}).format(value); }',
+                        'font' => ['size' => 11],
+                    ],
+                ],
+                'x' => [
+                    'grid' => [
+                        'display' => false,
+                    ],
+                    'ticks' => [
+                        'font' => ['size' => 11],
                     ],
                 ],
             ],
