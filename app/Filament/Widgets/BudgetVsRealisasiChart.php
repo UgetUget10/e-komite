@@ -81,8 +81,7 @@ class BudgetVsRealisasiChart extends Widget
         // Get monthly budget data
         $budgetQuery = ProgramKegiatan::query()
             ->selectRaw('MONTH(created_at) as bulan, SUM(pagu_komite) as total', [])
-            ->where('fk_id_pagu_tahun_anggaran', $tahunAktif->id)
-            ->whereNull('deleted_at');
+            ->where('fk_id_pagu_tahun_anggaran', $tahunAktif->id);
 
         if (!$isPrivileged && !empty($allowedStandarIds)) {
             $budgetQuery->whereIn('id_standar', $allowedStandarIds);

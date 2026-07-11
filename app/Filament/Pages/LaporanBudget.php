@@ -84,8 +84,7 @@ class LaporanBudget extends Page
 
         // Get all programs
         $query = ProgramKegiatan::query()
-            ->where('fk_id_pagu_tahun_anggaran', $this->tahunAktif->id)
-            ->whereNull('deleted_at');
+            ->where('fk_id_pagu_tahun_anggaran', $this->tahunAktif->id);
 
         if (!$isPrivileged && !empty($allowedStandarIds)) {
             $query->whereIn('id_standar', $allowedStandarIds);

@@ -33,8 +33,7 @@ class BudgetAlertWidget extends Widget
         // Get all programs with spending info
         $query = ProgramKegiatan::query()
             ->with('realisasi')
-            ->where('fk_id_pagu_tahun_anggaran', $tahunAktif->id)
-            ->whereNull('deleted_at');
+            ->where('fk_id_pagu_tahun_anggaran', $tahunAktif->id);
 
         if (!$isPrivileged && !empty($allowedStandarIds)) {
             $query->whereIn('id_standar', $allowedStandarIds);
