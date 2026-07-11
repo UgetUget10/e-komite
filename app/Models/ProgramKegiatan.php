@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Standar;
 use App\Models\PaguTahunAnggaran;
+use App\Models\RealisasiNominal;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -55,6 +56,11 @@ class ProgramKegiatan extends Model
     public function uraianProgram()
     {
         return $this->hasMany(UraianProgram::class, 'id_program_kegiatan');
+    }
+
+    public function realisasi()
+    {
+        return $this->hasMany(RealisasiNominal::class, 'fk_id_program_kegiatan', 'id');
     }
 
     protected static function booted()
