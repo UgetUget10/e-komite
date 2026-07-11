@@ -3,9 +3,19 @@
 namespace App\Filament\Resources\RealisasiNominals\Schemas;
 
 use Filament\Schemas\Schema;
-use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Textarea;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\View;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class RealisasiNominalForm
 {
@@ -13,69 +23,257 @@ class RealisasiNominalForm
     {
         return $schema
             ->components([
+                Section::make('Pilih Program')
+                    ->description('Pilih standar dan kode program kegiatan — data program akan terisi otomatis')
+                    ->icon('heroicon-o-link')
+                    ->schema([
+                        Select::make('fk_id_pagu_tahun_anggaran')
+                            ->label('Tahun Anggaran (Aktif)')
+                            ->prefixIcon('heroicon-o-calendar')
+                            ->options(function () {
+                                return \App\Models\PaguTahunAnggaran::where('status_aktif', 1)
+                                    ->pluck('tahun', 'id');
+                            })
+                            ->default(function () {
+                                return \App\Models\PaguTahunAnggaran::where('status_aktif', 1)->value('id');
+                            })
+                            ->required()
+                            ->disabled()
+                            ->dehydrated(false)
+                            ->reactive(),
 
-                Select::make('fk_id_pagu_tahun_anggaran')
-                    ->label('Tahun Anggaran (Aktif)')
-                    ->options(function () {
-                        return \App\Models\PaguTahunAnggaran::where('status_aktif', 1)
-                            ->pluck('tahun', 'id');
-                    })
-                    ->default(function () {
-                        return \App\Models\PaguTahunAnggaran::where('status_aktif', 1)->value('id');
-                    })
-                    ->required()
-                    ->disabled()
-                    ->dehydrated(false) // jangan kirim ini (karena Hidden yang mengirim)
-                    ->reactive(),
+                        Select::make('fk_id_standar')
+                            ->label('Standar')
+                            ->prefixIcon('heroicon-o-building-library')
+                            ->options(function () {
+                                $user = auth()->user();
+                                if ($user->hasRole('Super Admin')) {
+                                    return \App\Models\Standar::pluck('nama_standar', 'id');
+                                } else {
+                                    return $user->standars()->pluck('nama_standar', 'id');
+                                }
+                            })
+                            ->searchable()
+                            ->preload()
+                            ->required()
+                            ->reactive()
+                            ->afterStateUpdated(function (callable $set) {
+                                $set('fk_id_program_kegiatan_kode', null);
+                                $set('fk_id_program_kegiatan', null);
+                            }),
 
+                        Select::make('fk_id_program_kegiatan_kode')
+                            ->label('Kode Program Kegiatan')
+                            ->prefixIcon('heroicon-o-hashtag')
+                            ->options(function (callable $get) {
+                                $standarId = $get('fk_id_standar');
+                                $paguId = $get('fk_id_pagu_tahun_anggaran');
 
-                Select::make('fk_id_standar')
-                    ->label('Standar')
-                    ->relationship('standar', 'nama_standar')
-                    ->searchable()
-                    ->preload()
-                    ->reactive()
-                    ->required()
-                    // ❗ reset fk_id_program_kegiatan saat standar berubah
-                    ->afterStateUpdated(function (callable $set) {
-                        $set('fk_id_program_kegiatan', null);
-                    }),
+                                if (!$standarId || !$paguId) {
+                                    return [];
+                                }
 
-                Select::make('fk_id_program_kegiatan')
-                    ->label('Program Kegiatan')
-                    ->options(function (callable $get) {
-                        $standarId = $get('fk_id_standar');
-                        $paguId    = $get('fk_id_pagu_tahun_anggaran');
+                                return \App\Models\ProgramKegiatan::where('id_standar', $standarId)
+                                    ->where('fk_id_pagu_tahun_anggaran', $paguId)
+                                    ->get()
+                                    ->mapWithKeys(function ($program) {
+                                        return [$program->id => $program->kode_lengkap];
+                                    });
+                            })
+                            ->searchable()
+                            ->preload()
+                            ->required()
+                            ->reactive()
+                            ->afterStateHydrated(function (callable $set, $record) {
+                                if ($record && $record->fk_id_program_kegiatan) {
+                                    $set('fk_id_program_kegiatan_kode', $record->fk_id_program_kegiatan);
 
-                        if (!$standarId || !$paguId) {
-                            return [];
-                        }
+                                    $program = \App\Models\ProgramKegiatan::find($record->fk_id_program_kegiatan);
+                                    $set('program_kegiatan_display', $program?->judul_program ?? '');
 
-                        return \App\Models\ProgramKegiatan::where('id_standar', $standarId)
-                            ->where('fk_id_pagu_tahun_anggaran', $paguId)
-                            ->pluck('judul_program', 'id');
-                    })
-                    ->reactive()
-                    ->required()
-                    ->searchable()
-                    ->preload(),
+                                    // Get pagu komite
+                                    $paguKomite = (float) ($program?->pagu_komite ?? 0);
+                                    $set('pagu_komite_display', $paguKomite);
 
+                                    // Get realisasi existing
+                                    $realisasiExisting = \App\Models\RealisasiNominal::where('fk_id_program_kegiatan', $record->fk_id_program_kegiatan)
+                                        ->whereNull('deleted_at')
+                                        ->sum('nominal');
+                                    $set('realisasi_existing_display', $realisasiExisting);
 
-                Select::make('fk_id_realisasi_bulan')
-                    ->label('Di realisasikan pada bulan')
-                    ->relationship(
-                        'bulan',
-                        'nama_bulan',
-                        modifyQueryUsing: fn($query) => $query->orderBy('created_at', 'asc')
-                    )
-                    ->searchable()
-                    ->preload()
-                    ->required(),
+                                    // Calculate sisa anggaran
+                                    $sisaAnggaran = $paguKomite - $realisasiExisting;
+                                    $set('sisa_anggaran_display', $sisaAnggaran);
+                                }
+                            })
+                            ->afterStateUpdated(function (callable $set, $state) {
+                                $set('fk_id_program_kegiatan', $state);
 
-                TextInput::make('nominal')
-                    ->required()
-                    ->numeric()
-                    ->default(0),
+                                if ($state) {
+                                    $program = \App\Models\ProgramKegiatan::find($state);
+                                    $set('program_kegiatan_display', $program?->judul_program ?? '');
+
+                                    // Get pagu komite
+                                    $paguKomite = (float) ($program?->pagu_komite ?? 0);
+                                    $set('pagu_komite_display', $paguKomite);
+
+                                    // Get realisasi existing
+                                    $realisasiExisting = \App\Models\RealisasiNominal::where('fk_id_program_kegiatan', $state)
+                                        ->whereNull('deleted_at')
+                                        ->sum('nominal');
+                                    $set('realisasi_existing_display', $realisasiExisting);
+
+                                    // Calculate sisa anggaran
+                                    $sisaAnggaran = $paguKomite - $realisasiExisting;
+                                    $set('sisa_anggaran_display', $sisaAnggaran);
+                                } else {
+                                    $set('program_kegiatan_display', '');
+                                    $set('pagu_komite_display', null);
+                                    $set('realisasi_existing_display', 0);
+                                    $set('sisa_anggaran_display', null);
+                                }
+                            }),
+
+                        TextInput::make('program_kegiatan_display')
+                            ->label('Program Kegiatan (Otomatis)')
+                            ->prefixIcon('heroicon-o-clipboard-document-list')
+                            ->readOnly()
+                            ->dehydrated(false)
+                            ->reactive(),
+
+                        TextInput::make('pagu_komite_display')
+                            ->label('Pagu Komite')
+                            ->prefixIcon('heroicon-o-currency-dollar')
+                            ->prefix('Rp')
+                            ->readOnly()
+                            ->dehydrated(false)
+                            ->reactive()
+                            ->formatStateUsing(function ($state) {
+                                return $state ? number_format($state, 0, ',', '.') : '-';
+                            }),
+
+                        TextInput::make('realisasi_existing_display')
+                            ->label('Realisasi Sudah Ada')
+                            ->prefixIcon('heroicon-o-chart-bar')
+                            ->prefix('Rp')
+                            ->readOnly()
+                            ->dehydrated(false)
+                            ->reactive()
+                            ->formatStateUsing(function ($state) {
+                                return $state ? number_format($state, 0, ',', '.') : '0';
+                            }),
+
+                        TextInput::make('sisa_anggaran_display')
+                            ->label('Sisa Anggaran')
+                            ->prefixIcon('heroicon-o-banknotes')
+                            ->prefix('Rp')
+                            ->readOnly()
+                            ->dehydrated(false)
+                            ->reactive()
+                            ->formatStateUsing(function ($state) {
+                                return $state ? number_format($state, 0, ',', '.') : '-';
+                            })
+                            ->helperText('Sisa anggaran = Pagu Komite - Realisasi Sudah Ada'),
+
+                        Hidden::make('fk_id_program_kegiatan')
+                            ->required(),
+                    ])
+                    ->columns(3)
+                    ->columnSpanFull(),
+
+                Section::make('Detail Realisasi')
+                    ->icon('heroicon-o-banknotes')
+                    ->schema([
+                        DatePicker::make('tanggal_realisasi')
+                            ->label('Tanggal Realisasi')
+                            ->prefixIcon('heroicon-o-calendar-days')
+                            ->native(false)
+                            ->displayFormat('d/m/Y')
+                            ->default(now())
+                            ->required(),
+
+                        TextInput::make('nominal')
+                            ->label('Nominal Realisasi')
+                            ->prefix('Rp')
+                            ->required()
+                            ->numeric()
+                            ->default(0),
+
+                        Textarea::make('keterangan')
+                            ->label('Keterangan Realisasi')
+                            ->placeholder('Tambahkan keterangan realisasi (opsional)')
+                            ->rows(3)
+                            ->columnSpanFull(),
+                    ])
+                    ->columns(2)
+                    ->columnSpanFull(),
+
+                Section::make('Dokumen Pendukung')
+                    ->icon('heroicon-o-document-arrow-up')
+                    ->schema([
+                        FileUpload::make('dokumen')
+                            ->label('Upload Dokumen (PDF)')
+                            ->acceptedFileTypes(['application/pdf'])
+                            ->maxSize(10240) // 10MB
+                            ->required(false)
+                            ->disk('public')
+                            ->directory('realisasi-nominal-dokumen')
+                            ->visibility('public')
+                            ->downloadable()
+                            ->openable()
+                            ->multiple(false)
+                            ->helperText('Format: PDF | Ukuran maksimal: 10MB')
+                            ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file, Get $get): string {
+                                $standarNama = \App\Models\Standar::whereKey($get('fk_id_standar'))
+                                    ->value('nama_standar') ?? 'standar';
+
+                                $programNama = \App\Models\ProgramKegiatan::whereKey($get('fk_id_program_kegiatan'))
+                                    ->value('judul_program') ?? 'program-kegiatan';
+
+                                $tanggal = $get('tanggal_realisasi');
+                                $tanggalSlug = $tanggal
+                                    ? \Illuminate\Support\Carbon::parse($tanggal)->format('d-m-Y')
+                                    : now()->format('d-m-Y');
+
+                                $baseName = collect([
+                                    'Realisasi',
+                                    Str::slug($standarNama),
+                                    Str::slug($programNama),
+                                    $tanggalSlug,
+                                ])->implode('_');
+
+                                $extension = $file->getClientOriginalExtension();
+                                $filename = "{$baseName}.{$extension}";
+
+                                $disk = Storage::disk('public');
+                                $counter = 2;
+
+                                while ($disk->exists('realisasi-nominal-dokumen/'.$filename)) {
+                                    $filename = "{$baseName}-{$counter}.{$extension}";
+                                    $counter++;
+                                }
+
+                                return $filename;
+                            })
+                            ->deleteUploadedFileUsing(function (string $file): void {
+                                Storage::disk('public')->delete($file);
+                            })
+                            ->columnSpanFull(),
+
+                        View::make('filament.upload-berkas.berkas-preview')
+                            ->viewData(function (Get $get, ?Model $record) {
+                                $path = $get('dokumen');
+                                $hasExisting = $record && is_string($path) && filled($path);
+
+                                return [
+                                    'existingUrl' => $hasExisting ? Storage::disk('public')->url($path) : null,
+                                    'existingIsPdf' => $hasExisting,
+                                    'showFallbackLink' => true,
+                                ];
+                            })
+                            ->columnSpanFull(),
+                    ])
+                    ->columnSpanFull(),
             ]);
     }
 }
