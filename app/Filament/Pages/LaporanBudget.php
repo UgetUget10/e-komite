@@ -82,8 +82,9 @@ class LaporanBudget extends Page
         $isPrivileged = $this->isPrivilegedUser();
         $allowedStandarIds = $this->allowedStandarIds();
 
-        // Get all programs
+        // Get all programs with eager load standar
         $query = ProgramKegiatan::query()
+            ->with('standar')
             ->where('fk_id_pagu_tahun_anggaran', $this->tahunAktif->id);
 
         if (!$isPrivileged && !empty($allowedStandarIds)) {
