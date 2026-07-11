@@ -13,6 +13,11 @@ class ListProgramKegiatans extends ListRecords
 {
     protected static string $resource = ProgramKegiatanResource::class;
 
+    public function getPageClasses(): array
+    {
+        return ['fi-page-program-kegiatan'];
+    }
+
     protected function getHeaderActions(): array
     {
         return [

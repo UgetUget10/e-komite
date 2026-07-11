@@ -10,6 +10,11 @@ class ViewRealisasiNominal extends ViewRecord
 {
     protected static string $resource = RealisasiNominalResource::class;
 
+    public function getPageClasses(): array
+    {
+        return ['fi-page-realisasi-nominal'];
+    }
+
     protected function getHeaderActions(): array
     {
         return [

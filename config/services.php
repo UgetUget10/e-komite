@@ -35,4 +35,11 @@ return [
         ],
     ],
 
+    'rclone' => [
+        'binary' => env('RCLONE_BINARY_PATH', 'rclone'),
+        'remote' => env('RCLONE_REMOTE_NAME', 'gdrive'),
+        'root_folder' => env('RCLONE_ROOT_FOLDER', ''),
+        'config_path' => env('RCLONE_CONFIG_PATH'),
+    ],
+
 ];

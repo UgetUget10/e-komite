@@ -11,6 +11,11 @@ class EditPaguTahunAnggaran extends EditRecord
 {
     protected static string $resource = PaguTahunAnggaranResource::class;
 
+    public function getPageClasses(): array
+    {
+        return ['fi-page-pagu-tahun-anggaran'];
+    }
+
     protected function getRedirectUrl(): string
     {
         return $this->getResource()::getUrl('index');

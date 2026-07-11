@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use App\Filament\Widgets\Concerns\ScopesToUserStandar;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Facades\DB;
@@ -9,6 +10,8 @@ use Illuminate\Support\Facades\Auth;
 
 class PaguAnggaranOverview extends BaseWidget
 {
+    use ScopesToUserStandar;
+
     protected static ?int $sort = 1;
     protected int|string|array $columnSpan = 'full';
 
@@ -17,12 +20,20 @@ class PaguAnggaranOverview extends BaseWidget
         return 3;
     }
 
+    protected function getHeading(): ?string
+    {
+        return 'Ringkasan Anggaran';
+    }
+
+    protected function getDescription(): ?string
+    {
+        return 'Kondisi pendapatan dan keperluan dana tahun anggaran berjalan';
+    }
+
     protected function getStats(): array
     {
-        $user = Auth::user();
-        $isSuperAdmin = $user->hasRole('Super Admin');
-        $isPelaksanaKomite = $user->hasRole('Pelaksana Komite'); // Sesuaikan jika nama role berbeda
-        $isPrivileged = $isSuperAdmin || $isPelaksanaKomite;
+        $isPrivileged = $this->isPrivilegedUser();
+        $allowedStandarIds = $this->allowedStandarIds();
 
         // Ambil pagu aktif atau terbaru
         $pagu = DB::table('komite.tb_pagu_tahun_anggaran')
@@ -41,8 +52,9 @@ class PaguAnggaranOverview extends BaseWidget
                     ->description('Belum ada pagu anggaran')
                     ->descriptionIcon('heroicon-m-exclamation-triangle')
                     ->color('danger'),
-                Stat::make('Total Keperluan Dana', 'Rp. 0'),
-                Stat::make('Sisa Anggaran', 'Rp. 0'),
+                Stat::make('Total Keperluan Dana', 'Rp 0'),
+                Stat::make('Execution Rate', '-'),
+                Stat::make('Sisa Anggaran', 'Rp 0'),
             ];
         }
 
@@ -51,78 +63,65 @@ class PaguAnggaranOverview extends BaseWidget
         $isAktif   = $pagu->status_aktif == 1;
 
         // Format rupiah
-        $format = fn($value) => 'Rp. ' . number_format($value, 0, ',', '.');
+        $format = fn($value) => 'Rp ' . number_format($value, 0, ',', '.');
 
         // Base query program kegiatan untuk pagu aktif
         $baseQuery = DB::table('komite.tb_program_kegiatan')
             ->where('fk_id_pagu_tahun_anggaran', $pagu->id);
 
         if ($isPrivileged) {
-            // SUPER ADMIN / PELAKSANA KOMITE
+            // SUPER ADMIN / PELAKSANA KOMITE / KEPALA MADRASAH
             $paguDiajukan = $baseQuery->sum(DB::raw('pagu_dipa + pagu_komite')) ?? 0;
-
             $descDiajukan = 'Semua Standar';
             $iconDiajukan = 'heroicon-m-shield-check';
             $colorDiajukan = 'success';
         } else {
-            // USER BIASA → Hanya pagu_komite dan sisa dari field
-            $handledStandarIds = DB::table('komite.tb_standar_user')
-                ->where('user_id', $user->id)
-                ->pluck('standar_id')
-                ->toArray();
-
-            if (empty($handledStandarIds)) {
+            // USER RESTRICTED → Hanya data Standar yang di-assign
+            if (empty($allowedStandarIds)) {
                 $paguDiajukan = 0;
-
                 $descDiajukan = 'Tidak ada akses standar';
                 $iconDiajukan = 'heroicon-m-lock-closed';
                 $colorDiajukan = 'gray';
             } else {
-                $allowedProgramIds = DB::table('komite.tb_uraian_program')
-                    ->whereIn('id_standar', $handledStandarIds)
-                    ->distinct()
-                    ->pluck('id_program_kegiatan')
-                    ->toArray();
-
-                if (empty($allowedProgramIds)) {
-                    $paguDiajukan = 0;
-
-                    $descDiajukan = 'Standar Anda (belum ada program)';
-                    $iconDiajukan = 'heroicon-m-information-circle';
-                    $colorDiajukan = 'warning';
-                } else {
-                    $filteredQuery = $baseQuery->whereIn('id', $allowedProgramIds);
-
-                    $paguDiajukan = $filteredQuery->sum('pagu_komite') ?? 0; // Hanya pagu_komite
-
-                    $descDiajukan = 'Standar Anda';
-                    $iconDiajukan = 'heroicon-m-arrow-up-tray';
-                    $colorDiajukan = 'primary';
-                }
+                $filteredQuery = $baseQuery->whereIn('id_standar', $allowedStandarIds);
+                $paguDiajukan = $filteredQuery->sum('pagu_komite') ?? 0;
+                $descDiajukan = 'Standar Anda';
+                $iconDiajukan = 'heroicon-m-arrow-up-tray';
+                $colorDiajukan = 'primary';
             }
         }
 
-        // Sisa Anggaran = Total Pendapatan - Total Keperluan Dana (sama untuk semua role)
+        // Sisa Anggaran
         $sisaAnggaran = $totalPagu - $paguDiajukan;
         $descSisa = $sisaAnggaran < 0 ? 'Melebihi Anggaran!' : ($sisaAnggaran == 0 ? 'Habis' : 'Tersedia');
         $iconSisa = $sisaAnggaran < 0 ? 'heroicon-m-exclamation-triangle' : ($sisaAnggaran == 0 ? 'heroicon-m-minus-circle' : 'heroicon-m-banknotes');
         $colorSisa = $sisaAnggaran < 0 ? 'danger' : ($sisaAnggaran == 0 ? 'warning' : 'success');
 
+        $colorPendapatan = $isAktif ? 'success' : 'warning';
+
         return [
             Stat::make("Total Pendapatan {$tahun}", $format($totalPagu))
                 ->description($isAktif ? 'Aktif' : 'Tidak Aktif')
                 ->descriptionIcon($isAktif ? 'heroicon-m-check-circle' : 'heroicon-m-x-circle')
-                ->color($isAktif ? 'success' : 'warning'),
+                ->icon('heroicon-o-banknotes')
+                ->color($colorPendapatan)
+                ->extraAttributes(['style' => "--stat-accent: var(--color-{$colorPendapatan}-500);"]),
 
             Stat::make('Total Keperluan Dana', $format($paguDiajukan))
                 ->description($descDiajukan)
                 ->descriptionIcon($iconDiajukan)
-                ->color($colorDiajukan),
+                ->icon('heroicon-o-calculator')
+                ->color($colorDiajukan)
+                ->url(route('filament.kelola.pages.reka-pagu-standar'))
+                ->extraAttributes(['style' => "--stat-accent: var(--color-{$colorDiajukan}-500);"])
+                ->extraAttributes(['class' => 'cursor-pointer hover:scale-105 transition-transform']),
 
             Stat::make('Sisa Anggaran', $format($sisaAnggaran))
                 ->description($descSisa)
                 ->descriptionIcon($iconSisa)
-                ->color($colorSisa),
+                ->icon('heroicon-o-scale')
+                ->color($colorSisa)
+                ->extraAttributes(['style' => "--stat-accent: var(--color-{$colorSisa}-500);"]),
         ];
     }
 }

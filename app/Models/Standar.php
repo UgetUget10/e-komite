@@ -20,6 +20,7 @@ class Standar extends Model
 
     protected $fillable = [
         'nama_standar',
+        'kode',
     ];
 
 

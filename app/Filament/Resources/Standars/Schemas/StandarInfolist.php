@@ -14,6 +14,9 @@ class StandarInfolist
                 TextEntry::make('id')
                     ->label('ID'),
                 TextEntry::make('nama_standar'),
+                TextEntry::make('kode')
+                    ->label('Kode Standar')
+                    ->placeholder('-'),
                 TextEntry::make('created_at')
                     ->dateTime()
                     ->placeholder('-'),

@@ -10,6 +10,11 @@ class ViewPaguTahunAnggaran extends ViewRecord
 {
     protected static string $resource = PaguTahunAnggaranResource::class;
 
+    public function getPageClasses(): array
+    {
+        return ['fi-page-pagu-tahun-anggaran'];
+    }
+
     protected function getHeaderActions(): array
     {
         return [

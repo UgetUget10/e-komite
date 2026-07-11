@@ -64,7 +64,7 @@ class StandarPaguOverview extends BaseWidget
                 DB::raw('COUNT(pk.id) as jumlah_program'),
                 DB::raw('COALESCE(SUM(pk.pagu_komite), 0) as total_pagu')
             )
-            ->when(!$isSuperAdmin && $allowedStandarIds, fn($q) => $q->whereIn('s.id', $allowedStandarIds))
+            ->when(!is_null($allowedStandarIds), fn($q) => $q->whereIn('s.id', $allowedStandarIds))
             ->groupBy('s.id', 's.nama_standar')
             ->orderBy('s.nama_standar')
             ->get();
@@ -74,7 +74,7 @@ class StandarPaguOverview extends BaseWidget
             ->where('rn.fk_id_pagu_tahun_anggaran', $tahunAktifId)
             ->whereNull('rn.deleted_at') // Exclude soft-deleted realisasi
             ->select('rn.fk_id_standar', DB::raw('COALESCE(SUM(rn.nominal), 0) as total_realisasi'))
-            ->when(!$isSuperAdmin && $allowedStandarIds, fn($q) => $q->whereIn('rn.fk_id_standar', $allowedStandarIds))
+            ->when(!is_null($allowedStandarIds), fn($q) => $q->whereIn('rn.fk_id_standar', $allowedStandarIds))
             ->groupBy('rn.fk_id_standar')
             ->pluck('total_realisasi', 'fk_id_standar');
 
@@ -85,25 +85,43 @@ class StandarPaguOverview extends BaseWidget
             $sisaStandar = $item->total_pagu - $totalRealisasi;
 
             $icon = $this->getIconByStandar($item->nama_standar);
+            $detailUrl = \App\Filament\Pages\DetailKeperluanDana::getUrl(['standarId' => $item->id]);
+            $color = $this->getColorByStandar($item->nama_standar);
+            $accentHex = $this->getAccentHex($color);
+
+            $persenRealisasi = $item->total_pagu > 0
+                ? min(100, round(($totalRealisasi / $item->total_pagu) * 100))
+                : 0;
+
+            $progressBar = "<div class=\"stat-progress-track\">"
+                . "<div class=\"stat-progress-fill\" style=\"width: {$persenRealisasi}%; background: {$accentHex};\"></div>"
+                . "</div>"
+                . "<div class=\"stat-progress-label\">{$persenRealisasi}% terealisasi</div>";
+
             $descText = new HtmlString(
+                $progressBar .
                 "Realisasi: Rp " . number_format($totalRealisasi, 0, ',', '.') .
                 "<br>Sisa: Rp " . number_format($sisaStandar, 0, ',', '.') .
-                "<br>{$item->jumlah_program} program {$icon}"
+                "<br>{$item->jumlah_program} program {$icon}" .
+                "<br><a href=\"{$detailUrl}\" class=\"inline-flex items-center gap-1 mt-1 text-xs font-semibold text-primary-600 hover:underline\">Lihat Detail &rarr;</a>"
             );
 
             $cards[] = Stat::make("Keperluan Dana " . $item->nama_standar, 'Rp. ' . number_format($item->total_pagu, 0, ',', '.'))
                 ->description($descText)
-                ->color($this->getColorByStandar($item->nama_standar));
+                ->color($color)
+                ->extraAttributes(['style' => "--stat-accent: {$this->getAccentHex($color)};"]);
         }
 
         return $cards;
     }
 
-    private function getTahunAktifId(): ?int
+    private function getTahunAktifId(): ?string
     {
         // Query langsung tanpa cache untuk selalu ambil tahun aktif terbaru
-        $id = DB::table('komite.tb_pagu_tahun_anggaran')->where('status_aktif', 1)->value('id');
-        return $id !== null ? (int) $id : null;
+        // id adalah UUID (string), jangan di-cast ke int — UUID v7 yang dibuat
+        // berdekatan waktu bisa punya digit awal sama sehingga (int) cast
+        // membuat tahun anggaran berbeda dianggap sama.
+        return DB::table('komite.tb_pagu_tahun_anggaran')->where('status_aktif', 1)->value('id');
     }
 
     private function getColorByStandar(string $nama): string
@@ -118,6 +136,21 @@ class StandarPaguOverview extends BaseWidget
             str_contains($nama, 'Kelulusan')    => 'emerald',
             str_contains($nama, 'Pembiayaan')   => 'amber',
             default                             => 'gray',
+        };
+    }
+
+    private function getAccentHex(string $color): string
+    {
+        return match ($color) {
+            'success' => '#10b981',
+            'info' => '#3b82f6',
+            'warning' => '#f59e0b',
+            'danger' => '#ef4444',
+            'primary' => '#f59e0b',
+            'rose' => '#f43f5e',
+            'emerald' => '#10b981',
+            'amber' => '#f59e0b',
+            default => '#9ca3af',
         };
     }
 

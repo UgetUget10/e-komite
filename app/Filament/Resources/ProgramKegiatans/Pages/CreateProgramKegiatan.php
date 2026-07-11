@@ -11,6 +11,11 @@ class CreateProgramKegiatan extends CreateRecord
 {
     protected static string $resource = ProgramKegiatanResource::class;
 
+    public function getPageClasses(): array
+    {
+        return ['fi-page-program-kegiatan'];
+    }
+
     /**
      * Nonaktifkan tombol "Create & create another"
      */

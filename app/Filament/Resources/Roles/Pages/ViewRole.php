@@ -18,4 +18,9 @@ class ViewRole extends ViewRecord
             EditAction::make(),
         ];
     }
+
+    public function getPageClasses(): array
+    {
+        return ['fi-page-peran'];
+    }
 }

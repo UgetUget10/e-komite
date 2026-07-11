@@ -10,6 +10,11 @@ class ViewRealisasiBulan extends ViewRecord
 {
     protected static string $resource = RealisasiBulanResource::class;
 
+    public function getPageClasses(): array
+    {
+        return ['fi-page-realisasi-bulan'];
+    }
+
     protected function getHeaderActions(): array
     {
         return [

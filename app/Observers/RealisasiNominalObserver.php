@@ -2,6 +2,7 @@
 
 namespace App\Observers;
 
+use App\Jobs\UploadRealisasiDokumenToGoogleDrive;
 use App\Models\RealisasiNominal;
 use App\Models\ProgramKegiatan;
 use Illuminate\Support\Facades\Log;
@@ -11,6 +12,10 @@ class RealisasiNominalObserver
     public function created(RealisasiNominal $realisasi)
     {
         $this->updateProgram($realisasi->fk_id_program_kegiatan);
+
+        if (filled($realisasi->dokumen)) {
+            UploadRealisasiDokumenToGoogleDrive::dispatch($realisasi->id);
+        }
     }
 
     public function updated(RealisasiNominal $realisasi)
@@ -22,6 +27,10 @@ class RealisasiNominalObserver
         }
 
         $this->updateProgram($realisasi->fk_id_program_kegiatan);
+
+        if ($realisasi->wasChanged('dokumen') && filled($realisasi->dokumen)) {
+            UploadRealisasiDokumenToGoogleDrive::dispatch($realisasi->id);
+        }
     }
 
     public function deleted(RealisasiNominal $realisasi)

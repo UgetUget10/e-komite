@@ -21,6 +21,10 @@ class StandarsTable
                 TextColumn::make('nama_standar')
                     ->searchable(),
 
+                TextColumn::make('kode')
+                    ->label('Kode Standar')
+                    ->searchable(),
+
                 TextColumn::make('users.name')
                     ->label('Penanggung Jawab')
                     ->searchable(),

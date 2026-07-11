@@ -18,4 +18,9 @@ class ListRoles extends ListRecords
             CreateAction::make(),
         ];
     }
+
+    public function getPageClasses(): array
+    {
+        return ['fi-page-peran'];
+    }
 }

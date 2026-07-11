@@ -58,4 +58,9 @@ class EditRole extends EditRecord
     {
         return $this->getResource()::getUrl('index');
     }
+
+    public function getPageClasses(): array
+    {
+        return ['fi-page-peran'];
+    }
 }

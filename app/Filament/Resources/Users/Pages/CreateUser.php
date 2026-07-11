@@ -9,6 +9,11 @@ class CreateUser extends CreateRecord
 {
     protected static string $resource = UserResource::class;
 
+    public function getPageClasses(): array
+    {
+        return ['fi-page-user'];
+    }
+
     protected function getRedirectUrl(): string
     {
         return $this->getResource()::getUrl('index');

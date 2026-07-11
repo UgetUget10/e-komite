@@ -11,6 +11,10 @@ class EditUraianProgram extends EditRecord
 {
     protected static string $resource = UraianProgramResource::class;
 
+    public function getPageClasses(): array
+    {
+        return ['fi-page-uraian-program'];
+    }
 
     protected function getRedirectUrl(): string
     {

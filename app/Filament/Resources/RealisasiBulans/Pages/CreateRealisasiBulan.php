@@ -8,4 +8,9 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateRealisasiBulan extends CreateRecord
 {
     protected static string $resource = RealisasiBulanResource::class;
+
+    public function getPageClasses(): array
+    {
+        return ['fi-page-realisasi-bulan'];
+    }
 }

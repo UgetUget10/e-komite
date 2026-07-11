@@ -48,4 +48,9 @@ class CreateRole extends CreateRecord
     {
         return $this->getResource()::getUrl('index');
     }
+
+    public function getPageClasses(): array
+    {
+        return ['fi-page-peran'];
+    }
 }

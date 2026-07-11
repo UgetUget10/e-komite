@@ -18,4 +18,11 @@ class RealisasiBulan extends Model
     protected $fillable = [
         'nama_bulan',
     ];
+
+    public static function fromDate(\DateTimeInterface|string $date): self
+    {
+        $namaBulan = \Illuminate\Support\Carbon::parse($date)->translatedFormat('F');
+
+        return static::firstOrCreate(['nama_bulan' => $namaBulan]);
+    }
 }

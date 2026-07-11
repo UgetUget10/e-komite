@@ -3,13 +3,10 @@
 namespace App\Providers\Filament;
 
 use Andreia\FilamentNordTheme\FilamentNordThemePlugin;
-use App\Filament\Widgets\BlogPostsChart;
-use App\Filament\Widgets\PaguAnggaranCard;
-use App\Filament\Widgets\PaguAnggaranChart;
+use App\Filament\Widgets\BudgetAlertWidget;
+use App\Filament\Widgets\BudgetVsRealisasiChart;
 use App\Filament\Widgets\PaguAnggaranOverview;
-use App\Filament\Widgets\PaguPerStandarChart;
-use App\Filament\Widgets\PendapatanAnggaranOverview;
-use App\Filament\Widgets\StandarPaguChart;
+use App\Filament\Widgets\RecentActivityWidget;
 use App\Filament\Widgets\StandarPaguOverview;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Filafly\Themes\Brisk\BriskTheme;
@@ -17,7 +14,7 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Pages\Dashboard;
+use App\Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -42,25 +39,7 @@ class KelolaPanelProvider extends PanelProvider
             ->default()
             ->id('kelola')
             ->path('kelola')
-            // ->renderHook(
-            //     'panels::styles.after',
-            //         fn () => '<style>
-            //             .fi-simple-layout {
-            //                 padding-left: 0 !important;
-            //                 padding-right: 0 !important;
-            //             }
-
-            //             .fi-simple-layout > div {
-            //                 max-width: 100% !important;
-            //             }
-
-            //             /* Atau hapus semua padding */
-            //             body .fi-simple-page {
-            //                 padding: 0 !important;
-            //             }
-            //         </style>'
-            // )
-            ->login()
+            ->login(\App\Filament\Auth\Login::class)
             ->brandLogo(null) // Hilangkan logo
             ->brandName('KOMITE')
             ->colors([
@@ -78,19 +57,12 @@ class KelolaPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
-                // AccountWidget::class,
-                // FilamentInfoWidget::class,
                 PaguAnggaranOverview::class,
+                BudgetAlertWidget::class,
+                BudgetVsRealisasiChart::class,
+                RecentActivityWidget::class,
                 StandarPaguOverview::class,
-                // PaguAnggaranChart::class,
-                // PaguPerStandarChart::class,
-                // StandarPaguChart::class,
-                // BlogPostsChart::class,
-                // PaguAnggaranCard::class,
             ])
-            // ->pages([
-            //     Dashboard::class,
-            // ])
             // ->topbar(false)
             ->middleware([
                 EncryptCookies::class,
@@ -126,6 +98,7 @@ class KelolaPanelProvider extends PanelProvider
             ->viteTheme('resources/css/filament/kelola/theme.css')
             ->sidebarFullyCollapsibleOnDesktop()
             ->sidebarWidth('19rem')
+            ->topNavigation(fn () => auth()->check() && !auth()->user()->hasRole('Super Admin'))
             ->darkMode(false)
             ->font('Poppins');
     }

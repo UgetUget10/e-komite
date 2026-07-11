@@ -6,8 +6,8 @@
     <div
         class="p-6 rounded-2xl bg-white dark:bg-gray-900 shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-all duration-200">
         <div class="flex items-center justify-between">
-            <h3 class="text-sm font-semibold text-gray-500 dark:text-gray-400">Total Pendapatan {{ $stats['tahun'] }}
-            </h3>
+            <p class="text-sm font-semibold text-gray-500 dark:text-gray-400">Total Pendapatan {{ $stats['tahun'] }}
+            </p>
             <x-heroicon-o-banknotes class="w-6 h-6 text-emerald-500" />
         </div>
 

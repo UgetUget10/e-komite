@@ -10,6 +10,11 @@ class ListStandars extends ListRecords
 {
     protected static string $resource = StandarResource::class;
 
+    public function getPageClasses(): array
+    {
+        return ['fi-page-standar'];
+    }
+
     protected function getHeaderActions(): array
     {
         return [

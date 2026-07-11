@@ -10,6 +10,11 @@ class ListUraianPrograms extends ListRecords
 {
     protected static string $resource = UraianProgramResource::class;
 
+    public function getPageClasses(): array
+    {
+        return ['fi-page-uraian-program'];
+    }
+
     protected function getHeaderActions(): array
     {
         return [

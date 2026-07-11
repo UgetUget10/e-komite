@@ -1,0 +1,69 @@
+<div
+    x-data="{
+        url: @js(($existingIsPdf ?? false) ? $existingUrl : null),
+        blobUrl: null,
+        init() {
+            const form = this.$el.closest('form');
+
+            if (! form) {
+                return;
+            }
+
+            // Delegate on the stable <form> ancestor instead of the file input
+            // itself, since FilePond/Livewire may replace the input element
+            // after this component initializes.
+            form.addEventListener('change', (event) => {
+                if (! event.target.matches('input[type=file]')) {
+                    return;
+                }
+
+                if (this.blobUrl) {
+                    URL.revokeObjectURL(this.blobUrl);
+                    this.blobUrl = null;
+                }
+
+                const file = event.target.files && event.target.files[0];
+
+                if (! file) {
+                    this.url = null;
+
+                    return;
+                }
+
+                const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+
+                if (! isPdf) {
+                    this.url = null;
+
+                    return;
+                }
+
+                this.blobUrl = URL.createObjectURL(file);
+                this.url = this.blobUrl;
+            });
+        },
+    }"
+>
+    <template x-if="url">
+        <iframe
+            :src="url"
+            class="upload-berkas-preview-frame"
+            title="Pratinjau berkas"
+        ></iframe>
+    </template>
+
+    @if ($showFallbackLink ?? false)
+        <template x-if="!url">
+            <div class="upload-berkas-preview-fallback">
+                @if ($existingUrl)
+                    <x-heroicon-o-document-arrow-down class="h-5 w-5 text-primary-600" />
+                    <a href="{{ $existingUrl }}" target="_blank" rel="noopener" class="font-medium text-primary-600 underline">
+                        Pratinjau tidak tersedia untuk jenis berkas ini — buka / unduh berkas
+                    </a>
+                @else
+                    <p class="text-gray-500 dark:text-gray-400">Belum ada berkas.</p>
+                @endif
+            </div>
+        </template>
+    @endif
+</div>

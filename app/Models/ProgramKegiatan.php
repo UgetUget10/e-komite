@@ -19,7 +19,11 @@ class ProgramKegiatan extends Model
     protected $fillable = [
         'id_standar',
         'judul_program',
+        'kode',
+        'kode_lengkap',
         'pagu_dipa',
+        'pagu_bos',
+        'pagu_swadaya',
         'pagu_komite',
         'total_pengeluaran_perprogram ',
         'sisa_anggaran_perprogram ',
@@ -35,6 +39,8 @@ class ProgramKegiatan extends Model
     // Cast semua kolom uang ke decimal agar presisi tetap terjaga
     protected $casts = [
         'pagu_dipa' => 'decimal:2',
+        'pagu_bos' => 'decimal:2',
+        'pagu_swadaya' => 'decimal:2',
         'pagu_komite' => 'decimal:2',
         'total_pengeluaran_perprogram' => 'decimal:2',
         'sisa_anggaran_perprogram' => 'decimal:2',

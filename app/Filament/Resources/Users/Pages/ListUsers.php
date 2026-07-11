@@ -10,6 +10,11 @@ class ListUsers extends ListRecords
 {
     protected static string $resource = UserResource::class;
 
+    public function getPageClasses(): array
+    {
+        return ['fi-page-user'];
+    }
+
     protected function getHeaderActions(): array
     {
         return [

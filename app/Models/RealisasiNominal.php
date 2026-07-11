@@ -19,7 +19,17 @@ class RealisasiNominal extends Model
         'fk_id_program_kegiatan',
         'fk_id_pagu_tahun_anggaran',
         'fk_id_realisasi_bulan',
+        'tanggal_realisasi',
         'nominal',
+        'keterangan',
+        'dokumen',
+        'google_drive_file_id',
+        'google_drive_url',
+        'google_drive_path',
+    ];
+
+    protected $casts = [
+        'tanggal_realisasi' => 'date',
     ];
 
     public function standar()
