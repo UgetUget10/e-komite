@@ -187,7 +187,6 @@ class RealisasiNominalForm
                             ->label('Nominal Realisasi')
                             ->prefix('Rp ')
                             ->required()
-                            ->numeric()
                             ->default(0)
                             ->extraAttributes([
                                 'x-data' => "{
@@ -198,6 +197,7 @@ class RealisasiNominalForm
                                 }",
                                 '@input' => 'formatNumber($event)',
                                 'inputmode' => 'numeric',
+                                'type' => 'text',
                             ])
                             ->dehydrateStateUsing(fn ($state) => $state ? (int) str_replace('.', '', (string)$state) : 0),
 
