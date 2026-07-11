@@ -1,4 +1,8 @@
 <x-filament-widgets::widget>
+    @once
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    @endonce
+
     <div class="space-y-4">
         <div class="flex items-center justify-between">
             <h3 class="text-lg font-bold text-main-black">Budget vs Realisasi - Trend Bulanan</h3>
