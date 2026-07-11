@@ -13,6 +13,7 @@ class BudgetVsRealisasiChart extends ChartWidget
 
     protected ?string $heading = 'Budget vs Realisasi - Trend Bulanan';
     protected static ?int $sort = 2;
+    protected int|string|array $columnSpan = 'full';
 
     protected function getData(): array
     {

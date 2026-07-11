@@ -13,6 +13,7 @@ class BudgetAlertWidget extends Widget
 
     protected string $view = 'filament.widgets.budget-alert';
     protected static ?int $sort = 3;
+    protected int|string|array $columnSpan = 'full';
 
     public function getAlerts(): array
     {
