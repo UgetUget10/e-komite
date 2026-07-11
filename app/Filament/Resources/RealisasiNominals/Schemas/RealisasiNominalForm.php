@@ -185,10 +185,12 @@ class RealisasiNominalForm
 
                         TextInput::make('nominal')
                             ->label('Nominal Realisasi')
-                            ->prefix('Rp')
+                            ->prefix('Rp ')
                             ->required()
                             ->numeric()
-                            ->default(0),
+                            ->default(0)
+                            ->formatStateUsing(fn ($state) => $state ? number_format((int)$state, 0, '.', '.') : '')
+                            ->dehydrateStateUsing(fn ($state) => $state ? (int) str_replace('.', '', $state) : 0),
 
                         Textarea::make('keterangan')
                             ->label('Keterangan Realisasi')
