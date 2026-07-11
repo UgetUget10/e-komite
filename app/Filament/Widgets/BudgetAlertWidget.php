@@ -4,8 +4,8 @@ namespace App\Filament\Widgets;
 
 use App\Filament\Widgets\Concerns\ScopesToUserStandar;
 use App\Models\ProgramKegiatan;
+use App\Models\SignatureSetting;
 use Filament\Widgets\Widget;
-use Illuminate\Support\Facades\DB;
 
 class BudgetAlertWidget extends Widget
 {
@@ -23,6 +23,10 @@ class BudgetAlertWidget extends Widget
         if (!$tahunAktif) {
             return [];
         }
+
+        // Get alert threshold from settings (default 80%)
+        $settings = SignatureSetting::first();
+        $threshold = $settings?->alert_threshold ?? 80;
 
         $alerts = [];
 
@@ -45,7 +49,7 @@ class BudgetAlertWidget extends Widget
             if ($pagu > 0) {
                 $percentage = ($realisasi / $pagu) * 100;
 
-                // Alert jika sudah 100%
+                // Alert jika sudah melampaui pagu (100%+)
                 if ($realisasi >= $pagu) {
                     $alerts[] = [
                         'type' => 'danger',
@@ -54,11 +58,11 @@ class BudgetAlertWidget extends Widget
                         'percentage' => 100,
                     ];
                 }
-                // Alert jika sudah 80%
-                elseif ($percentage >= 80) {
+                // Alert jika sudah mencapai threshold yang di-set
+                elseif ($percentage >= $threshold) {
                     $alerts[] = [
                         'type' => 'warning',
-                        'title' => '⚡ Budget Mendekati Batas',
+                        'title' => "⚡ Budget Mendekati Batas ({$threshold}%)",
                         'message' => "{$program->judul_program} - " . round($percentage, 1) . "% terpakai",
                         'percentage' => $percentage,
                     ];

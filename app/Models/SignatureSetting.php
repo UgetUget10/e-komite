@@ -12,5 +12,6 @@ class SignatureSetting extends Model
         'signature_day',
         'signature_month',
         'signature_year',
+        'alert_threshold',
     ];
 }

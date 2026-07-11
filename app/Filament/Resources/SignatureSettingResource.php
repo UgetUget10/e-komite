@@ -63,6 +63,20 @@ class SignatureSettingResource extends Resource
                             ->default(2025)
                             ->required(),
                     ]),
+
+                Section::make('Alert Budget')
+                    ->description('Atur threshold untuk menampilkan alert jika realisasi sudah mencapai persentase tertentu')
+                    ->schema([
+                        TextInput::make('alert_threshold')
+                            ->label('Alert Threshold (%)')
+                            ->numeric()
+                            ->default(80)
+                            ->suffix('%')
+                            ->helperText('Contoh: 80 = alert tampil ketika realisasi ≥ 80% dari pagu')
+                            ->minValue(1)
+                            ->maxValue(200)
+                            ->required(),
+                    ]),
             ]);
     }
 

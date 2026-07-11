@@ -3,57 +3,92 @@
 namespace App\Filament\Widgets;
 
 use App\Filament\Widgets\Concerns\ScopesToUserStandar;
+use App\Models\PaguTahunAnggaran;
 use App\Models\ProgramKegiatan;
 use App\Models\RealisasiNominal;
-use Filament\Widgets\ChartWidget;
+use Filament\Widgets\Widget;
 
-class BudgetVsRealisasiChart extends ChartWidget
+class BudgetVsRealisasiChart extends Widget
 {
     use ScopesToUserStandar;
 
-    protected ?string $heading = 'Budget vs Realisasi - Trend Bulanan';
+    protected string $view = 'filament.widgets.budget-vs-realisasi-chart';
     protected static ?int $sort = 2;
 
-    protected function getData(): array
+    public string $chartType = 'line';
+    public int $selectedYear = 0;
+    public int $selectedMonth = 0;
+    public array $tahunList = [];
+    public array $chartData = [];
+
+    public function mount(): void
+    {
+        $tahunAktif = $this->activeTahunAnggaran();
+        $this->selectedYear = $tahunAktif?->tahun ?? now()->year;
+        $this->loadTahunList();
+        $this->updateChartData();
+    }
+
+    public function loadTahunList(): void
+    {
+        $this->tahunList = PaguTahunAnggaran::pluck('tahun')
+            ->sort()
+            ->reverse()
+            ->toArray();
+    }
+
+    public function updatedChartType(): void
+    {
+        $this->updateChartData();
+    }
+
+    public function updatedSelectedYear(): void
+    {
+        $this->updateChartData();
+    }
+
+    public function updatedSelectedMonth(): void
+    {
+        $this->updateChartData();
+    }
+
+    public function updateChartData(): void
     {
         $isPrivileged = $this->isPrivilegedUser();
         $allowedStandarIds = $this->allowedStandarIds();
-        $tahunAktif = $this->activeTahunAnggaran();
 
+        $tahunAktif = PaguTahunAnggaran::where('tahun', $this->selectedYear)->first();
         if (!$tahunAktif) {
-            return [
-                'labels' => [],
-                'datasets' => [],
-            ];
+            $this->chartData = ['labels' => [], 'datasets' => []];
+            return;
         }
 
         // Get monthly realisasi data
-        $realisasiData = RealisasiNominal::query()
+        $realisasiQuery = RealisasiNominal::query()
             ->selectRaw('MONTH(tanggal_realisasi) as bulan, SUM(nominal) as total', [])
-            ->whereYear('tanggal_realisasi', $tahunAktif->tahun)
+            ->whereYear('tanggal_realisasi', $this->selectedYear)
             ->whereNull('deleted_at');
 
-        // Apply role-based scoping
         if (!$isPrivileged && !empty($allowedStandarIds)) {
-            $realisasiData->whereIn('fk_id_standar', $allowedStandarIds);
+            $realisasiQuery->whereIn('fk_id_standar', $allowedStandarIds);
         }
 
-        $realisasiData = $realisasiData->groupBy('bulan')
+        $realisasiData = $realisasiQuery->groupBy('bulan')
             ->orderBy('bulan')
             ->pluck('total', 'bulan')
             ->toArray();
 
         // Get monthly budget data
-        $budgetData = ProgramKegiatan::query()
+        $budgetQuery = ProgramKegiatan::query()
             ->selectRaw('MONTH(created_at) as bulan, SUM(pagu_komite) as total', [])
             ->where('fk_id_pagu_tahun_anggaran', $tahunAktif->id)
             ->whereNull('deleted_at');
 
         if (!$isPrivileged && !empty($allowedStandarIds)) {
-            $budgetData->whereIn('id_standar', $allowedStandarIds);
+            $budgetQuery->whereIn('id_standar', $allowedStandarIds);
         }
 
-        $budgetData = $budgetData->groupBy('bulan')
+        $budgetData = $budgetQuery->groupBy('bulan')
             ->orderBy('bulan')
             ->pluck('total', 'bulan')
             ->toArray();
@@ -62,62 +97,33 @@ class BudgetVsRealisasiChart extends ChartWidget
         $months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
         $budgetDataPoints = [];
         $realisasiDataPoints = [];
+        $chartMonths = [];
 
-        for ($i = 1; $i <= 12; $i++) {
-            $budgetDataPoints[] = $budgetData[$i] ?? 0;
-            $realisasiDataPoints[] = $realisasiData[$i] ?? 0;
+        // Jika filter bulan dipilih, tampilkan hanya bulan tersebut
+        if ($this->selectedMonth > 0) {
+            $months = [array_values($months)[$this->selectedMonth - 1]];
+            $budgetDataPoints = [$budgetData[$this->selectedMonth] ?? 0];
+            $realisasiDataPoints = [$realisasiData[$this->selectedMonth] ?? 0];
+            $chartMonths = $months;
+        } else {
+            // Tampilkan semua 12 bulan
+            for ($i = 1; $i <= 12; $i++) {
+                $budgetDataPoints[] = $budgetData[$i] ?? 0;
+                $realisasiDataPoints[] = $realisasiData[$i] ?? 0;
+            }
+            $chartMonths = $months;
         }
 
-        return [
-            'labels' => $months,
+        $this->chartData = [
+            'labels' => $chartMonths,
             'datasets' => [
                 [
                     'label' => 'Budget Komite (Rp)',
                     'data' => $budgetDataPoints,
-                    'borderColor' => '#FF9800',
-                    'backgroundColor' => 'rgba(255, 152, 0, 0.1)',
-                    'fill' => true,
-                    'tension' => 0.4,
-                    'borderWidth' => 2,
                 ],
                 [
                     'label' => 'Realisasi (Rp)',
                     'data' => $realisasiDataPoints,
-                    'borderColor' => '#4CAF50',
-                    'backgroundColor' => 'rgba(76, 175, 80, 0.1)',
-                    'fill' => true,
-                    'tension' => 0.4,
-                    'borderWidth' => 2,
-                ],
-            ],
-        ];
-    }
-
-    protected function getType(): string
-    {
-        return 'line';
-    }
-
-    protected function getOptions(): array
-    {
-        return [
-            'plugins' => [
-                'legend' => [
-                    'display' => true,
-                    'position' => 'top',
-                ],
-                'tooltip' => [
-                    'callbacks' => [
-                        'label' => 'function(context) { return context.dataset.label + ": Rp " + new Intl.NumberFormat("id-ID").format(context.parsed.y); }',
-                    ],
-                ],
-            ],
-            'scales' => [
-                'y' => [
-                    'beginAtZero' => true,
-                    'ticks' => [
-                        'callback' => 'function(value) { return "Rp " + new Intl.NumberFormat("id-ID", {notation: "compact"}).format(value); }',
-                    ],
                 ],
             ],
         ];
