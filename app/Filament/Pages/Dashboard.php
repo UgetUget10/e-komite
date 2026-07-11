@@ -7,9 +7,6 @@ use App\Filament\Widgets\BudgetVsRealisasiChart;
 use App\Filament\Widgets\PaguAnggaranOverview;
 use App\Filament\Widgets\RecentActivityWidget;
 use App\Filament\Widgets\StandarPaguOverview;
-use App\Services\DashboardReportService;
-use Barryvdh\DomPDF\Facade\Pdf;
-use Filament\Actions\Action;
 use Filament\Pages\Dashboard as BaseDashboard;
 
 class Dashboard extends BaseDashboard
@@ -35,7 +32,7 @@ class Dashboard extends BaseDashboard
         return [
             'default' => 1,
             'sm' => 1,
-            'md' => 1,
+            'md' => 2,
             'lg' => 12,
             'xl' => 12,
             '2xl' => 12,
