@@ -188,7 +188,18 @@ class RealisasiNominalForm
                             ->prefix('Rp ')
                             ->required()
                             ->numeric()
-                            ->default(0),
+                            ->default(0)
+                            ->extraAttributes([
+                                'x-data' => "{
+                                    formatNumber(e) {
+                                        let val = e.target.value.replace(/\D/g, '');
+                                        e.target.value = val ? new Intl.NumberFormat('id-ID').format(val) : '';
+                                    }
+                                }",
+                                '@input' => 'formatNumber($event)',
+                                'inputmode' => 'numeric',
+                            ])
+                            ->dehydrateStateUsing(fn ($state) => $state ? (int) str_replace('.', '', (string)$state) : 0),
 
                         Textarea::make('keterangan')
                             ->label('Keterangan Realisasi')
