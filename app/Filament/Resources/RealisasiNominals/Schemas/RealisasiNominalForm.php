@@ -144,34 +144,34 @@ class RealisasiNominalForm
                         TextInput::make('pagu_komite_display')
                             ->label('Pagu Komite')
                             ->prefixIcon('heroicon-o-currency-dollar')
-                            ->prefix('Rp')
+                            ->prefix('Rp ')
                             ->readOnly()
                             ->dehydrated(false)
                             ->reactive()
                             ->formatStateUsing(function ($state) {
-                                return $state ? number_format($state, 0, ',', '.') : '-';
+                                return $state ? number_format((int)$state, 0, '.', '.') : '-';
                             }),
 
                         TextInput::make('realisasi_existing_display')
                             ->label('Realisasi Sudah Ada')
                             ->prefixIcon('heroicon-o-chart-bar')
-                            ->prefix('Rp')
+                            ->prefix('Rp ')
                             ->readOnly()
                             ->dehydrated(false)
                             ->reactive()
                             ->formatStateUsing(function ($state) {
-                                return $state ? number_format($state, 0, ',', '.') : '0';
+                                return $state ? number_format((int)$state, 0, '.', '.') : '0';
                             }),
 
                         TextInput::make('sisa_anggaran_display')
                             ->label('Sisa Anggaran')
                             ->prefixIcon('heroicon-o-banknotes')
-                            ->prefix('Rp')
+                            ->prefix('Rp ')
                             ->readOnly()
                             ->dehydrated(false)
                             ->reactive()
                             ->formatStateUsing(function ($state) {
-                                return $state ? number_format($state, 0, ',', '.') : '-';
+                                return $state ? number_format((int)$state, 0, '.', '.') : '-';
                             })
                             ->helperText('Sisa anggaran = Pagu Komite - Realisasi Sudah Ada'),
 
