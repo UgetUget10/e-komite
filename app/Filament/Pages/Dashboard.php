@@ -2,6 +2,8 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Widgets\BudgetAlertWidget;
+use App\Filament\Widgets\BudgetVsRealisasiChart;
 use App\Filament\Widgets\PaguAnggaranOverview;
 use App\Filament\Widgets\RecentActivityWidget;
 use App\Filament\Widgets\StandarPaguOverview;
@@ -16,8 +18,10 @@ class Dashboard extends BaseDashboard
     {
         return [
             PaguAnggaranOverview::class,
-            StandarPaguOverview::class,
+            BudgetVsRealisasiChart::class,
+            BudgetAlertWidget::class,
             RecentActivityWidget::class,
+            StandarPaguOverview::class,
         ];
     }
 
