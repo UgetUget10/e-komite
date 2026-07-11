@@ -93,17 +93,17 @@ class RealisasiNominalForm
 
                                     // Get pagu komite
                                     $paguKomite = (float) ($program?->pagu_komite ?? 0);
-                                    $set('pagu_komite_display', $paguKomite);
+                                    $set('pagu_komite_display', number_format((int)$paguKomite, 0, '.', '.'));
 
                                     // Get realisasi existing
                                     $realisasiExisting = \App\Models\RealisasiNominal::where('fk_id_program_kegiatan', $record->fk_id_program_kegiatan)
                                         ->whereNull('deleted_at')
                                         ->sum('nominal');
-                                    $set('realisasi_existing_display', $realisasiExisting);
+                                    $set('realisasi_existing_display', number_format((int)$realisasiExisting, 0, '.', '.'));
 
                                     // Calculate sisa anggaran
                                     $sisaAnggaran = $paguKomite - $realisasiExisting;
-                                    $set('sisa_anggaran_display', $sisaAnggaran);
+                                    $set('sisa_anggaran_display', number_format((int)$sisaAnggaran, 0, '.', '.'));
                                 }
                             })
                             ->afterStateUpdated(function (callable $set, $state) {
@@ -115,22 +115,22 @@ class RealisasiNominalForm
 
                                     // Get pagu komite
                                     $paguKomite = (float) ($program?->pagu_komite ?? 0);
-                                    $set('pagu_komite_display', $paguKomite);
+                                    $set('pagu_komite_display', number_format((int)$paguKomite, 0, '.', '.'));
 
                                     // Get realisasi existing
                                     $realisasiExisting = \App\Models\RealisasiNominal::where('fk_id_program_kegiatan', $state)
                                         ->whereNull('deleted_at')
                                         ->sum('nominal');
-                                    $set('realisasi_existing_display', $realisasiExisting);
+                                    $set('realisasi_existing_display', number_format((int)$realisasiExisting, 0, '.', '.'));
 
                                     // Calculate sisa anggaran
                                     $sisaAnggaran = $paguKomite - $realisasiExisting;
-                                    $set('sisa_anggaran_display', $sisaAnggaran);
+                                    $set('sisa_anggaran_display', number_format((int)$sisaAnggaran, 0, '.', '.'));
                                 } else {
                                     $set('program_kegiatan_display', '');
-                                    $set('pagu_komite_display', null);
-                                    $set('realisasi_existing_display', 0);
-                                    $set('sisa_anggaran_display', null);
+                                    $set('pagu_komite_display', '');
+                                    $set('realisasi_existing_display', '0');
+                                    $set('sisa_anggaran_display', '');
                                 }
                             }),
 
@@ -147,10 +147,7 @@ class RealisasiNominalForm
                             ->prefix('Rp ')
                             ->readOnly()
                             ->dehydrated(false)
-                            ->reactive()
-                            ->formatStateUsing(function ($state) {
-                                return $state ? number_format((int)$state, 0, '.', '.') : '-';
-                            }),
+                            ->reactive(),
 
                         TextInput::make('realisasi_existing_display')
                             ->label('Realisasi Sudah Ada')
@@ -158,10 +155,7 @@ class RealisasiNominalForm
                             ->prefix('Rp ')
                             ->readOnly()
                             ->dehydrated(false)
-                            ->reactive()
-                            ->formatStateUsing(function ($state) {
-                                return $state ? number_format((int)$state, 0, '.', '.') : '0';
-                            }),
+                            ->reactive(),
 
                         TextInput::make('sisa_anggaran_display')
                             ->label('Sisa Anggaran')
@@ -170,9 +164,6 @@ class RealisasiNominalForm
                             ->readOnly()
                             ->dehydrated(false)
                             ->reactive()
-                            ->formatStateUsing(function ($state) {
-                                return $state ? number_format((int)$state, 0, '.', '.') : '-';
-                            })
                             ->helperText('Sisa anggaran = Pagu Komite - Realisasi Sudah Ada'),
 
                         Hidden::make('fk_id_program_kegiatan')
