@@ -4,6 +4,7 @@ namespace App\Filament\Pages;
 
 use App\Filament\Widgets\Concerns\ScopesToUserStandar;
 use App\Models\ProgramKegiatan;
+use App\Models\RealisasiNominal;
 use App\Models\SignatureSetting;
 use App\Models\Standar;
 use Filament\Actions\Action;
@@ -47,10 +48,29 @@ class RekaPaguStandar extends Page
             $q->where('fk_id_pagu_tahun_anggaran', $tahunAktif->id);
         }])->orderBy('kode')->get();
 
+        // Kumpulkan semua id program untuk 1 query realisasi (hindari N+1)
+        $allProgramIds = $standars->pluck('programkegiatan')->flatten()->pluck('id')->all();
+
+        $realisasiSelesai = RealisasiNominal::whereIn('fk_id_program_kegiatan', $allProgramIds)
+            ->where('status', RealisasiNominal::STATUS_SELESAI)
+            ->selectRaw('fk_id_program_kegiatan, SUM(nominal) as total')
+            ->groupBy('fk_id_program_kegiatan')
+            ->pluck('total', 'fk_id_program_kegiatan');
+
+        $realisasiBerjalan = RealisasiNominal::whereIn('fk_id_program_kegiatan', $allProgramIds)
+            ->whereIn('status', RealisasiNominal::STATUSES_BERJALAN)
+            ->selectRaw('fk_id_program_kegiatan, SUM(nominal) as total')
+            ->groupBy('fk_id_program_kegiatan')
+            ->pluck('total', 'fk_id_program_kegiatan');
+
         $rows = [];
         $totalDipa = 0;
         $totalBos = 0;
         $totalKomite = 0;
+        $totalRealisasi = 0;
+        $totalPengajuanBerjalan = 0;
+        $totalPengembalian = 0;
+        $totalSisa = 0;
 
         foreach ($standars as $index => $standar) {
             // Use eager-loaded programs
@@ -59,6 +79,16 @@ class RekaPaguStandar extends Page
             $dipa = (int) $programs->sum('pagu_dipa');
             $bos = (int) $programs->sum('pagu_bos');
             $komite = (int) $programs->sum('pagu_komite');
+            $pengembalian = (int) $programs->sum('pengembalian_sisa_anggaran');
+
+            $realisasi = 0;
+            $pengajuanBerjalan = 0;
+            foreach ($programs as $program) {
+                $realisasi += (float) ($realisasiSelesai[$program->id] ?? 0);
+                $pengajuanBerjalan += (float) ($realisasiBerjalan[$program->id] ?? 0);
+            }
+
+            $sisa = $komite - $realisasi - $pengajuanBerjalan + $pengembalian;
 
             $rows[] = [
                 'no' => $index + 1,
@@ -66,12 +96,20 @@ class RekaPaguStandar extends Page
                 'dipa' => $dipa,
                 'bos' => $bos,
                 'komite' => $komite,
+                'realisasi' => $realisasi,
+                'pengajuan_berjalan' => $pengajuanBerjalan,
+                'pengembalian' => $pengembalian,
+                'sisa' => $sisa,
                 'total' => $dipa + $bos + $komite,
             ];
 
             $totalDipa += $dipa;
             $totalBos += $bos;
             $totalKomite += $komite;
+            $totalRealisasi += $realisasi;
+            $totalPengajuanBerjalan += $pengajuanBerjalan;
+            $totalPengembalian += $pengembalian;
+            $totalSisa += $sisa;
         }
 
         return [
@@ -82,6 +120,10 @@ class RekaPaguStandar extends Page
                 'dipa' => $totalDipa,
                 'bos' => $totalBos,
                 'komite' => $totalKomite,
+                'realisasi' => $totalRealisasi,
+                'pengajuan_berjalan' => $totalPengajuanBerjalan,
+                'pengembalian' => $totalPengembalian,
+                'sisa' => $totalSisa,
                 'grand_total' => $totalDipa + $totalBos + $totalKomite,
             ],
         ];
@@ -167,7 +209,7 @@ class RekaPaguStandar extends Page
         fputcsv($output, []); // Empty row
 
         // Table header
-        fputcsv($output, ['NO.', 'URAIAN ANGGARAN BELANJA', 'DIPA (Rp)', 'BOS (Rp)', 'KOMITE (Rp)']);
+        fputcsv($output, ['NO.', 'URAIAN ANGGARAN BELANJA', 'DIPA (Rp)', 'BOS (Rp)', 'KOMITE (Rp)', 'REALISASI (Rp)', 'PENGAJUAN BERJALAN (Rp)', 'PENGEMBALIAN (Rp)', 'SISA ANGGARAN (Rp)']);
 
         // Data rows
         foreach ($data['rows'] as $row) {
@@ -177,6 +219,10 @@ class RekaPaguStandar extends Page
                 number_format($row['dipa'], 0, '.', '.'),
                 number_format($row['bos'], 0, '.', '.'),
                 number_format($row['komite'], 0, '.', '.'),
+                number_format($row['realisasi'], 0, '.', '.'),
+                number_format($row['pengajuan_berjalan'], 0, '.', '.'),
+                number_format($row['pengembalian'], 0, '.', '.'),
+                number_format($row['sisa'], 0, '.', '.'),
             ]);
         }
 
@@ -187,6 +233,10 @@ class RekaPaguStandar extends Page
             number_format($data['totals']['dipa'], 0, '.', '.'),
             number_format($data['totals']['bos'], 0, '.', '.'),
             number_format($data['totals']['komite'], 0, '.', '.'),
+            number_format($data['totals']['realisasi'], 0, '.', '.'),
+            number_format($data['totals']['pengajuan_berjalan'], 0, '.', '.'),
+            number_format($data['totals']['pengembalian'], 0, '.', '.'),
+            number_format($data['totals']['sisa'], 0, '.', '.'),
         ]);
 
         // Grand total

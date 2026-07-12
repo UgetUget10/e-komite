@@ -126,7 +126,7 @@
             <td class="label">Kode Program</td>
             <td class="value"><span class="badge">{{ $record->kode_lengkap ?? '-' }}</span></td>
             <td class="label">Standar</td>
-            <td class="value">{{ trim(($record->standars->kode ?? '') . '. ' . ($record->standars->nama_standar ?? '-')) }}</td>
+            <td class="value">{{ trim(($record->standar->kode ?? '') . '. ' . ($record->standar->nama_standar ?? '-')) }}</td>
         </tr>
         <tr>
             <td class="label">Judul Program</td>

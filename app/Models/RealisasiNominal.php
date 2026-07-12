@@ -14,6 +14,19 @@ class RealisasiNominal extends Model
     protected $keyType = 'string';               // Primary key berbasis UUID
     public $incrementing = false;                // Tidak auto-increment
 
+    const STATUS_DIAJUKAN = 'diajukan';
+    const STATUS_BERJALAN = 'berjalan';
+    const STATUS_SELESAI = 'selesai';
+
+    const STATUSES = [
+        self::STATUS_DIAJUKAN => 'Diajukan',
+        self::STATUS_BERJALAN => 'Berjalan',
+        self::STATUS_SELESAI => 'Selesai',
+    ];
+
+    // Status yang belum final (dana sudah diajukan/dicairkan tapi belum ada bukti lengkap)
+    const STATUSES_BERJALAN = [self::STATUS_DIAJUKAN, self::STATUS_BERJALAN];
+
     protected $fillable = [
         'fk_id_standar',
         'fk_id_program_kegiatan',
@@ -21,6 +34,7 @@ class RealisasiNominal extends Model
         'fk_id_realisasi_bulan',
         'tanggal_realisasi',
         'nominal',
+        'status',
         'keterangan',
         'dokumen',
         'google_drive_file_id',

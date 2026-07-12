@@ -33,7 +33,7 @@ class ViewProgramKegiatan extends ViewRecord
                 ->icon('heroicon-o-document-arrow-down')
                 ->color('gray')
                 ->action(function () {
-                    $record = $this->record->load('standars', 'uraianProgram');
+                    $record = $this->record->load('standar', 'uraianProgram');
 
                     $pdf = Pdf::loadView('pdf.program-kegiatan-detail', [
                         'record' => $record,

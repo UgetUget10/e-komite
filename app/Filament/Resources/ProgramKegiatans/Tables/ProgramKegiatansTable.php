@@ -44,7 +44,7 @@ class ProgramKegiatansTable
                     ->sortable()
                     ->badge()
                     ->color('primary'),
-                TextColumn::make('standars.nama_standar')
+                TextColumn::make('standar.nama_standar')
                     ->label('Standar')
                     ->searchable(),
                 TextColumn::make('judul_program')
@@ -130,7 +130,7 @@ class ProgramKegiatansTable
                     ->icon('heroicon-o-document-arrow-down')
                     ->color('gray')
                     ->action(function ($record) {
-                        $record->load('standars', 'uraianProgram');
+                        $record->load('standar', 'uraianProgram');
 
                         $pdf = Pdf::loadView('pdf.program-kegiatan-detail', [
                             'record' => $record,
@@ -171,7 +171,7 @@ class ProgramKegiatansTable
                     ->color('success')
                     ->action(function ($livewire) {
                         $records = $livewire->getFilteredTableQuery()
-                            ->with(['standars', 'uraianProgram'])
+                            ->with(['standar', 'uraianProgram'])
                             ->get();
 
                         $tahun = \App\Models\PaguTahunAnggaran::where('status_aktif', 1)->value('tahun');
@@ -193,13 +193,13 @@ class ProgramKegiatansTable
                     ->color('warning')
                     ->action(function ($livewire) {
                         $records = $livewire->getFilteredTableQuery()
-                            ->with('standars')
+                            ->with('standar')
                             ->get();
 
                         $groups = $records
                             ->groupBy('id_standar')
                             ->map(function ($programsInStandar) {
-                                $standar = $programsInStandar->first()->standars;
+                                $standar = $programsInStandar->first()->standar;
 
                                 $rows = $programsInStandar
                                     ->sortBy(fn ($p) => $p->kode)

@@ -23,13 +23,13 @@ class ProgramKegiatanInfolist
                             ->color('primary')
                             ->extraEntryWrapperAttributes(['class' => 'info-stat-box']),
 
-                        TextEntry::make('standars.nama_standar')
+                        TextEntry::make('standar.nama_standar')
                             ->label('Standar')
                             ->icon('heroicon-o-building-library')
                             ->formatStateUsing(function ($state, $record) {
                                 $label = $state;
-                                if ($record->standars?->kode) {
-                                    $label .= ' (' . $record->standars->kode . ')';
+                                if ($record->standar?->kode) {
+                                    $label .= ' (' . $record->standar->kode . ')';
                                 }
                                 return $label;
                             })
@@ -97,6 +97,53 @@ class ProgramKegiatanInfolist
                             ->color('danger')
                             ->formatStateUsing(fn($state) => 'Rp ' . number_format($state ?? 0, 0, ',', '.'))
                             ->extraEntryWrapperAttributes(['class' => 'anggaran-stat-box anggaran-stat-danger']),
+                    ])
+                    ->columns(4)
+                    ->columnSpanFull(),
+
+                Section::make('Ringkasan Realisasi')
+                    ->icon('heroicon-o-arrow-trending-up')
+                    ->description('Realisasi Final = dana yang sudah selesai dipertanggungjawabkan. Pengajuan Berjalan = dana diajukan/dicairkan yang menunggu bukti. Sisa = Pagu Komite - Realisasi - Pengajuan Berjalan + Pengembalian.')
+                    ->schema([
+                        TextEntry::make('total_pengeluaran_perprogram')
+                            ->numeric()
+                            ->label('Realisasi (Selesai)')
+                            ->icon('heroicon-o-check-circle')
+                            ->weight('bold')
+                            ->size('lg')
+                            ->color('success')
+                            ->formatStateUsing(fn($state) => 'Rp ' . number_format($state ?? 0, 0, ',', '.'))
+                            ->extraEntryWrapperAttributes(['class' => 'anggaran-stat-box anggaran-stat-success']),
+
+                        TextEntry::make('total_pengajuan_berjalan_perprogram')
+                            ->numeric()
+                            ->label('Pengajuan Berjalan')
+                            ->icon('heroicon-o-clock')
+                            ->weight('bold')
+                            ->size('lg')
+                            ->color('warning')
+                            ->formatStateUsing(fn($state) => 'Rp ' . number_format($state ?? 0, 0, ',', '.'))
+                            ->extraEntryWrapperAttributes(['class' => 'anggaran-stat-box anggaran-stat-warning']),
+
+                        TextEntry::make('pengembalian_sisa_anggaran')
+                            ->numeric()
+                            ->label('Pengembalian Sisa Anggaran')
+                            ->icon('heroicon-o-arrow-uturn-left')
+                            ->weight('bold')
+                            ->size('lg')
+                            ->color('info')
+                            ->formatStateUsing(fn($state) => 'Rp ' . number_format($state ?? 0, 0, ',', '.'))
+                            ->extraEntryWrapperAttributes(['class' => 'anggaran-stat-box anggaran-stat-info']),
+
+                        TextEntry::make('sisa_anggaran_perprogram')
+                            ->numeric()
+                            ->label('Sisa Anggaran')
+                            ->icon('heroicon-o-scale')
+                            ->weight('bold')
+                            ->size('lg')
+                            ->color(fn ($state) => $state < 0 ? 'danger' : 'gray')
+                            ->formatStateUsing(fn($state) => 'Rp ' . number_format($state ?? 0, 0, ',', '.'))
+                            ->extraEntryWrapperAttributes(['class' => 'anggaran-stat-box anggaran-stat-gray']),
                     ])
                     ->columns(4)
                     ->columnSpanFull(),

@@ -61,6 +61,19 @@ class RealisasiNominalsTable
                     ->label('Tanggal Realisasi')
                     ->date('d/m/Y')
                     ->sortable(),
+
+                TextColumn::make('status')
+                    ->label('Status')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        RealisasiNominal::STATUS_DIAJUKAN => 'gray',
+                        RealisasiNominal::STATUS_BERJALAN => 'warning',
+                        RealisasiNominal::STATUS_SELESAI => 'success',
+                        default => 'gray',
+                    })
+                    ->formatStateUsing(fn (string $state): string => RealisasiNominal::STATUSES[$state] ?? $state)
+                    ->sortable(),
+
                 TextColumn::make('nominal')
                     ->label('Nominal')
                     ->money('IDR')
@@ -123,6 +136,11 @@ class RealisasiNominalsTable
                     ->relationship('standar', 'nama_standar')
                     ->searchable()
                     ->preload(),
+
+                // Filter Status
+                SelectFilter::make('status')
+                    ->label('Status')
+                    ->options(RealisasiNominal::STATUSES),
 
                 // Filter Program Kegiatan
                 SelectFilter::make('fk_id_program_kegiatan')
@@ -270,6 +288,26 @@ class RealisasiNominalsTable
                     }),
             ])
             ->recordActions([
+                Action::make('setujui_cairkan')
+                    ->label('Setujui & Cairkan')
+                    ->icon('heroicon-o-check-circle')
+                    ->color('warning')
+                    ->visible(fn ($record) => static::isPrivilegedUser() && $record->status === RealisasiNominal::STATUS_DIAJUKAN)
+                    ->requiresConfirmation()
+                    ->modalHeading('Setujui & Cairkan Dana')
+                    ->modalDescription('Status akan berubah menjadi "Berjalan" — dana dianggap sudah dicairkan, menunggu bukti/dokumen realisasi.')
+                    ->action(fn ($record) => $record->update(['status' => RealisasiNominal::STATUS_BERJALAN])),
+
+                Action::make('tandai_selesai')
+                    ->label('Tandai Selesai')
+                    ->icon('heroicon-o-document-check')
+                    ->color('success')
+                    ->visible(fn ($record) => static::isPrivilegedUser() && $record->status === RealisasiNominal::STATUS_BERJALAN)
+                    ->requiresConfirmation()
+                    ->modalHeading('Tandai Realisasi Selesai')
+                    ->modalDescription('Status akan berubah menjadi "Selesai" — realisasi dianggap final dan bukti/dokumen sudah lengkap.')
+                    ->action(fn ($record) => $record->update(['status' => RealisasiNominal::STATUS_SELESAI])),
+
                 ViewAction::make(),
                 EditAction::make(),
             ])
@@ -284,6 +322,11 @@ class RealisasiNominalsTable
             ->emptyStateHeading('Belum ada realisasi nominal')
             ->striped()
             ->defaultSort('created_at', 'desc');
+    }
+
+    protected static function isPrivilegedUser(): bool
+    {
+        return auth()->user()?->hasRole(['Super Admin', 'Pelaksana Komite', 'Kepala Madrasah']) ?? false;
     }
 
     protected static function streamRekapPdf(
@@ -304,7 +347,7 @@ class RealisasiNominalsTable
         $tahun = PaguTahunAnggaran::find($tahunId);
 
         $programQuery = ProgramKegiatan::query()
-            ->with('standars')
+            ->with('standar')
             ->when($tahunId, fn ($q) => $q->where('fk_id_pagu_tahun_anggaran', $tahunId))
             ->when($standarFilter, fn ($q) => $q->where('id_standar', $standarFilter))
             ->when($programFilter, fn ($q) => $q->where('id', $programFilter));
@@ -319,13 +362,14 @@ class RealisasiNominalsTable
         $groups = $programs
             ->groupBy('id_standar')
             ->map(function ($programsInStandar) use ($tanggalDari, $tanggalSampai) {
-                $standar = $programsInStandar->first()->standars;
+                $standar = $programsInStandar->first()->standar;
 
                 $rows = $programsInStandar
                     ->sortBy(fn ($p) => $p->kode)
                     ->values()
                     ->map(function ($program) use ($tanggalDari, $tanggalSampai) {
                         $realisasi = RealisasiNominal::where('fk_id_program_kegiatan', $program->id)
+                            ->where('status', RealisasiNominal::STATUS_SELESAI)
                             ->when($tanggalDari, fn ($q, $date) => $q->whereDate('tanggal_realisasi', '>=', $date))
                             ->when($tanggalSampai, fn ($q, $date) => $q->whereDate('tanggal_realisasi', '<=', $date))
                             ->sum('nominal');
@@ -390,7 +434,7 @@ class RealisasiNominalsTable
         )->all();
 
         $programQuery = ProgramKegiatan::query()
-            ->with('standars')
+            ->with('standar')
             ->when($tahunId, fn ($q) => $q->where('fk_id_pagu_tahun_anggaran', $tahunId))
             ->when($standarFilter, fn ($q) => $q->where('id_standar', $standarFilter))
             ->when($programFilter, fn ($q) => $q->where('id', $programFilter));
@@ -405,13 +449,14 @@ class RealisasiNominalsTable
         $groups = $programs
             ->groupBy('id_standar')
             ->map(function ($programsInStandar) use ($tahunKalender) {
-                $standar = $programsInStandar->first()->standars;
+                $standar = $programsInStandar->first()->standar;
 
                 $rows = $programsInStandar
                     ->sortBy(fn ($p) => $p->kode)
                     ->values()
                     ->map(function ($program) use ($tahunKalender) {
                         $realisasiPerBulan = RealisasiNominal::where('fk_id_program_kegiatan', $program->id)
+                            ->where('status', RealisasiNominal::STATUS_SELESAI)
                             ->whereYear('tanggal_realisasi', $tahunKalender)
                             ->selectRaw('MONTH(tanggal_realisasi) as bulan, SUM(nominal) as total')
                             ->groupBy('bulan')

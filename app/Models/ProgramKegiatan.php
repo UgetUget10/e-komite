@@ -28,6 +28,8 @@ class ProgramKegiatan extends Model
         'pagu_komite',
         'total_pengeluaran_perprogram ',
         'sisa_anggaran_perprogram ',
+        'total_pengajuan_berjalan_perprogram',
+        'pengembalian_sisa_anggaran',
     ];
 
     // <<< WAJIB DITAMBAHKAN >>>
@@ -45,6 +47,8 @@ class ProgramKegiatan extends Model
         'pagu_komite' => 'decimal:2',
         'total_pengeluaran_perprogram' => 'decimal:2',
         'sisa_anggaran_perprogram' => 'decimal:2',
+        'total_pengajuan_berjalan_perprogram' => 'decimal:2',
+        'pengembalian_sisa_anggaran' => 'decimal:2',
     ];
     // <<< END >>>
 

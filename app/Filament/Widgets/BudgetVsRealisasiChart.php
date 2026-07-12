@@ -34,9 +34,10 @@ class BudgetVsRealisasiChart extends ChartWidget
             ];
         }
 
-        // Get monthly realisasi data
+        // Get monthly realisasi data (hanya status selesai/final)
         $realisasiData = RealisasiNominal::query()
             ->selectRaw('MONTH(tanggal_realisasi) as bulan, SUM(nominal) as total', [])
+            ->where('status', RealisasiNominal::STATUS_SELESAI)
             ->whereYear('tanggal_realisasi', $tahunAktif->tahun)
             ->whereNull('deleted_at');
 

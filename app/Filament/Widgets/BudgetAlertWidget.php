@@ -4,6 +4,7 @@ namespace App\Filament\Widgets;
 
 use App\Filament\Widgets\Concerns\ScopesToUserStandar;
 use App\Models\ProgramKegiatan;
+use App\Models\RealisasiNominal;
 use App\Models\SignatureSetting;
 use Filament\Widgets\Widget;
 
@@ -43,7 +44,9 @@ class BudgetAlertWidget extends Widget
         $programs = $query->get();
 
         foreach ($programs as $program) {
-            $realisasi = $program->realisasi()->whereNull('deleted_at')->sum('nominal');
+            $realisasi = $program->realisasi()
+                ->where('status', RealisasiNominal::STATUS_SELESAI)
+                ->sum('nominal');
             $pagu = $program->pagu_komite;
 
             if ($pagu > 0) {

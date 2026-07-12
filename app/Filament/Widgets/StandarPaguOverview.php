@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use App\Models\RealisasiNominal;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Facades\Auth;
@@ -62,27 +63,41 @@ class StandarPaguOverview extends BaseWidget
                 's.id',
                 's.nama_standar',
                 DB::raw('COUNT(pk.id) as jumlah_program'),
-                DB::raw('COALESCE(SUM(pk.pagu_komite), 0) as total_pagu')
+                DB::raw('COALESCE(SUM(pk.pagu_komite), 0) as total_pagu'),
+                DB::raw('COALESCE(SUM(pk.pengembalian_sisa_anggaran), 0) as total_pengembalian')
             )
             ->when(!is_null($allowedStandarIds), fn($q) => $q->whereIn('s.id', $allowedStandarIds))
             ->groupBy('s.id', 's.nama_standar')
             ->orderBy('s.nama_standar')
             ->get();
 
-        // Query realisasi per standar (terpisah untuk menghindari fan-out akibat join multiple tables)
+        // Query realisasi final per standar (terpisah untuk menghindari fan-out akibat join multiple tables)
         $realisasiPerStandar = DB::table('komite.tb_realisasi_nominal as rn')
             ->where('rn.fk_id_pagu_tahun_anggaran', $tahunAktifId)
+            ->where('rn.status', RealisasiNominal::STATUS_SELESAI)
             ->whereNull('rn.deleted_at') // Exclude soft-deleted realisasi
             ->select('rn.fk_id_standar', DB::raw('COALESCE(SUM(rn.nominal), 0) as total_realisasi'))
             ->when(!is_null($allowedStandarIds), fn($q) => $q->whereIn('rn.fk_id_standar', $allowedStandarIds))
             ->groupBy('rn.fk_id_standar')
             ->pluck('total_realisasi', 'fk_id_standar');
 
+        // Query pengajuan berjalan (status diajukan/berjalan) per standar
+        $pengajuanBerjalanPerStandar = DB::table('komite.tb_realisasi_nominal as rn')
+            ->where('rn.fk_id_pagu_tahun_anggaran', $tahunAktifId)
+            ->whereIn('rn.status', RealisasiNominal::STATUSES_BERJALAN)
+            ->whereNull('rn.deleted_at')
+            ->select('rn.fk_id_standar', DB::raw('COALESCE(SUM(rn.nominal), 0) as total'))
+            ->when(!is_null($allowedStandarIds), fn($q) => $q->whereIn('rn.fk_id_standar', $allowedStandarIds))
+            ->groupBy('rn.fk_id_standar')
+            ->pluck('total', 'fk_id_standar');
+
         $cards = [];
 
         foreach ($stats as $item) {
             $totalRealisasi = (float) ($realisasiPerStandar[$item->id] ?? 0);
-            $sisaStandar = $item->total_pagu - $totalRealisasi;
+            $totalPengajuanBerjalan = (float) ($pengajuanBerjalanPerStandar[$item->id] ?? 0);
+            $totalPengembalian = (float) $item->total_pengembalian;
+            $sisaStandar = $item->total_pagu - $totalRealisasi - $totalPengajuanBerjalan + $totalPengembalian;
 
             $icon = $this->getIconByStandar($item->nama_standar);
             $detailUrl = \App\Filament\Pages\DetailKeperluanDana::getUrl(['standarId' => $item->id]);
@@ -101,6 +116,7 @@ class StandarPaguOverview extends BaseWidget
             $descText = new HtmlString(
                 $progressBar .
                 "Realisasi: Rp " . number_format($totalRealisasi, 0, ',', '.') .
+                ($totalPengajuanBerjalan > 0 ? "<br>Pengajuan Berjalan: Rp " . number_format($totalPengajuanBerjalan, 0, ',', '.') : '') .
                 "<br>Sisa: Rp " . number_format($sisaStandar, 0, ',', '.') .
                 "<br>{$item->jumlah_program} program {$icon}" .
                 "<br><a href=\"{$detailUrl}\" class=\"inline-flex items-center gap-1 mt-1 text-xs font-semibold text-primary-600 hover:underline\">Lihat Detail &rarr;</a>"

@@ -167,12 +167,14 @@
     <table>
         <thead>
             <tr>
-                <th style="width: 5%;">NO</th>
-                <th style="width: 20%;">STANDAR</th>
-                <th style="width: 35%;">PROGRAM KEGIATAN</th>
-                <th style="width: 15%;" class="text-right">PAGU (Rp)</th>
-                <th style="width: 15%;" class="text-right">REALISASI (Rp)</th>
-                <th style="width: 10%;" class="text-center">%</th>
+                <th style="width: 4%;">NO</th>
+                <th style="width: 14%;">STANDAR</th>
+                <th style="width: 20%;">PROGRAM KEGIATAN</th>
+                <th style="width: 12%;" class="text-right">PAGU (Rp)</th>
+                <th style="width: 12%;" class="text-right">REALISASI (Rp)</th>
+                <th style="width: 13%;" class="text-right">PENGAJUAN BERJALAN (Rp)</th>
+                <th style="width: 12%;" class="text-right">PENGEMBALIAN (Rp)</th>
+                <th style="width: 13%;" class="text-right">SISA (Rp)</th>
             </tr>
         </thead>
         <tbody>
@@ -183,15 +185,13 @@
                     <td>{{ $program['judul'] }}</td>
                     <td class="text-right">{{ number_format($program['pagu'], 0, '.', '.') }}</td>
                     <td class="text-right">{{ number_format($program['realisasi'], 0, '.', '.') }}</td>
-                    <td class="text-center">
-                        <span class="{{ $program['percentage'] >= 100 ? 'status-danger' : ($program['percentage'] >= 80 ? 'status-warning' : 'status-good') }}">
-                            {{ round($program['percentage'], 1) }}%
-                        </span>
-                    </td>
+                    <td class="text-right">{{ number_format($program['pengajuan_berjalan'], 0, '.', '.') }}</td>
+                    <td class="text-right">{{ number_format($program['pengembalian'], 0, '.', '.') }}</td>
+                    <td class="text-right{{ $program['sisa'] < 0 ? ' status-danger' : '' }}">{{ number_format($program['sisa'], 0, '.', '.') }}</td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="6" class="text-center">Tidak ada data</td>
+                    <td colspan="8" class="text-center">Tidak ada data</td>
                 </tr>
             @endforelse
         </tbody>
@@ -210,8 +210,18 @@
                     <div class="footer-value">Rp {{ number_format($data['total_realisasi'], 0, '.', '.') }}</div>
                 </td>
                 <td class="footer-item">
+                    <div class="footer-label">PENGAJUAN BERJALAN</div>
+                    <div class="footer-value">Rp {{ number_format($data['total_pengajuan_berjalan'], 0, '.', '.') }}</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="footer-item">
+                    <div class="footer-label">PENGEMBALIAN</div>
+                    <div class="footer-value">Rp {{ number_format($data['total_pengembalian'], 0, '.', '.') }}</div>
+                </td>
+                <td class="footer-item">
                     <div class="footer-label">SISA ANGGARAN</div>
-                    <div class="footer-value">Rp {{ number_format($data['total_pagu'] - $data['total_realisasi'], 0, '.', '.') }}</div>
+                    <div class="footer-value">Rp {{ number_format($data['total_sisa'], 0, '.', '.') }}</div>
                 </td>
             </tr>
         </table>

@@ -201,13 +201,21 @@ class RealisasiNominalForm
                             ])
                             ->dehydrateStateUsing(fn ($state) => $state ? (int) str_replace('.', '', (string)$state) : 0),
 
+                        Select::make('status')
+                            ->label('Status')
+                            ->prefixIcon('heroicon-o-flag')
+                            ->options(\App\Models\RealisasiNominal::STATUSES)
+                            ->default(\App\Models\RealisasiNominal::STATUS_DIAJUKAN)
+                            ->required()
+                            ->helperText('Diajukan: menunggu persetujuan. Berjalan: sudah dicairkan, menunggu bukti. Selesai: bukti lengkap (realisasi final).'),
+
                         Textarea::make('keterangan')
                             ->label('Keterangan Realisasi')
                             ->placeholder('Tambahkan keterangan realisasi (opsional)')
                             ->rows(3)
                             ->columnSpanFull(),
                     ])
-                    ->columns(2)
+                    ->columns(3)
                     ->columnSpanFull(),
 
                 Section::make('Dokumen Pendukung')

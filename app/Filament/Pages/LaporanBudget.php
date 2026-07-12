@@ -107,6 +107,8 @@ class LaporanBudget extends Page
             'generated_at' => now()->format('d/m/Y H:i:s'),
             'total_pagu' => 0,
             'total_realisasi' => 0,
+            'total_pengajuan_berjalan' => 0,
+            'total_pengembalian' => 0,
             'programs' => [],
         ];
 
@@ -116,10 +118,18 @@ class LaporanBudget extends Page
 
         foreach ($programs as $program) {
             $realisasi = RealisasiNominal::where('fk_id_program_kegiatan', $program->id)
-                ->whereNull('deleted_at')
+                ->where('status', RealisasiNominal::STATUS_SELESAI)
                 ->sum('nominal');
 
+            $pengajuanBerjalan = RealisasiNominal::where('fk_id_program_kegiatan', $program->id)
+                ->whereIn('status', RealisasiNominal::STATUSES_BERJALAN)
+                ->sum('nominal');
+
+            $pengembalian = (float) $program->pengembalian_sisa_anggaran;
+
             $standarName = $program->standar->nama_standar ?? '-';
+
+            $sisa = $program->pagu_komite - $realisasi - $pengajuanBerjalan + $pengembalian;
 
             $this->laporanData['programs'][] = [
                 'id_standar' => $program->id_standar,
@@ -127,7 +137,9 @@ class LaporanBudget extends Page
                 'judul' => $program->judul_program,
                 'pagu' => $program->pagu_komite,
                 'realisasi' => $realisasi,
-                'sisa' => $program->pagu_komite - $realisasi,
+                'pengajuan_berjalan' => $pengajuanBerjalan,
+                'pengembalian' => $pengembalian,
+                'sisa' => $sisa,
                 'percentage' => $program->pagu_komite > 0 ? ($realisasi / $program->pagu_komite) * 100 : 0,
             ];
 
@@ -136,18 +148,22 @@ class LaporanBudget extends Page
                 $this->breakdownByStandar[$standarName] = [
                     'pagu' => 0,
                     'realisasi' => 0,
+                    'pengajuan_berjalan' => 0,
+                    'pengembalian' => 0,
                     'sisa' => 0,
                     'count' => 0,
                 ];
             }
             $this->breakdownByStandar[$standarName]['pagu'] += $program->pagu_komite;
             $this->breakdownByStandar[$standarName]['realisasi'] += $realisasi;
-            $this->breakdownByStandar[$standarName]['sisa'] += $program->pagu_komite - $realisasi;
+            $this->breakdownByStandar[$standarName]['pengajuan_berjalan'] += $pengajuanBerjalan;
+            $this->breakdownByStandar[$standarName]['pengembalian'] += $pengembalian;
+            $this->breakdownByStandar[$standarName]['sisa'] += $sisa;
             $this->breakdownByStandar[$standarName]['count']++;
 
-            // Breakdown by bulan
+            // Breakdown by bulan (realisasi final saja, konsisten dengan chart bulanan)
             $realisasiBulan = RealisasiNominal::where('fk_id_program_kegiatan', $program->id)
-                ->whereNull('deleted_at')
+                ->where('status', RealisasiNominal::STATUS_SELESAI)
                 ->get()
                 ->groupBy(fn ($item) => $item->tanggal_realisasi->format('M Y'));
 
@@ -164,7 +180,15 @@ class LaporanBudget extends Page
 
             $this->laporanData['total_pagu'] += $program->pagu_komite;
             $this->laporanData['total_realisasi'] += $realisasi;
+            $this->laporanData['total_pengajuan_berjalan'] += $pengajuanBerjalan;
+            $this->laporanData['total_pengembalian'] += $pengembalian;
         }
+
+        // Grand total sisa = Pagu - Realisasi - Pengajuan Berjalan + Pengembalian
+        $this->laporanData['total_sisa'] = $this->laporanData['total_pagu']
+            - $this->laporanData['total_realisasi']
+            - $this->laporanData['total_pengajuan_berjalan']
+            + $this->laporanData['total_pengembalian'];
 
         // Sort breakdown by bulan
         ksort($this->breakdownByBulan);
@@ -205,7 +229,7 @@ class LaporanBudget extends Page
 
     public function downloadCsv()
     {
-        $headers = ['NO', 'STANDAR', 'PROGRAM KEGIATAN', 'PAGU (Rp)', 'REALISASI (Rp)', 'SISA (Rp)', '%'];
+        $headers = ['NO', 'STANDAR', 'PROGRAM KEGIATAN', 'PAGU (Rp)', 'REALISASI (Rp)', 'PENGAJUAN BERJALAN (Rp)', 'PENGEMBALIAN (Rp)', 'SISA (Rp)', '%'];
         $rows = [];
 
         foreach ($this->laporanData['programs'] as $index => $program) {
@@ -215,12 +239,22 @@ class LaporanBudget extends Page
                 $program['judul'],
                 $program['pagu'],
                 $program['realisasi'],
+                $program['pengajuan_berjalan'],
+                $program['pengembalian'],
                 $program['sisa'],
                 round($program['percentage'], 1),
             ];
         }
 
-        $rows[] = ['', '', 'TOTAL', $this->laporanData['total_pagu'], $this->laporanData['total_realisasi'], $this->laporanData['total_pagu'] - $this->laporanData['total_realisasi'], ''];
+        $rows[] = [
+            '', '', 'TOTAL',
+            $this->laporanData['total_pagu'],
+            $this->laporanData['total_realisasi'],
+            $this->laporanData['total_pengajuan_berjalan'],
+            $this->laporanData['total_pengembalian'],
+            $this->laporanData['total_sisa'],
+            '',
+        ];
 
         return response()->streamDownload(function () use ($headers, $rows) {
             $fp = fopen('php://output', 'w');
@@ -249,7 +283,7 @@ class LaporanBudget extends Page
 
             // Header
             echo "<Row>\n";
-            $headers = ['NO', 'STANDAR', 'PROGRAM KEGIATAN', 'PAGU (Rp)', 'REALISASI (Rp)', 'SISA (Rp)', '%'];
+            $headers = ['NO', 'STANDAR', 'PROGRAM KEGIATAN', 'PAGU (Rp)', 'REALISASI (Rp)', 'PENGAJUAN BERJALAN (Rp)', 'PENGEMBALIAN (Rp)', 'SISA (Rp)', '%'];
             foreach ($headers as $header) {
                 echo "<Cell ss:StyleID=\"s1\"><Data ss:Type=\"String\">" . htmlspecialchars($header) . "</Data></Cell>\n";
             }
@@ -263,6 +297,8 @@ class LaporanBudget extends Page
                 echo "<Cell><Data ss:Type=\"String\">" . htmlspecialchars($program['judul']) . "</Data></Cell>\n";
                 echo "<Cell><Data ss:Type=\"Number\">" . $program['pagu'] . "</Data></Cell>\n";
                 echo "<Cell><Data ss:Type=\"Number\">" . $program['realisasi'] . "</Data></Cell>\n";
+                echo "<Cell><Data ss:Type=\"Number\">" . $program['pengajuan_berjalan'] . "</Data></Cell>\n";
+                echo "<Cell><Data ss:Type=\"Number\">" . $program['pengembalian'] . "</Data></Cell>\n";
                 echo "<Cell><Data ss:Type=\"Number\">" . $program['sisa'] . "</Data></Cell>\n";
                 echo "<Cell><Data ss:Type=\"Number\">" . round($program['percentage'], 1) . "</Data></Cell>\n";
                 echo "</Row>\n";
@@ -275,7 +311,9 @@ class LaporanBudget extends Page
             echo "<Cell ss:StyleID=\"s2\"><Data ss:Type=\"String\">TOTAL</Data></Cell>\n";
             echo "<Cell ss:StyleID=\"s2\"><Data ss:Type=\"Number\">" . $this->laporanData['total_pagu'] . "</Data></Cell>\n";
             echo "<Cell ss:StyleID=\"s2\"><Data ss:Type=\"Number\">" . $this->laporanData['total_realisasi'] . "</Data></Cell>\n";
-            echo "<Cell ss:StyleID=\"s2\"><Data ss:Type=\"Number\">" . ($this->laporanData['total_pagu'] - $this->laporanData['total_realisasi']) . "</Data></Cell>\n";
+            echo "<Cell ss:StyleID=\"s2\"><Data ss:Type=\"Number\">" . $this->laporanData['total_pengajuan_berjalan'] . "</Data></Cell>\n";
+            echo "<Cell ss:StyleID=\"s2\"><Data ss:Type=\"Number\">" . $this->laporanData['total_pengembalian'] . "</Data></Cell>\n";
+            echo "<Cell ss:StyleID=\"s2\"><Data ss:Type=\"Number\">" . $this->laporanData['total_sisa'] . "</Data></Cell>\n";
             echo "<Cell></Cell>\n";
             echo "</Row>\n";
 

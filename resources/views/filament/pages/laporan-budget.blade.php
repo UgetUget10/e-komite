@@ -45,7 +45,7 @@
 
         @if (!empty($this->laporanData['programs']))
             <!-- Summary Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
                 <div class="rounded-lg border border-gray-200 p-4" style="background: linear-gradient(135deg, rgba(255, 193, 7, 0.05), transparent);">
                     <p class="text-xs font-semibold text-main-secondary mb-1">TOTAL PAGU KOMITE</p>
                     <p class="text-2xl font-bold text-main-black">Rp {{ number_format($this->laporanData['total_pagu'], 0, '.', '.') }}</p>
@@ -54,6 +54,16 @@
                 <div class="rounded-lg border border-gray-200 p-4" style="background: linear-gradient(135deg, rgba(76, 175, 80, 0.05), transparent);">
                     <p class="text-xs font-semibold text-main-secondary mb-1">TOTAL REALISASI</p>
                     <p class="text-2xl font-bold text-main-black">Rp {{ number_format($this->laporanData['total_realisasi'], 0, '.', '.') }}</p>
+                </div>
+
+                <div class="rounded-lg border border-gray-200 p-4" style="background: linear-gradient(135deg, rgba(255, 152, 0, 0.05), transparent);">
+                    <p class="text-xs font-semibold text-main-secondary mb-1">PENGAJUAN BERJALAN</p>
+                    <p class="text-2xl font-bold text-main-black">Rp {{ number_format($this->laporanData['total_pengajuan_berjalan'], 0, '.', '.') }}</p>
+                </div>
+
+                <div class="rounded-lg border border-gray-200 p-4" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), transparent);">
+                    <p class="text-xs font-semibold text-main-secondary mb-1">PENGEMBALIAN</p>
+                    <p class="text-2xl font-bold text-main-black">Rp {{ number_format($this->laporanData['total_pengembalian'], 0, '.', '.') }}</p>
                 </div>
 
                 <div class="rounded-lg border border-gray-200 p-4" style="background: linear-gradient(135deg, rgba(76, 175, 80, 0.05), transparent);">
@@ -78,6 +88,8 @@
                                     <th class="border-b border-gray-200 px-4 py-3 text-right text-xs font-bold text-main-black">JUMLAH PROGRAM</th>
                                     <th class="border-b border-gray-200 px-4 py-3 text-right text-xs font-bold text-main-black">TOTAL PAGU (Rp)</th>
                                     <th class="border-b border-gray-200 px-4 py-3 text-right text-xs font-bold text-main-black">TOTAL REALISASI (Rp)</th>
+                                    <th class="border-b border-gray-200 px-4 py-3 text-right text-xs font-bold text-main-black">PENGAJUAN BERJALAN (Rp)</th>
+                                    <th class="border-b border-gray-200 px-4 py-3 text-right text-xs font-bold text-main-black">PENGEMBALIAN (Rp)</th>
                                     <th class="border-b border-gray-200 px-4 py-3 text-right text-xs font-bold text-main-black">SISA (Rp)</th>
                                 </tr>
                             </thead>
@@ -88,7 +100,9 @@
                                         <td class="px-4 py-3 text-right text-sm text-main-black">{{ $data['count'] }}</td>
                                         <td class="px-4 py-3 text-right text-sm text-main-black">{{ number_format($data['pagu'], 0, '.', '.') }}</td>
                                         <td class="px-4 py-3 text-right text-sm text-main-black">{{ number_format($data['realisasi'], 0, '.', '.') }}</td>
-                                        <td class="px-4 py-3 text-right text-sm text-main-black">{{ number_format($data['sisa'], 0, '.', '.') }}</td>
+                                        <td class="px-4 py-3 text-right text-sm text-main-black">{{ number_format($data['pengajuan_berjalan'], 0, '.', '.') }}</td>
+                                        <td class="px-4 py-3 text-right text-sm text-main-black">{{ number_format($data['pengembalian'], 0, '.', '.') }}</td>
+                                        <td class="px-4 py-3 text-right text-sm {{ $data['sisa'] < 0 ? 'text-red-600 font-bold' : 'text-main-black' }}">{{ number_format($data['sisa'], 0, '.', '.') }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -137,6 +151,8 @@
                             <th class="border-b border-gray-200 px-4 py-3 text-left text-xs font-bold text-main-black">PROGRAM KEGIATAN</th>
                             <th class="border-b border-gray-200 px-4 py-3 text-right text-xs font-bold text-main-black">PAGU (Rp)</th>
                             <th class="border-b border-gray-200 px-4 py-3 text-right text-xs font-bold text-main-black">REALISASI (Rp)</th>
+                            <th class="border-b border-gray-200 px-4 py-3 text-right text-xs font-bold text-main-black">PENGAJUAN BERJALAN (Rp)</th>
+                            <th class="border-b border-gray-200 px-4 py-3 text-right text-xs font-bold text-main-black">PENGEMBALIAN (Rp)</th>
                             <th class="border-b border-gray-200 px-4 py-3 text-right text-xs font-bold text-main-black">SISA (Rp)</th>
                             <th class="border-b border-gray-200 px-4 py-3 text-center text-xs font-bold text-main-black">%</th>
                         </tr>
@@ -149,7 +165,9 @@
                                 <td class="px-4 py-3 text-sm text-main-black">{{ $program['judul'] }}</td>
                                 <td class="px-4 py-3 text-right text-sm text-main-black">{{ number_format($program['pagu'], 0, '.', '.') }}</td>
                                 <td class="px-4 py-3 text-right text-sm text-main-black font-medium">{{ number_format($program['realisasi'], 0, '.', '.') }}</td>
-                                <td class="px-4 py-3 text-right text-sm text-main-black">{{ number_format($program['sisa'], 0, '.', '.') }}</td>
+                                <td class="px-4 py-3 text-right text-sm text-main-black">{{ number_format($program['pengajuan_berjalan'], 0, '.', '.') }}</td>
+                                <td class="px-4 py-3 text-right text-sm text-main-black">{{ number_format($program['pengembalian'], 0, '.', '.') }}</td>
+                                <td class="px-4 py-3 text-right text-sm {{ $program['sisa'] < 0 ? 'text-red-600 font-bold' : 'text-main-black' }}">{{ number_format($program['sisa'], 0, '.', '.') }}</td>
                                 <td class="px-4 py-3 text-center text-sm">
                                     <span class="inline-block rounded-full px-3 py-1 text-xs font-bold"
                                         style="background: {{ $program['percentage'] >= 100 ? 'rgba(244, 67, 54, 0.2); color: #f44336;' : ($program['percentage'] >= 80 ? 'rgba(255, 152, 0, 0.2); color: #ff9800;' : 'rgba(76, 175, 80, 0.2); color: #4CAF50;') }}">
@@ -165,7 +183,7 @@
 
             <!-- Footer Summary -->
             <div class="rounded-lg border border-gray-200 p-4" style="background: linear-gradient(135deg, rgba(255, 193, 7, 0.05), transparent);">
-                <div class="grid grid-cols-3 gap-4">
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
                     <div>
                         <p class="text-xs text-main-secondary mb-1">TOTAL PAGU</p>
                         <p class="text-lg font-bold text-main-black">Rp {{ number_format($this->laporanData['total_pagu'], 0, '.', '.') }}</p>
@@ -175,8 +193,16 @@
                         <p class="text-lg font-bold text-main-black">Rp {{ number_format($this->laporanData['total_realisasi'], 0, '.', '.') }}</p>
                     </div>
                     <div>
+                        <p class="text-xs text-main-secondary mb-1">PENGAJUAN BERJALAN</p>
+                        <p class="text-lg font-bold text-main-black">Rp {{ number_format($this->laporanData['total_pengajuan_berjalan'], 0, '.', '.') }}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-main-secondary mb-1">PENGEMBALIAN</p>
+                        <p class="text-lg font-bold text-main-black">Rp {{ number_format($this->laporanData['total_pengembalian'], 0, '.', '.') }}</p>
+                    </div>
+                    <div>
                         <p class="text-xs text-main-secondary mb-1">SISA ANGGARAN</p>
-                        <p class="text-lg font-bold text-main-black">Rp {{ number_format($this->laporanData['total_pagu'] - $this->laporanData['total_realisasi'], 0, '.', '.') }}</p>
+                        <p class="text-lg font-bold {{ $this->laporanData['total_sisa'] < 0 ? 'text-red-600' : 'text-main-black' }}">Rp {{ number_format($this->laporanData['total_sisa'], 0, '.', '.') }}</p>
                     </div>
                 </div>
             </div>

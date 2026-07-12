@@ -88,6 +88,11 @@
             font-size: 9pt;
         }
 
+        .negative {
+            color: #dc2626;
+            font-weight: bold;
+        }
+
         .signature {
             margin-top: 15px;
         }
@@ -139,11 +144,15 @@
     <table>
         <thead>
             <tr>
-                <th style="width: 5%;">NO.</th>
-                <th style="width: 40%;">URAIAN ANGGARAN BELANJA</th>
-                <th style="width: 18%;">DIPA (Rp)</th>
-                <th style="width: 18%;">BOS (Rp)</th>
-                <th style="width: 19%;">KOMITE (Rp)</th>
+                <th style="width: 4%;">NO.</th>
+                <th style="width: 16%;">URAIAN ANGGARAN BELANJA</th>
+                <th style="width: 8%;">DIPA (Rp)</th>
+                <th style="width: 8%;">BOS (Rp)</th>
+                <th style="width: 9%;">KOMITE (Rp)</th>
+                <th style="width: 13%;">REALISASI (Rp)</th>
+                <th style="width: 13%;">PENGAJUAN BERJALAN (Rp)</th>
+                <th style="width: 13%;">PENGEMBALIAN SISA ANGGARAN (Rp)</th>
+                <th style="width: 16%;">SISA ANGGARAN (Rp)</th>
             </tr>
         </thead>
         <tbody>
@@ -154,10 +163,14 @@
                     <td class="text-right">{{ number_format($row['dipa'], 0, '.', '.') }}</td>
                     <td class="text-right">{{ number_format($row['bos'], 0, '.', '.') }}</td>
                     <td class="text-right">{{ number_format($row['komite'], 0, '.', '.') }}</td>
+                    <td class="text-right">{{ number_format($row['realisasi'], 0, '.', '.') }}</td>
+                    <td class="text-right">{{ number_format($row['pengajuan_berjalan'], 0, '.', '.') }}</td>
+                    <td class="text-right">{{ number_format($row['pengembalian'], 0, '.', '.') }}</td>
+                    <td class="text-right{{ $row['sisa'] < 0 ? ' negative' : '' }}">{{ number_format($row['sisa'], 0, '.', '.') }}</td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="5" class="text-center" style="padding: 20px;">
+                    <td colspan="9" class="text-center" style="padding: 20px;">
                         Belum ada data standar untuk tahun {{ $data['tahun'] }}
                     </td>
                 </tr>
@@ -172,16 +185,20 @@
             <td class="text-right">{{ number_format($data['totals']['dipa'], 0, '.', '.') }}</td>
             <td class="text-right">{{ number_format($data['totals']['bos'], 0, '.', '.') }}</td>
             <td class="highlight text-right">{{ number_format($data['totals']['komite'], 0, '.', '.') }}</td>
+            <td class="text-right">{{ number_format($data['totals']['realisasi'], 0, '.', '.') }}</td>
+            <td class="text-right">{{ number_format($data['totals']['pengajuan_berjalan'], 0, '.', '.') }}</td>
+            <td class="text-right">{{ number_format($data['totals']['pengembalian'], 0, '.', '.') }}</td>
+            <td class="text-right{{ $data['totals']['sisa'] < 0 ? ' negative' : '' }}">{{ number_format($data['totals']['sisa'], 0, '.', '.') }}</td>
         </tr>
     </table>
 
     <!-- Grand Total -->
     <table style="margin-top: 10px;">
         <tr class="footer-row">
-            <td colspan="5" class="text-center">JUMLAH KESELURUHAN (DIPA/BOS dan KOMITE)</td>
+            <td colspan="9" class="text-center">JUMLAH KESELURUHAN (DIPA/BOS dan KOMITE)</td>
         </tr>
         <tr class="grand-total">
-            <td colspan="5" class="text-center">{{ number_format($data['totals']['grand_total'], 0, '.', '.') }}
+            <td colspan="9" class="text-center">{{ number_format($data['totals']['grand_total'], 0, '.', '.') }}
             </td>
         </tr>
     </table>

@@ -26,7 +26,7 @@ class TopProgramsWidget extends BaseWidget
                 ProgramKegiatan::query()
                     ->when($this->activeTahunAnggaran(), fn ($q) => $q->where('fk_id_pagu_tahun_anggaran', $this->activeTahunAnggaran()?->id))
                     ->when(!$this->isPrivilegedUser() && !empty($this->allowedStandarIds()), fn ($q) => $q->whereIn('id_standar', $this->allowedStandarIds()))
-                    ->with('standars')
+                    ->with('standar')
                     ->orderByDesc('total_pengeluaran_perprogram')
                     ->limit(5)
             )
@@ -37,7 +37,7 @@ class TopProgramsWidget extends BaseWidget
                     ->sortable()
                     ->limit(40),
 
-                TextColumn::make('standars.nama_standar')
+                TextColumn::make('standar.nama_standar')
                     ->label('Standar')
                     ->toggleable(),
 

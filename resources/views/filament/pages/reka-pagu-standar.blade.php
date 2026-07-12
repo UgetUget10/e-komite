@@ -16,6 +16,10 @@
                             <th rowspan="2" class="reka-th reka-th-no">NO.</th>
                             <th rowspan="2" class="reka-th reka-th-left">URAIAN ANGGARAN BELANJA</th>
                             <th colspan="3" class="reka-th reka-th-colspan">KEPERLUAN DANA SATU TAHUN</th>
+                            <th rowspan="2" class="reka-th">REALISASI (Rp)</th>
+                            <th rowspan="2" class="reka-th">PENGAJUAN BERJALAN (Rp)</th>
+                            <th rowspan="2" class="reka-th">PENGEMBALIAN SISA ANGGARAN (Rp)</th>
+                            <th rowspan="2" class="reka-th">SISA ANGGARAN (Rp)</th>
                         </tr>
                         <tr class="reka-th-sub">
                             <th class="reka-th">DIPA (Rp)</th>
@@ -31,10 +35,14 @@
                                 <td class="reka-td reka-td-right">{{ number_format($row['dipa'], 0, '.', '.') }}</td>
                                 <td class="reka-td reka-td-right">{{ number_format($row['bos'], 0, '.', '.') }}</td>
                                 <td class="reka-td reka-td-right">{{ number_format($row['komite'], 0, '.', '.') }}</td>
+                                <td class="reka-td reka-td-right">{{ number_format($row['realisasi'], 0, '.', '.') }}</td>
+                                <td class="reka-td reka-td-right">{{ number_format($row['pengajuan_berjalan'], 0, '.', '.') }}</td>
+                                <td class="reka-td reka-td-right">{{ number_format($row['pengembalian'], 0, '.', '.') }}</td>
+                                <td class="reka-td reka-td-right {{ $row['sisa'] < 0 ? 'reka-td-negative' : '' }}">{{ number_format($row['sisa'], 0, '.', '.') }}</td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="reka-td reka-td-center reka-empty">
+                                <td colspan="9" class="reka-td reka-td-center reka-empty">
                                     Belum ada data standar untuk tahun {{ $data['tahun'] }}
                                 </td>
                             </tr>
@@ -46,12 +54,16 @@
                             <td class="reka-td-foot reka-td-right">{{ number_format($data['totals']['dipa'], 0, '.', '.') }}</td>
                             <td class="reka-td-foot reka-td-right">{{ number_format($data['totals']['bos'], 0, '.', '.') }}</td>
                             <td class="reka-td-foot reka-td-right dkd-foot-highlight">{{ number_format($data['totals']['komite'], 0, '.', '.') }}</td>
+                            <td class="reka-td-foot reka-td-right">{{ number_format($data['totals']['realisasi'], 0, '.', '.') }}</td>
+                            <td class="reka-td-foot reka-td-right">{{ number_format($data['totals']['pengajuan_berjalan'], 0, '.', '.') }}</td>
+                            <td class="reka-td-foot reka-td-right">{{ number_format($data['totals']['pengembalian'], 0, '.', '.') }}</td>
+                            <td class="reka-td-foot reka-td-right {{ $data['totals']['sisa'] < 0 ? 'reka-td-negative' : '' }}">{{ number_format($data['totals']['sisa'], 0, '.', '.') }}</td>
                         </tr>
                         <tr class="reka-row-footer">
-                            <td colspan="5" class="reka-td-foot reka-td-center">JUMLAH KESELURUHAN (DIPA/BOS dan KOMITE)</td>
+                            <td colspan="9" class="reka-td-foot reka-td-center">JUMLAH KESELURUHAN (DIPA/BOS dan KOMITE)</td>
                         </tr>
                         <tr class="reka-row-footer">
-                            <td colspan="5" class="reka-td-foot reka-td-center reka-grand-total">
+                            <td colspan="9" class="reka-td-foot reka-td-center reka-grand-total">
                                 {{ number_format($data['totals']['grand_total'], 0, '.', '.') }}
                             </td>
                         </tr>
@@ -172,6 +184,11 @@
             font-weight: 700;
             color: var(--color-main-black);
             letter-spacing: 0.02em;
+        }
+
+        .reka-td-negative {
+            color: #dc2626;
+            font-weight: 700;
         }
 
         .reka-empty {

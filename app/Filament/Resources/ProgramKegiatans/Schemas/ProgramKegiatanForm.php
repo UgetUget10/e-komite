@@ -149,6 +149,24 @@ class ProgramKegiatanForm
                     ->columns(3)
                     ->columnSpanFull(),
 
+                Section::make('Pengembalian Anggaran')
+                    ->icon('heroicon-o-arrow-uturn-left')
+                    ->description('Diisi jika ada sisa dana yang dikembalikan ke komite (biasanya di akhir tahun anggaran). Hanya bisa diisi oleh Super Admin, Pelaksana Komite, atau Kepala Madrasah.')
+                    ->schema([
+                        TextInput::make('pengembalian_sisa_anggaran')
+                            ->label('Pengembalian Sisa Anggaran')
+                            ->prefix('Rp ')
+                            ->default(0)
+                            ->formatStateUsing(fn ($state) => $state > 0 ? number_format($state, 0, ',', '.') : '')
+                            ->dehydrateStateUsing(fn ($state) => (int) preg_replace('/\D/', '', $state ?? '0'))
+                            ->extraInputAttributes([
+                                'onkeyup' => "let v = this.value.replace(/\\D/g,''); this.value = v ? new Intl.NumberFormat('id-ID').format(v) : ''"
+                            ])
+                            ->extraAttributes(['class' => 'text-right font-medium']),
+                    ])
+                    ->visible(fn () => auth()->user()?->hasRole(['Super Admin', 'Pelaksana Komite', 'Kepala Madrasah']) ?? false)
+                    ->columnSpanFull(),
+
                 Section::make('Uraian Kegiatan')
                     ->icon('heroicon-o-list-bullet')
                     ->schema([

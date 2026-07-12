@@ -52,8 +52,8 @@ class UraianProgramForm
                                     return '';
                                 }
 
-                                $program = ProgramKegiatan::with('standars')->find($programId);
-                                return $program?->standars?->nama_standar ?? '';
+                                $program = ProgramKegiatan::with('standar')->find($programId);
+                                return $program?->standar?->nama_standar ?? '';
                             })
                             ->live()
                             ->columnSpanFull(),

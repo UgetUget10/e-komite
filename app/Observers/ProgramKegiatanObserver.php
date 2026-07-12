@@ -9,7 +9,7 @@ class ProgramKegiatanObserver
     public function saving(ProgramKegiatan $programKegiatan): void
     {
         if ($programKegiatan->id_standar && $programKegiatan->kode) {
-            $standar = $programKegiatan->standars;
+            $standar = $programKegiatan->standar;
             if ($standar) {
                 $programKegiatan->kode_lengkap = ($standar->kode ?? '') . '.' . $programKegiatan->kode;
             }
@@ -29,7 +29,12 @@ class ProgramKegiatanObserver
      */
     public function updated(ProgramKegiatan $programKegiatan): void
     {
-        //
+        // Jika pengembalian sisa anggaran diubah manual (bukan lewat observer realisasi),
+        // hitung ulang sisa_anggaran_perprogram supaya tetap konsisten dengan formula:
+        // Sisa = Pagu Komite - Realisasi Final - Pengajuan Berjalan + Pengembalian
+        if ($programKegiatan->wasChanged('pengembalian_sisa_anggaran') && ! $programKegiatan->wasRecentlyCreated) {
+            \App\Observers\RealisasiNominalObserver::updateProgram($programKegiatan->id);
+        }
     }
 
     /**
