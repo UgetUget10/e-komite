@@ -393,7 +393,6 @@ class RealisasiNominalsTable
                     RestoreBulkAction::make(),
                 ]),
             ])
-            ->modifyQueryUsing(fn (Builder $query) => $query->withTrashed())
             ->emptyStateHeading('Belum ada realisasi nominal')
             ->striped()
             ->defaultSort('created_at', 'desc');
