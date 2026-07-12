@@ -234,7 +234,19 @@ class RealisasiNominalForm
                             ->openable()
                             ->multiple(false)
                             ->helperText('Format: PDF | Ukuran maksimal: 10MB')
-                            ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file, Get $get): string {
+                            ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file, Get $get, ?Model $record): string {
+                                $extension = $file->getClientOriginalExtension();
+
+                                // Saat EDIT dan record sudah punya dokumen sebelumnya: pakai nama file
+                                // yang PERSIS SAMA supaya file baru menimpa (overwrite) file lama di disk,
+                                // bukan membuat file baru dengan suffix -2, -3, dst.
+                                if ($record && filled($record->dokumen)) {
+                                    $existingFilename = basename($record->dokumen);
+                                    $existingBaseName = pathinfo($existingFilename, PATHINFO_FILENAME);
+
+                                    return "{$existingBaseName}.{$extension}";
+                                }
+
                                 $standarNama = \App\Models\Standar::whereKey($get('fk_id_standar'))
                                     ->value('nama_standar') ?? 'standar';
 
@@ -253,9 +265,9 @@ class RealisasiNominalForm
                                     $tanggalSlug,
                                 ])->implode('_');
 
-                                $extension = $file->getClientOriginalExtension();
                                 $filename = "{$baseName}.{$extension}";
 
+                                // Hanya cegah tabrakan nama antar record BERBEDA (record baru / belum ada dokumen)
                                 $disk = Storage::disk('public');
                                 $counter = 2;
 
@@ -266,7 +278,14 @@ class RealisasiNominalForm
 
                                 return $filename;
                             })
-                            ->deleteUploadedFileUsing(function (string $file): void {
+                            ->deleteUploadedFileUsing(function (string $file, ?Model $record): void {
+                                // Jangan hapus file jika nama filenya SAMA dengan dokumen record saat ini —
+                                // itu artinya file baru sudah menimpa (overwrite) file yang sama di disk,
+                                // jadi menghapusnya di sini justru akan menghapus file yang baru saja diupload.
+                                if ($record && $record->dokumen === $file) {
+                                    return;
+                                }
+
                                 Storage::disk('public')->delete($file);
                             })
                             ->columnSpanFull(),

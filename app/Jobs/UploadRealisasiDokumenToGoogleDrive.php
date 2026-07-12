@@ -2,7 +2,6 @@
 
 namespace App\Jobs;
 
-use App\Models\PaguTahunAnggaran;
 use App\Models\RealisasiNominal;
 use App\Services\GoogleDriveService;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -29,15 +28,17 @@ class UploadRealisasiDokumenToGoogleDrive implements ShouldQueue
         }
 
         try {
-            $tahunAktif = PaguTahunAnggaran::where('status_aktif', true)->first();
-            $tahun = $tahunAktif?->tahun ?? 'Tanpa Tahun';
-
+            // Nama folder tahun & bulan di Google Drive mengikuti tanggal realisasi yang
+            // diinput user (bukan tahun anggaran yang sedang aktif) — supaya dokumen selalu
+            // masuk ke folder tahun yang sesuai dengan tanggal kejadian realisasinya.
             if ($realisasi->tanggal_realisasi) {
                 $tanggal = Carbon::parse($realisasi->tanggal_realisasi);
+                $tahun = (string) $tanggal->year;
                 $nomorBulan = $tanggal->month;
                 $namaBulan = $tanggal->translatedFormat('F');
                 $bulan = "$nomorBulan. $namaBulan";
             } else {
+                $tahun = 'Tanpa Tahun';
                 $bulan = 'Tanpa Bulan';
             }
 
