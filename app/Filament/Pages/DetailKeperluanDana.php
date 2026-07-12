@@ -20,7 +20,7 @@ class DetailKeperluanDana extends Page
 
     protected static bool $shouldRegisterNavigation = false;
 
-    public Standar $standar;
+    public ?Standar $standar = null;
 
     public ?PaguTahunAnggaran $tahunAktif = null;
 
@@ -157,12 +157,12 @@ class DetailKeperluanDana extends Page
 
     public function getTitle(): string
     {
-        return 'Keperluan Dana ' . $this->standar->nama_standar;
+        return 'Keperluan Dana ' . ($this->standar->nama_standar ?? '-');
     }
 
     public function getHeading(): string
     {
-        return 'Keperluan Dana ' . $this->standar->nama_standar;
+        return 'Keperluan Dana ' . ($this->standar->nama_standar ?? '-');
     }
 
     protected function getHeaderActions(): array
