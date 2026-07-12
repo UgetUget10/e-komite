@@ -117,10 +117,22 @@ class StandarPaguOverview extends BaseWidget
 
     private function getTahunAktifId(): ?string
     {
-        // Query langsung tanpa cache untuk selalu ambil tahun aktif terbaru
+        // Prioritaskan tahun yang dipilih user via switcher (session), lalu
+        // fallback ke tahun anggaran yang berstatus aktif.
         // id adalah UUID (string), jangan di-cast ke int — UUID v7 yang dibuat
         // berdekatan waktu bisa punya digit awal sama sehingga (int) cast
         // membuat tahun anggaran berbeda dianggap sama.
+        $selectedTahun = session('selected_tahun_anggaran');
+
+        if ($selectedTahun) {
+            $id = DB::table('komite.tb_pagu_tahun_anggaran')->where('tahun', $selectedTahun)->value('id');
+            if ($id) {
+                return $id;
+            }
+
+            session()->forget('selected_tahun_anggaran');
+        }
+
         return DB::table('komite.tb_pagu_tahun_anggaran')->where('status_aktif', 1)->value('id');
     }
 

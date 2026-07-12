@@ -35,10 +35,18 @@ class PaguAnggaranOverview extends BaseWidget
         $isPrivileged = $this->isPrivilegedUser();
         $allowedStandarIds = $this->allowedStandarIds();
 
-        // Ambil pagu aktif atau terbaru
-        $pagu = DB::table('komite.tb_pagu_tahun_anggaran')
-            ->where('status_aktif', 1)
-            ->first();
+        // Ambil pagu sesuai tahun yang dipilih (session), atau aktif/terbaru sebagai fallback
+        $tahunAktif = $this->activeTahunAnggaran();
+
+        $pagu = $tahunAktif
+            ? DB::table('komite.tb_pagu_tahun_anggaran')->where('id', $tahunAktif->id)->first()
+            : null;
+
+        if (!$pagu) {
+            $pagu = DB::table('komite.tb_pagu_tahun_anggaran')
+                ->where('status_aktif', 1)
+                ->first();
+        }
 
         if (!$pagu) {
             $pagu = DB::table('komite.tb_pagu_tahun_anggaran')

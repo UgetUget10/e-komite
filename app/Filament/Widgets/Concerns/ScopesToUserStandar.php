@@ -24,14 +24,22 @@ trait ScopesToUserStandar
 
     protected function activeTahunAnggaran(): ?PaguTahunAnggaran
     {
-        // Check if user selected a specific tahun in session
+        // Prioritaskan tahun yang dipilih user via switcher (session)
         $selectedTahun = session('selected_tahun_anggaran');
 
         if ($selectedTahun) {
-            return PaguTahunAnggaran::where('tahun', $selectedTahun)->first();
+            $tahun = PaguTahunAnggaran::where('tahun', $selectedTahun)->first();
+
+            if ($tahun) {
+                return $tahun;
+            }
+
+            // Tahun tersimpan di session sudah tidak ada (mis. dihapus) — bersihkan
+            // supaya request berikutnya tidak terus mencoba tahun yang invalid.
+            session()->forget('selected_tahun_anggaran');
         }
 
-        // Fall back to active tahun
+        // Fall back ke tahun anggaran yang berstatus aktif
         return PaguTahunAnggaran::where('status_aktif', 1)->first();
     }
 

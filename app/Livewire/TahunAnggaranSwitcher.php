@@ -9,11 +9,14 @@ class TahunAnggaranSwitcher extends Component
 {
     public $selectedTahun = null;
     public $tahunList = [];
+    public $isActiveTahun = true;
 
     public function mount()
     {
         $this->loadTahunList();
-        $this->selectedTahun = session('selected_tahun_anggaran') ?? $this->getActiveTahun();
+        $activeTahun = $this->getActiveTahun();
+        $this->selectedTahun = session('selected_tahun_anggaran') ?? $activeTahun;
+        $this->isActiveTahun = $this->selectedTahun == $activeTahun;
     }
 
     public function loadTahunList()
