@@ -125,6 +125,30 @@ class ProgramKegiatansTable
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
+                Action::make('isi_pengembalian')
+                    ->label('Isi Pengembalian')
+                    ->icon('heroicon-o-arrow-uturn-left')
+                    ->color('info')
+                    ->visible(fn () => auth()->user()?->hasRole(['Super Admin', 'Pelaksana Komite', 'Kepala Madrasah']) ?? false)
+                    ->schema([
+                        \Filament\Forms\Components\TextInput::make('pengembalian_sisa_anggaran')
+                            ->label('Pengembalian Sisa Anggaran')
+                            ->prefix('Rp ')
+                            ->required()
+                            ->numeric()
+                            ->minValue(0)
+                            ->default(fn ($record) => (int) $record->pengembalian_sisa_anggaran)
+                            ->helperText('Nominal dana yang dikembalikan ke komite untuk program ini.'),
+                    ])
+                    ->modalHeading(fn ($record) => 'Isi Pengembalian — ' . $record->judul_program)
+                    ->action(function ($record, array $data) {
+                        $record->update(['pengembalian_sisa_anggaran' => $data['pengembalian_sisa_anggaran']]);
+                    })
+                    ->successNotification(
+                        \Filament\Notifications\Notification::make()
+                            ->success()
+                            ->title('Pengembalian sisa anggaran berhasil disimpan')
+                    ),
                 Action::make('ekspor_pdf')
                     ->label('Ekspor PDF')
                     ->icon('heroicon-o-document-arrow-down')

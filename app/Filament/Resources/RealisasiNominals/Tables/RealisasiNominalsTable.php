@@ -7,6 +7,7 @@ use App\Models\ProgramKegiatan;
 use App\Models\RealisasiNominal;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Actions\Action;
+use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -319,6 +320,48 @@ class RealisasiNominalsTable
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
+                    BulkAction::make('setujui_cairkan_massal')
+                        ->label('Setujui & Cairkan (Terpilih)')
+                        ->icon('heroicon-o-check-circle')
+                        ->color('warning')
+                        ->visible(fn () => static::isPrivilegedUser())
+                        ->requiresConfirmation()
+                        ->modalHeading('Setujui & Cairkan Dana Terpilih')
+                        ->modalDescription('Semua record berstatus "Diajukan" di antara yang dipilih akan diubah menjadi "Berjalan". Record dengan status lain akan dilewati.')
+                        ->deselectRecordsAfterCompletion()
+                        ->action(function ($records) {
+                            $updated = $records
+                                ->where('status', RealisasiNominal::STATUS_DIAJUKAN)
+                                ->each(fn ($record) => $record->update(['status' => RealisasiNominal::STATUS_BERJALAN]))
+                                ->count();
+
+                            \Filament\Notifications\Notification::make()
+                                ->title($updated . ' realisasi disetujui & dicairkan')
+                                ->success()
+                                ->send();
+                        }),
+
+                    BulkAction::make('tandai_selesai_massal')
+                        ->label('Tandai Selesai (Terpilih)')
+                        ->icon('heroicon-o-document-check')
+                        ->color('success')
+                        ->visible(fn () => static::isPrivilegedUser())
+                        ->requiresConfirmation()
+                        ->modalHeading('Tandai Selesai Realisasi Terpilih')
+                        ->modalDescription('Semua record berstatus "Berjalan" di antara yang dipilih akan diubah menjadi "Selesai". Record dengan status lain akan dilewati.')
+                        ->deselectRecordsAfterCompletion()
+                        ->action(function ($records) {
+                            $updated = $records
+                                ->where('status', RealisasiNominal::STATUS_BERJALAN)
+                                ->each(fn ($record) => $record->update(['status' => RealisasiNominal::STATUS_SELESAI]))
+                                ->count();
+
+                            \Filament\Notifications\Notification::make()
+                                ->title($updated . ' realisasi ditandai selesai')
+                                ->success()
+                                ->send();
+                        }),
+
                     DeleteBulkAction::make(),
                     ForceDeleteBulkAction::make(),
                     RestoreBulkAction::make(),

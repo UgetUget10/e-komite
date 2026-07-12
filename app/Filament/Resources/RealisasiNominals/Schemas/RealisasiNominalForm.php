@@ -207,6 +207,7 @@ class RealisasiNominalForm
                             ->options(\App\Models\RealisasiNominal::STATUSES)
                             ->default(\App\Models\RealisasiNominal::STATUS_DIAJUKAN)
                             ->required()
+                            ->visible(fn () => auth()->user()?->hasRole(['Super Admin', 'Pelaksana Komite', 'Kepala Madrasah']) ?? false)
                             ->helperText('Diajukan: menunggu persetujuan. Berjalan: sudah dicairkan, menunggu bukti. Selesai: bukti lengkap (realisasi final).'),
 
                         Textarea::make('keterangan')
