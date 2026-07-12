@@ -37,6 +37,11 @@ class StandarIsiPolicy
         return $authUser->can('Delete:StandarIsi');
     }
 
+    public function deleteAny(AuthUser $authUser): bool
+    {
+        return $authUser->can('DeleteAny:StandarIsi');
+    }
+
     public function restore(AuthUser $authUser, StandarIsi $standarIsi): bool
     {
         return $authUser->can('Restore:StandarIsi');

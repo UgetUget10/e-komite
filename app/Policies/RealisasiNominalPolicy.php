@@ -37,6 +37,11 @@ class RealisasiNominalPolicy
         return $authUser->can('Delete:RealisasiNominal');
     }
 
+    public function deleteAny(AuthUser $authUser): bool
+    {
+        return $authUser->can('DeleteAny:RealisasiNominal');
+    }
+
     public function restore(AuthUser $authUser, RealisasiNominal $realisasiNominal): bool
     {
         return $authUser->can('Restore:RealisasiNominal');

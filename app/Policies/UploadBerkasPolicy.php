@@ -37,6 +37,11 @@ class UploadBerkasPolicy
         return $authUser->can('Delete:UploadBerkas');
     }
 
+    public function deleteAny(AuthUser $authUser): bool
+    {
+        return $authUser->can('DeleteAny:UploadBerkas');
+    }
+
     public function restore(AuthUser $authUser, UploadBerkas $uploadBerkas): bool
     {
         return $authUser->can('Restore:UploadBerkas');

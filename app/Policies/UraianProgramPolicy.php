@@ -37,6 +37,11 @@ class UraianProgramPolicy
         return $authUser->can('Delete:UraianProgram');
     }
 
+    public function deleteAny(AuthUser $authUser): bool
+    {
+        return $authUser->can('DeleteAny:UraianProgram');
+    }
+
     public function restore(AuthUser $authUser, UraianProgram $uraianProgram): bool
     {
         return $authUser->can('Restore:UraianProgram');

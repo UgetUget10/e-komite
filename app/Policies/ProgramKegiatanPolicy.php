@@ -37,6 +37,11 @@ class ProgramKegiatanPolicy
         return $authUser->can('Delete:ProgramKegiatan');
     }
 
+    public function deleteAny(AuthUser $authUser): bool
+    {
+        return $authUser->can('DeleteAny:ProgramKegiatan');
+    }
+
     public function restore(AuthUser $authUser, ProgramKegiatan $programKegiatan): bool
     {
         return $authUser->can('Restore:ProgramKegiatan');

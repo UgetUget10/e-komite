@@ -37,6 +37,11 @@ class PaguTahunAnggaranPolicy
         return $authUser->can('Delete:PaguTahunAnggaran');
     }
 
+    public function deleteAny(AuthUser $authUser): bool
+    {
+        return $authUser->can('DeleteAny:PaguTahunAnggaran');
+    }
+
     public function restore(AuthUser $authUser, PaguTahunAnggaran $paguTahunAnggaran): bool
     {
         return $authUser->can('Restore:PaguTahunAnggaran');

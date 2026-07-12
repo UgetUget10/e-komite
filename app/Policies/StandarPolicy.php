@@ -37,6 +37,11 @@ class StandarPolicy
         return $authUser->can('Delete:Standar');
     }
 
+    public function deleteAny(AuthUser $authUser): bool
+    {
+        return $authUser->can('DeleteAny:Standar');
+    }
+
     public function restore(AuthUser $authUser, Standar $standar): bool
     {
         return $authUser->can('Restore:Standar');

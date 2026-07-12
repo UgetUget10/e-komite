@@ -37,6 +37,11 @@ class RealisasiBulanPolicy
         return $authUser->can('Delete:RealisasiBulan');
     }
 
+    public function deleteAny(AuthUser $authUser): bool
+    {
+        return $authUser->can('DeleteAny:RealisasiBulan');
+    }
+
     public function restore(AuthUser $authUser, RealisasiBulan $realisasiBulan): bool
     {
         return $authUser->can('Restore:RealisasiBulan');
