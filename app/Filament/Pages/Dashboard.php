@@ -43,15 +43,4 @@ class Dashboard extends BaseDashboard
     {
         return ['fi-page-dashboard'];
     }
-
-    public static function canAccess(): bool
-    {
-        return true;
-    }
-
-    #[\Livewire\Attributes\Computed]
-    public function tahunSwitcher()
-    {
-        return \App\Livewire\TahunAnggaranSwitcher::class;
-    }
 }
