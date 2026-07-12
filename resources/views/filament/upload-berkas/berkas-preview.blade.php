@@ -45,11 +45,22 @@
     }"
 >
     <template x-if="url">
-        <iframe
-            :src="url"
-            class="upload-berkas-preview-frame"
-            title="Pratinjau berkas"
-        ></iframe>
+        <div>
+            {{-- Link "buka di tab baru" selalu tampil berdampingan dengan iframe — beberapa
+                 browser dikonfigurasi untuk selalu mengunduh PDF alih-alih menampilkannya
+                 inline, sehingga iframe bisa terlihat kosong tanpa link ini sebagai jalan keluar. --}}
+            <div class="upload-berkas-preview-toolbar">
+                <a x-bind:href="url" target="_blank" rel="noopener" class="upload-berkas-preview-open-link">
+                    <x-heroicon-o-arrow-top-right-on-square class="h-4 w-4" />
+                    Buka di tab baru
+                </a>
+            </div>
+            <iframe
+                :src="url"
+                class="upload-berkas-preview-frame"
+                title="Pratinjau berkas"
+            ></iframe>
+        </div>
     </template>
 
     @if ($showFallbackLink ?? false)

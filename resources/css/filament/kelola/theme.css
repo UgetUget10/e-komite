@@ -23,6 +23,20 @@
     @apply flex items-center gap-x-2 rounded-2xl bg-main-primary/40 p-4 text-sm;
 }
 
+.upload-berkas-preview-toolbar {
+    @apply flex justify-end mb-2;
+}
+
+.upload-berkas-preview-open-link {
+    @apply inline-flex items-center gap-x-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors duration-150;
+    color: var(--color-main-amber);
+    background: rgba(255, 152, 0, 0.08);
+}
+
+.upload-berkas-preview-open-link:hover {
+    background: rgba(255, 152, 0, 0.15);
+}
+
 @import "./dashboard.css";
 @import "./modals-forms.css";
 @import "./tables-cards.css";
