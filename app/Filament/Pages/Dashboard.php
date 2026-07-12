@@ -7,6 +7,7 @@ use App\Filament\Widgets\BudgetVsRealisasiChart;
 use App\Filament\Widgets\PaguAnggaranOverview;
 use App\Filament\Widgets\RecentActivityWidget;
 use App\Filament\Widgets\StandarPaguOverview;
+use App\Filament\Widgets\TahunAnggaranSwitcherWidget;
 use Filament\Pages\Dashboard as BaseDashboard;
 
 class Dashboard extends BaseDashboard
@@ -14,6 +15,7 @@ class Dashboard extends BaseDashboard
     public function getWidgets(): array
     {
         return [
+            TahunAnggaranSwitcherWidget::class,
             PaguAnggaranOverview::class,
             BudgetVsRealisasiChart::class,
             BudgetAlertWidget::class,
