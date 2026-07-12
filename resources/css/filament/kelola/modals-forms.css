@@ -3,13 +3,11 @@
 /* Modal backdrop */
 .fi-modal-backdrop {
     @apply fixed inset-0 bg-black/40 backdrop-blur-sm;
-    animation: fi-modal-fade-in 0.2s ease-out both;
 }
 
 /* Modal container */
 .fi-modal {
     @apply relative rounded-2xl bg-main-white shadow-2xl overflow-hidden;
-    animation: fi-modal-scale-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
     border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
@@ -65,10 +63,23 @@
     max-height: calc(80vh - 200px);
 }
 
+/* Modal konfirmasi sederhana (mis. Hapus) sering tidak punya form/isi apapun —
+   cegah wrapper konten kosong menyisakan celah putih besar antara deskripsi dan tombol */
+.fi-modal-content:empty {
+    display: none;
+    padding: 0;
+}
+
 /* Modal footer */
 .fi-modal-footer {
-    @apply flex items-center justify-end gap-3 px-8 py-4 border-t border-main-primary/30;
+    @apply px-8 py-4 border-t border-main-primary/30;
     background: linear-gradient(180deg, transparent 0%, rgba(255, 152, 0, 0.02) 100%);
+}
+
+/* Tombol aksi (Batal/Hapus, dst) ada di dalam wrapper bersarang ini — di sinilah
+   flex+gap harus diterapkan, bukan di .fi-modal-footer itu sendiri */
+.fi-modal-footer-actions {
+    @apply flex flex-wrap items-center justify-end gap-3;
 }
 
 /* ===== Form Elements Styling ===== */
@@ -76,14 +87,7 @@
 /* Form group wrapper */
 .fi-form-group {
     @apply mb-6;
-    animation: fi-form-group-in 0.3s ease-out both;
 }
-
-.fi-form-group:nth-child(1) { animation-delay: 0ms; }
-.fi-form-group:nth-child(2) { animation-delay: 40ms; }
-.fi-form-group:nth-child(3) { animation-delay: 80ms; }
-.fi-form-group:nth-child(4) { animation-delay: 120ms; }
-.fi-form-group:nth-child(n+5) { animation-delay: 160ms; }
 
 /* Form label */
 .fi-form-label {
@@ -275,39 +279,6 @@
 .fi-radio:disabled {
     opacity: 0.6;
     cursor: not-allowed;
-}
-
-/* ===== Animations ===== */
-
-@keyframes fi-modal-fade-in {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
-@keyframes fi-modal-scale-in {
-    from {
-        opacity: 0;
-        transform: scale(0.95) translateY(16px);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-    }
-}
-
-@keyframes fi-form-group-in {
-    from {
-        opacity: 0;
-        transform: translateY(8px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
 }
 
 /* ===== Responsive adjustments ===== */
