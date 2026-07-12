@@ -100,6 +100,7 @@ class KelolaPanelProvider extends PanelProvider
             ->sidebarWidth('19rem')
             ->topNavigation(fn () => auth()->check() && !auth()->user()->hasRole('Super Admin'))
             ->darkMode(false)
+            ->globalSearch(false)
             ->font('Poppins');
     }
 }
