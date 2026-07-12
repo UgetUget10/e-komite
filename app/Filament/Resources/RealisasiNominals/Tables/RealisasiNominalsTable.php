@@ -19,6 +19,7 @@ use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\FiltersLayout;
@@ -311,6 +312,31 @@ class RealisasiNominalsTable
                     ->modalHeading('Tandai Realisasi Selesai')
                     ->modalDescription('Status akan berubah menjadi "Selesai" — realisasi dianggap final dan bukti/dokumen sudah lengkap.')
                     ->action(fn ($record) => $record->update(['status' => RealisasiNominal::STATUS_SELESAI])),
+
+                Action::make('isi_pengembalian')
+                    ->label('Isi Pengembalian')
+                    ->icon('heroicon-o-arrow-uturn-left')
+                    ->color('info')
+                    ->visible(fn () => static::isPrivilegedUser())
+                    ->schema([
+                        TextInput::make('pengembalian_sisa_anggaran')
+                            ->label('Pengembalian Sisa Anggaran')
+                            ->prefix('Rp ')
+                            ->required()
+                            ->numeric()
+                            ->minValue(0)
+                            ->default(fn ($record) => (int) $record->programKegiatan?->pengembalian_sisa_anggaran)
+                            ->helperText('Nominal dana yang dikembalikan ke komite untuk program kegiatan ini.'),
+                    ])
+                    ->modalHeading(fn ($record) => 'Isi Pengembalian — ' . ($record->programKegiatan?->judul_program ?? '-'))
+                    ->action(function ($record, array $data) {
+                        $record->programKegiatan?->update(['pengembalian_sisa_anggaran' => $data['pengembalian_sisa_anggaran']]);
+                    })
+                    ->successNotification(
+                        \Filament\Notifications\Notification::make()
+                            ->success()
+                            ->title('Pengembalian sisa anggaran berhasil disimpan')
+                    ),
 
                 ViewAction::make(),
                 EditAction::make(),
